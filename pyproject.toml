@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "physiokit"
+version = "0.1.0"
+description = "PhysioKit, process raw ambulatory bio-signals."
+license = "BSD-3-Clause"
+authors = ["Adam Page <adam.page@ambiq.com>"]
+readme = "README.md"
+homepage = "https://ambiq.ai"
+packages = [
+    { include = "physiokit" },
+]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+numpy = "^1.24.3"
+neurokit2 = "^0.2.4"
+scipy = "^1.10.1"
+h5py = "^3.8.0"
+
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.13.2"
+jupyter = "^1.0.0"
+notebook = "^6.5.4"
+plotly = "^5.14.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
