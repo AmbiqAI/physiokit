@@ -27,7 +27,7 @@ def clean(
 
     # Bandpass filter
     ecg_clean = signal.filter_signal(
-        signal=data,
+        data=data,
         lowcut=lowcut,
         highcut=highcut,
         sample_rate=sample_rate,
