@@ -6,4 +6,5 @@ except ImportError:
 
 from . import ecg
 from . import ppg
+from . import rsp
 from . import signal
