@@ -199,7 +199,9 @@ def quotient_filter_mask(
         filt_idxs = np.where(mask == 0)[0]
         filt_ints = data[filt_idxs]
         # Compute quotient of each interval with the next
-        filt_deltas = filt_ints[:-1] / filt_ints[1:]
+        filt_deltas = np.zeros(filt_ints.size)
+        filt_deltas[1:] = filt_ints[:-1] / filt_ints[1:]
+        filt_deltas[0] = filt_deltas[1]
         # Get indices of intervals that are outside the range
         delta_idxs = np.where((filt_deltas < lowcut) | (filt_deltas > highcut))[0]
         # Update mask with rejected intervals

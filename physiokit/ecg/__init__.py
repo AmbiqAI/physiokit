@@ -7,5 +7,7 @@ from .metrics import (
 )
 from .peaks import (
     find_peaks,
-    filter_peaks
+    filter_peaks,
+    compute_rr_intervals,
+    filter_rr_intervals
 )

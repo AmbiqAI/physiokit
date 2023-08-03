@@ -1,6 +1,5 @@
 import numpy as np
 import numpy.typing as npt
-import scipy.ndimage as spn
 
 from .peaks import find_peaks, filter_peaks
 

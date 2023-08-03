@@ -2,7 +2,7 @@ from ..signal import filter_signal
 
 def clean(
         data,
-        lowcut: float = 0.7,
+        lowcut: float = 0.5,
         highcut: float = 4,
         sample_rate=1000,
         **kwargs
