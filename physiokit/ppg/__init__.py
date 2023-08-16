@@ -1,16 +1,11 @@
 """PPG module for PhysioKit"""
-from .synthesize import synthesize
 from .clean import clean
 from .metrics import (
-    compute_heart_rate,
     compute_fft,
+    compute_heart_rate,
     compute_spo2_from_perfusion,
+    compute_spo2_in_frequency,
     compute_spo2_in_time,
-    compute_spo2_in_frequency
 )
-from .peaks import (
-    find_peaks,
-    filter_peaks,
-    compute_rr_intervals,
-    filter_rr_intervals
-)
+from .peaks import compute_rr_intervals, filter_peaks, filter_rr_intervals, find_peaks
+from .synthesize import synthesize

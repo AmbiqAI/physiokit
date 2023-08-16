@@ -5,7 +5,6 @@ import scipy.ndimage as spn
 from ..signal import quotient_filter_mask
 
 
-
 def find_peaks(
     data: npt.NDArray,
     sample_rate: float = 1000,
@@ -54,7 +53,7 @@ def find_peaks(
         beg, end = beg_qrs[i], end_qrs[i]
         peak = beg + np.argmax(data[beg:end])
         qrs_len = end - beg
-        qrs_delay = peak - peaks[-1] if len(peaks) else min_qrs_delay
+        qrs_delay = peak - peaks[-1] if peaks else min_qrs_delay
 
         # Enforce minimum delay between peaks
         if qrs_delay < min_qrs_delay or qrs_len < min_qrs_len:
@@ -64,10 +63,11 @@ def find_peaks(
 
     return np.array(peaks, dtype=int)
 
+
 def filter_peaks(
-        peaks: npt.NDArray,
-        sample_rate: float = 1000,
-    ) -> npt.NDArray:
+    peaks: npt.NDArray,
+    sample_rate: float = 1000,
+) -> npt.NDArray:
     """Filter out peaks with RR intervals outside of normal range.
     Args:
         peaks (array): R peaks.
@@ -75,8 +75,8 @@ def filter_peaks(
     Returns:
         npt.NDArray: Filtered peaks.
     """
-    lowcut = 0.3*sample_rate
-    highcut = 2*sample_rate
+    lowcut = 0.3 * sample_rate
+    highcut = 2 * sample_rate
 
     # Capture RR intervals
     rr_ints = np.diff(peaks)
@@ -92,9 +92,8 @@ def filter_peaks(
 
 
 def compute_rr_intervals(
-        peaks: npt.NDArray,
-        sample_rate: float = 1000,
-    ) -> npt.NDArray:
+    peaks: npt.NDArray,
+) -> npt.NDArray:
     """Compute RR intervals from R peaks.
     Args:
         peaks (array): R peaks.
@@ -102,19 +101,14 @@ def compute_rr_intervals(
     Returns:
         npt.NDArray: RR intervals.
     """
-
     rr_ints = np.diff(peaks)
     rr_ints = np.hstack((rr_ints[0], rr_ints))
     return rr_ints
 
 
 def filter_rr_intervals(
-        rr_ints: npt.NDArray,
-        sample_rate: float = 1000,
-        min_rr: float = 0.3,
-        max_rr: float = 2.0,
-        min_delta: float = 0.3
-    ) -> npt.NDArray:
+    rr_ints: npt.NDArray, sample_rate: float = 1000, min_rr: float = 0.3, max_rr: float = 2.0, min_delta: float = 0.3
+) -> npt.NDArray:
     """Filter out peaks with RR intervals outside of normal range.
     Args:
         rr_ints (array): RR intervals.
@@ -127,9 +121,9 @@ def filter_rr_intervals(
     """
 
     # Filter out peaks with RR intervals outside of normal range
-    rr_mask = np.where((rr_ints < min_rr*sample_rate) | (rr_ints > max_rr*sample_rate), 1, 0)
+    rr_mask = np.where((rr_ints < min_rr * sample_rate) | (rr_ints > max_rr * sample_rate), 1, 0)
 
     # Filter out peaks that deviate more than delta
-    rr_mask = quotient_filter_mask(rr_ints, mask=rr_mask, lowcut=1-min_delta, highcut=1+min_delta)
+    rr_mask = quotient_filter_mask(rr_ints, mask=rr_mask, lowcut=1 - min_delta, highcut=1 + min_delta)
 
     return rr_mask

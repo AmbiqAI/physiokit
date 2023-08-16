@@ -1,13 +1,13 @@
-import numpy.typing as npt
 import numpy as np
+import numpy.typing as npt
 import scipy.stats
 
 from .defines import HrvTimeMetrics
 
+
 def compute_hrv_time(
     rr_intervals: npt.NDArray,
     sample_rate: float = 1000,
-    axis: int = -1
 ) -> HrvTimeMetrics:
     """Compute time domain HRV metrics.
     Args:
@@ -35,7 +35,7 @@ def compute_hrv_time(
 
     # Robust
     median_nn = np.nanmedian(rri_ms)
-    mad_nn = 1.4826*np.nanmedian(np.abs(rri_ms - median_nn))
+    mad_nn = 1.4826 * np.nanmedian(np.abs(rri_ms - median_nn))
     mcv_nn = mad_nn / median_nn
     iqr_nn = scipy.stats.iqr(rri_ms)
     prc20_nn = np.nanpercentile(rri_ms, q=20)
@@ -52,24 +52,20 @@ def compute_hrv_time(
     return HrvTimeMetrics(
         mean_nn=mean_nn,
         sd_nn=sd_nn,
-
         rms_sd=rms_sd,
         sd_sd=sd_sd,
-
         cv_nn=cv_nn,
         cv_sd=cv_sd,
-
         meadian_nn=median_nn,
         mad_nn=mad_nn,
         mcv_nn=mcv_nn,
         iqr_nn=iqr_nn,
         prc20_nn=prc20_nn,
         prc80_nn=prc80_nn,
-
         nn50=nn50,
         nn20=nn20,
         pnn50=pnn50,
         pnn20=pnn20,
         min_nn=min_nn,
-        max_nn=max_nn
+        max_nn=max_nn,
     )

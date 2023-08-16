@@ -1,12 +1,13 @@
 import neurokit2 as nk
 
+
 def synthesize(
-        duration: float = 10,
-        sample_rate: int = 1000,
-        heart_rate: int = 60,
-        heart_rate_std: int = 1,
-        leads: int = 1,
-    ):
+    duration: float = 10,
+    sample_rate: int = 1000,
+    heart_rate: int = 60,
+    heart_rate_std: int = 1,
+    leads: int = 1,
+):
     """Generate synthetic ECG signal. Utilize pk.signal.noise methods to make more realistic.
 
     Args:
@@ -29,7 +30,7 @@ def synthesize(
         # Dont inject noise here
         noise=0,
     )
-    # Single lead is returned as
+    # Return as numpy array
     if leads > 1:
         ecg_data = ecg_data.to_numpy().T
 

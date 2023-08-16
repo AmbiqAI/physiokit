@@ -55,7 +55,7 @@ def find_peaks(
         beg, end = beg_waves[i], end_waves[i]
         peak = beg + np.argmax(data[beg:end])
         peak_width = end - beg
-        peak_delay = peak - peaks[-1] if len(peaks) else min_delay
+        peak_delay = peak - peaks[-1] if peaks else min_delay
 
         # Enforce minimum length and delay between peaks
         if (peak_width < min_width) or (peak_delay < min_delay):
@@ -67,9 +67,9 @@ def find_peaks(
 
 
 def filter_peaks(
-        peaks: npt.NDArray,
-        sample_rate: float = 1000,
-    ) -> npt.NDArray:
+    peaks: npt.NDArray,
+    sample_rate: float = 1000,
+) -> npt.NDArray:
     """Filter out peaks with RR intervals outside of normal range.
     Args:
         peaks (array): Systolic peaks.
@@ -77,8 +77,8 @@ def filter_peaks(
     Returns:
         npt.NDArray: Filtered peaks.
     """
-    lowcut = 0.3*sample_rate
-    highcut = 2*sample_rate
+    lowcut = 0.3 * sample_rate
+    highcut = 2 * sample_rate
 
     # Capture RR intervals
     rr_ints = np.diff(peaks)
@@ -94,9 +94,8 @@ def filter_peaks(
 
 
 def compute_rr_intervals(
-        peaks: npt.NDArray,
-        sample_rate: float = 1000,
-    ) -> npt.NDArray:
+    peaks: npt.NDArray,
+) -> npt.NDArray:
     """Compute RR intervals from R peaks.
     Args:
         peaks (array): R peaks.
@@ -111,12 +110,8 @@ def compute_rr_intervals(
 
 
 def filter_rr_intervals(
-        rr_ints: npt.NDArray,
-        sample_rate: float = 1000,
-        min_rr: float = 0.3,
-        max_rr: float = 2.0,
-        min_delta: float = 0.3
-    ) -> npt.NDArray:
+    rr_ints: npt.NDArray, sample_rate: float = 1000, min_rr: float = 0.3, max_rr: float = 2.0, min_delta: float = 0.3
+) -> npt.NDArray:
     """Filter out peaks with RR intervals outside of normal range.
     Args:
         rr_ints (array): RR intervals.
@@ -129,9 +124,9 @@ def filter_rr_intervals(
     """
 
     # Filter out peaks with RR intervals outside of normal range
-    rr_mask = np.where((rr_ints < min_rr*sample_rate) | (rr_ints > max_rr*sample_rate), 1, 0)
+    rr_mask = np.where((rr_ints < min_rr * sample_rate) | (rr_ints > max_rr * sample_rate), 1, 0)
 
     # Filter out peaks that deviate more than delta
-    rr_mask = quotient_filter_mask(rr_ints, mask=rr_mask, lowcut=1-min_delta, highcut=1+min_delta)
+    rr_mask = quotient_filter_mask(rr_ints, mask=rr_mask, lowcut=1 - min_delta, highcut=1 + min_delta)
 
     return rr_mask

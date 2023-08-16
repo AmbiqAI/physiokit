@@ -1,17 +1,16 @@
-
 import numpy as np
 import numpy.typing as npt
 
 from .. import signal
 
+
 def clean(
-        data: npt.NDArray,
-        lowcut: float = 0.5,
-        highcut: float = 30,
-        sample_rate: int = 1000,
-        axis: int = -1,
-        **kwargs
-    ) -> npt.NDArray:
+    data: npt.NDArray,
+    lowcut: float = 0.5,
+    highcut: float = 30,
+    sample_rate: int = 1000,
+    axis: int = -1,
+) -> npt.NDArray:
     """Clean ECG signal by applying bandpass filter.
 
     Args:
@@ -27,23 +26,13 @@ def clean(
 
     # Bandpass filter
     ecg_clean = signal.filter_signal(
-        data=data,
-        lowcut=lowcut,
-        highcut=highcut,
-        sample_rate=sample_rate,
-        order=3,
-        forward_backward=True,
-        axis=axis
+        data=data, lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=3, forward_backward=True, axis=axis
     )
 
     return ecg_clean
 
 
-def square_filter_mask(
-        rr_ints: npt.NDArray,
-        lowcut: float = 300,
-        highcut: float = 900
-    ) -> npt.NDArray:
+def square_filter_mask(rr_ints: npt.NDArray, lowcut: float = 300, highcut: float = 900) -> npt.NDArray:
     """Mask out RR intervals that fall outside bounds.
 
     Args:

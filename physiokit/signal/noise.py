@@ -1,14 +1,14 @@
 """Add various noise sources to signal."""
-import numpy.typing as npt
 import neurokit2 as nk
+import numpy.typing as npt
 
 
 def add_baseline_wander(
-        data: npt.NDArray,
-        amplitude: float = 0.1,
-        frequency: float = 0.05,
-        sample_rate: int = 1000,
-    ) -> npt.NDArray:
+    data: npt.NDArray,
+    amplitude: float = 0.1,
+    frequency: float = 0.05,
+    sample_rate: int = 1000,
+) -> npt.NDArray:
     """Add baseline wander to signal.
 
     Args:
@@ -28,12 +28,13 @@ def add_baseline_wander(
         silent=True,
     )
 
+
 def add_motion_noise(
-        data: npt.NDArray,
-        amplitude: float = 0.2,
-        frequency: float = 0.5,
-        sample_rate: int = 1000,
-    ) -> npt.NDArray:
+    data: npt.NDArray,
+    amplitude: float = 0.2,
+    frequency: float = 0.5,
+    sample_rate: int = 1000,
+) -> npt.NDArray:
     """Add motion noise to signal.
 
     Args:
@@ -53,13 +54,14 @@ def add_motion_noise(
         silent=True,
     )
 
+
 def add_burst_noise(
-        data: npt.NDArray,
-        amplitude: float = 1,
-        frequency: float = 100,
-        burst_number: int = 1,
-        sample_rate: int = 1000,
-    ) -> npt.NDArray:
+    data: npt.NDArray,
+    amplitude: float = 1,
+    frequency: float = 100,
+    burst_number: int = 1,
+    sample_rate: int = 1000,
+) -> npt.NDArray:
     """Add high frequency burst noise to signal.
 
     Args:
@@ -81,12 +83,13 @@ def add_burst_noise(
         silent=True,
     )
 
+
 def add_powerline_noise(
-        data: npt.NDArray,
-        amplitude: float = 0.01,
-        frequency: float = 50,
-        sample_rate: int = 1000,
-    ) -> npt.NDArray:
+    data: npt.NDArray,
+    amplitude: float = 0.01,
+    frequency: float = 50,
+    sample_rate: int = 1000,
+) -> npt.NDArray:
     """Add powerline noise to signal.
 
     Args:
@@ -105,12 +108,13 @@ def add_powerline_noise(
         silent=True,
     )
 
+
 def add_noise_sources(
-        data: npt.NDArray,
-        amplitudes: list[float],
-        frequencies: list[float],
-        sample_rate: int = 1000,
-    ) -> npt.NDArray:
+    data: npt.NDArray,
+    amplitudes: list[float],
+    frequencies: list[float],
+    sample_rate: int = 1000,
+) -> npt.NDArray:
     """Add multiple noise sources to signal.
 
     Args:
@@ -122,21 +126,20 @@ def add_noise_sources(
         npt.NDArray: Signal w/ noise
     """
     return nk.signal_distort(
-        data,
-        sampling_rate=sample_rate,
-        noise_amplitude=amplitudes,
-        noise_frequency=frequencies,
-        silent=True
+        data, sampling_rate=sample_rate, noise_amplitude=amplitudes, noise_frequency=frequencies, silent=True
     )
 
 
 def add_signal_attenuation():
-    pass
+    """Add signal attenuation to signal."""
+    raise NotImplementedError()
 
 
 def add_signal_cutout():
-    pass
+    """Add cutout augmentation to signal."""
+    raise NotImplementedError()
 
 
 def add_signal_shift():
-    pass
+    """Add signal shift augmentation to signal."""
+    raise NotImplementedError()

@@ -1,12 +1,12 @@
 from ..signal import filter_signal
 
+
 def clean(
-        data,
-        lowcut: float = 0.5,
-        highcut: float = 4,
-        sample_rate=1000,
-        **kwargs
-    ):
+    data,
+    lowcut: float = 0.5,
+    highcut: float = 4,
+    sample_rate=1000,
+):
     """Clean PPG signal using bandpass filter.
 
     Args:
@@ -21,10 +21,5 @@ def clean(
 
     # Bandpass filter
     return filter_signal(
-        data=data,
-        lowcut=lowcut,
-        highcut=highcut,
-        sample_rate=sample_rate,
-        order=3,
-        forward_backward=True
+        data=data, lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=3, forward_backward=True
     )
