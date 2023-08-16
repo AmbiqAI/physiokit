@@ -1,7 +1,9 @@
 from enum import IntEnum
 
+
 class ECGSegments(IntEnum):
     """ECG Segment labels"""
+
     background = 0
     p_wave = 1
     q_wave = 2

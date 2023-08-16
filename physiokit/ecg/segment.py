@@ -1,7 +1,7 @@
-
 import numpy as np
 import numpy.typing as npt
 import scipy.ndimage as spn
+
 from .clean import clean as clean_ecg
 
 
@@ -53,7 +53,7 @@ def locate_qrs(
         beg, end = beg_qrs[i], end_qrs[i]
         peak = beg + np.argmax(data[beg:end])
         qrs_len = end - beg
-        qrs_delay = peak - peaks[-1] if len(peaks) else min_qrs_delay
+        qrs_delay = peak - peaks[-1] if peaks else min_qrs_delay
 
         # Enforce minimum delay between peaks
         if qrs_delay < min_qrs_delay or qrs_len < min_qrs_len:
@@ -63,11 +63,13 @@ def locate_qrs(
 
     return np.array(peaks, dtype=int), beg_qrs, end_qrs
 
+
 def apply_segmentation(
-        data: npt.NDArray,
-        sample_rate: float = 1000,
-        lead: int|None = None
-    ):
+    data: npt.NDArray,
+    sample_rate: float = 1000,
+    # lead: int|None = None
+):
+    """Apply segmentation to ECG signal."""
 
     qrs = clean_ecg(data, sample_rate=sample_rate, lowcut=10.0, highcut=30.0)
     qrs_segs = locate_qrs(qrs, sample_rate=sample_rate)
@@ -82,19 +84,23 @@ def apply_segmentation(
     # Identify R peaks
     # Extract nominal RR interval, filter out R peaks (mark as noise)
     # For each R peak, extract beat segment
-        # Identify QRS segment -> delineate Q wave, R wave, S wave
-        # Identify P wave
-        # Identify T wave
-        # Optionally, identify U wave
-        # Derive PR interval, PR segment, QRS complex, ST segment, QT segment
+    # Identify QRS segment -> delineate Q wave, R wave, S wave
+    # Identify P wave
+    # Identify T wave
+    # Optionally, identify U wave
+    # Derive PR interval, PR segment, QRS complex, ST segment, QT segment
+
 
 def find_pwave():
-    pass
+    """Find P wave in ECG signal"""
+    raise NotImplementedError()
 
 
 def find_twave():
-    pass
+    """Find T wave in ECG signal"""
+    raise NotImplementedError()
 
 
 def find_qrs():
-    pass
+    """Find QRS complex in ECG signal"""
+    raise NotImplementedError()

@@ -1,13 +1,10 @@
 import numpy as np
 import numpy.typing as npt
 
-from .peaks import find_peaks, filter_peaks
+from .peaks import filter_peaks, find_peaks
 
-def compute_heart_rate(
-    data: npt.NDArray,
-    sample_rate: float = 1000,
-    method: str = 'peak'
-):
+
+def compute_heart_rate(data: npt.NDArray, sample_rate: float = 1000, method: str = "peak"):
     """Compute heart rate from ECG signal.
     Args:
         data (array): ECG signal.
@@ -17,18 +14,16 @@ def compute_heart_rate(
         float: Heart rate in BPM.
     """
 
-    if method == 'peak':
-        return compute_heart_rate_from_peaks(
-            data=data,
-            sample_rate=sample_rate
-        )
+    if method == "peak":
+        return compute_heart_rate_from_peaks(data=data, sample_rate=sample_rate)
 
-    raise NotImplementedError(f'Heart rate computation method {method} not implemented.')
+    raise NotImplementedError(f"Heart rate computation method {method} not implemented.")
+
 
 def compute_heart_rate_from_peaks(
-        data: npt.NDArray,
-        sample_rate: float = 1000,
-    ) -> float:
+    data: npt.NDArray,
+    sample_rate: float = 1000,
+) -> float:
     """Compute heart rate from peaks of ECG signal.
     Args:
         data (array): ECG signal.
@@ -45,4 +40,4 @@ def compute_heart_rate_from_peaks(
         peaks=peaks,
         sample_rate=sample_rate,
     )
-    return 60/(np.diff(peaks).mean()/sample_rate)
+    return 60 / (np.diff(peaks).mean() / sample_rate)

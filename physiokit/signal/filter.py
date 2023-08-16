@@ -4,10 +4,11 @@ import numpy as np
 import numpy.typing as npt
 import scipy.signal as sps
 
+
 @functools.cache
 def get_butter_sos(
-    lowcut: float|None = None,
-    highcut: float|None = None,
+    lowcut: float | None = None,
+    highcut: float | None = None,
     sample_rate: float = 1000,
     order: int = 2,
 ) -> npt.NDArray:
@@ -39,10 +40,7 @@ def get_butter_sos(
 
 
 def resample_signal(
-    data: npt.NDArray,
-    sample_rate: float = 1000,
-    target_rate: float = 500,
-    axis: int = -1
+    data: npt.NDArray, sample_rate: float = 1000, target_rate: float = 500, axis: int = -1
 ) -> npt.NDArray:
     """Resample signal using scipy FFT-based resample routine.
 
@@ -59,11 +57,7 @@ def resample_signal(
     return sps.resample(data, desired_length, axis=axis)
 
 
-def normalize_signal(
-    data: npt.NDArray,
-    eps: float = 1e-3,
-    axis: int = -1
-) -> npt.NDArray:
+def normalize_signal(data: npt.NDArray, eps: float = 1e-3, axis: int = -1) -> npt.NDArray:
     """Normalize signal about its mean and std.
 
     Args:
@@ -81,12 +75,12 @@ def normalize_signal(
 
 def filter_signal(
     data: npt.NDArray,
-    lowcut: float|None = None,
-    highcut: float|None = None,
+    lowcut: float | None = None,
+    highcut: float | None = None,
     sample_rate: float = 1000,
     order: int = 2,
     axis: int = -1,
-    forward_backward: bool = True
+    forward_backward: bool = True,
 ) -> npt.NDArray:
     """Apply SOS filter to signal using butterworth design and cascaded filter.
 
@@ -101,23 +95,20 @@ def filter_signal(
     Returns:
         npt.NDArray: Filtered signal
     """
-    sos = get_butter_sos(
-        lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=order
-    )
+    sos = get_butter_sos(lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=order)
     if forward_backward:
         return sps.sosfiltfilt(sos, data, axis=axis)
-    else:
-        return sps.sosfilt(sos, data, axis=axis)
+    return sps.sosfilt(sos, data, axis=axis)
 
 
 def remove_baseline_wander(
-        data: npt.NDArray,
-        cutoff: float = 0.05,
-        quality: float = 0.005,
-        sample_rate: float = 1000,
-        axis: int = -1,
-        forward_backward: bool = True
-    ) -> npt.NDArray:
+    data: npt.NDArray,
+    cutoff: float = 0.05,
+    quality: float = 0.005,
+    sample_rate: float = 1000,
+    axis: int = -1,
+    forward_backward: bool = True,
+) -> npt.NDArray:
     """Remove baseline wander from signal using a notch filter.
 
     Args:
@@ -131,20 +122,19 @@ def remove_baseline_wander(
     Returns:
         npt.NDArray: Filtered signal
     """
-    b, a = sps.iirnotch(cutoff, Q = quality, fs = sample_rate)
+    b, a = sps.iirnotch(cutoff, Q=quality, fs=sample_rate)
     if forward_backward:
         return sps.filtfilt(b, a, data, axis=axis)
-    else:
-        return sps.filt(b, a, data, axis=axis)
+    return sps.lfilter(b, a, data, axis=axis)
 
 
 def smooth_signal(
-        data: npt.NDArray,
-        window_length: int|None = None,
-        polyorder: int = 3,
-        sample_rate: float = 1000,
-        axis: int = -1,
-    ) -> npt.NDArray:
+    data: npt.NDArray,
+    window_length: int | None = None,
+    polyorder: int = 3,
+    sample_rate: float = 1000,
+    axis: int = -1,
+) -> npt.NDArray:
     """Smooths signal using savitzky-golay filter
 
     Args:
@@ -158,26 +148,18 @@ def smooth_signal(
         npt.NDArray: Smoothed signal
     """
 
-    if window_length == None:
+    if window_length is None:
         window_length = sample_rate // 10
 
     if window_length % 2 == 0 or window_length == 0:
         window_length += 1
 
-    return sps.savgol_filter(
-        data,
-        window_length=window_length,
-        polyorder=polyorder,
-        axis=axis
-    )
+    return sps.savgol_filter(data, window_length=window_length, polyorder=polyorder, axis=axis)
+
 
 def quotient_filter_mask(
-        data: npt.NDArray,
-        mask: npt.NDArray|None = None,
-        iterations: int = 2,
-        lowcut: float = 0.8,
-        highcut: float = 1.2
-    ) -> npt.NDArray:
+    data: npt.NDArray, mask: npt.NDArray | None = None, iterations: int = 2, lowcut: float = 0.8, highcut: float = 1.2
+) -> npt.NDArray:
     """Applies a quotient filter to identify outliers from list.
 
     Args:
