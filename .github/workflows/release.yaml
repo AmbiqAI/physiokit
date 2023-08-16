@@ -25,7 +25,7 @@ jobs:
           cache: 'poetry'
       - name: Install Dependencies
         run: |
-          poetry install --no-dev
+          poetry install --with docs --without dev
           poetry build
       - name: Build Docs
         run: |
