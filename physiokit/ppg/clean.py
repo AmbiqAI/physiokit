@@ -5,6 +5,7 @@ def clean(
     data,
     lowcut: float = 0.5,
     highcut: float = 4,
+    order: int = 3,
     sample_rate=1000,
 ):
     """Clean PPG signal using bandpass filter.
@@ -13,6 +14,7 @@ def clean(
         data (npt.NDArray): Signal
         lowcut (float, optional): Lower cutoff in Hz. Defaults to 0.7 Hz.
         highcut (float, optional): Upper cutoff in Hz. Defaults to 4 Hz.
+        order (int, optional): Filter order. Defaults to 3 (3rd order Butterworth filter).
         sample_rate (int, optional): Sample rate in Hz. Defaults to 1000 Hz.
 
     Returns:
@@ -21,5 +23,5 @@ def clean(
 
     # Bandpass filter
     return filter_signal(
-        data=data, lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=3, forward_backward=True
+        data=data, lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=order, forward_backward=True
     )

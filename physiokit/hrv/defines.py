@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+
+from dataclasses import dataclass, field
 
 
 # pylint: disable=too-many-instance-attributes
@@ -36,16 +37,16 @@ class HrvTimeMetrics:
 
 
 @dataclass
+class HrvFrequencyBandMetrics:
+    """HRV Frequency domain metrics dataclass."""
+    peak_frequency: float = 0  # Peak of frequency band in Hz
+    peak_power: float = 0  # Power of frequency band in ms^2
+    total_power: float = 0  # Total power in ms^2
+
+@dataclass
 class HrvFrequencyMetrics:
     """Frequency domain HRV metric dataclass."""
-
-    hf_peak: float = 0  # Peak of high frequency band in Hz
-    hf_peak_power: float = 0  # Power of high frequency band in ms^2
-    hf_peak_ratio: float = 0  # Ratio of high frequency band in ms^2
-    lf_peak: float = 0  # Peak of low frequency band in Hz
-    lf_peak_power: float = 0  # Power of low frequency band in ms^2
-    lf_peak_ratio: float = 0  # Ratio of low frequency band in ms^2
-    lfhf_ratio: float = 0  # Ratio of low frequency to high frequency band
+    bands: list[HrvFrequencyBandMetrics] = field(default_factory=list)
     total_power: float = 0  # Total power in ms^2
 
 
