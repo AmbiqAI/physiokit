@@ -1,20 +1,19 @@
 from functools import reduce
+
 import numpy as np
 import numpy.typing as npt
-import neurokit2 as nk
 import scipy.interpolate
 import scipy.signal
 
-from .defines import HrvFrequencyMetrics, HrvFrequencyBandMetrics
-
+from .defines import HrvFrequencyBandMetrics, HrvFrequencyMetrics
 
 
 def compute_hrv_frequency(
-        peaks: npt.NDArray,
-        rri: npt.NDArray,
-        bands: list[tuple[float, float]],
-        sample_rate: float = 1000,
-    ) -> HrvFrequencyMetrics:
+    peaks: npt.NDArray,
+    rri: npt.NDArray,
+    bands: list[tuple[float, float]],
+    sample_rate: float = 1000,
+) -> HrvFrequencyMetrics:
     """Compute the frequency domain HRV features."""
 
     # Interpolate to get evenly spaced samples
@@ -33,12 +32,14 @@ def compute_hrv_frequency(
     for lowcut, highcut in bands:
         l_idx = np.where(freqs >= lowcut)[0][0]
         r_idx = np.where(freqs >= highcut)[0][0]
-        f_idx = rri_ps[l_idx:r_idx].argmax()+l_idx
-        metrics.bands.append(HrvFrequencyBandMetrics(
-            peak_frequency=freqs[f_idx],
-            peak_power=rri_ps[f_idx],
-            total_power=rri_ps[l_idx:r_idx].sum(),
-        ))
+        f_idx = rri_ps[l_idx:r_idx].argmax() + l_idx
+        metrics.bands.append(
+            HrvFrequencyBandMetrics(
+                peak_frequency=freqs[f_idx],
+                peak_power=rri_ps[f_idx],
+                total_power=rri_ps[l_idx:r_idx].sum(),
+            )
+        )
     # END FOR
     metrics.total_power = reduce(lambda x, y: x + y.total_power, metrics.bands, 0)
     return metrics

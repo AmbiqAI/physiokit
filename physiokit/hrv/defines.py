@@ -1,4 +1,3 @@
-
 from dataclasses import dataclass, field
 
 
@@ -39,13 +38,16 @@ class HrvTimeMetrics:
 @dataclass
 class HrvFrequencyBandMetrics:
     """HRV Frequency domain metrics dataclass."""
+
     peak_frequency: float = 0  # Peak of frequency band in Hz
     peak_power: float = 0  # Power of frequency band in ms^2
     total_power: float = 0  # Total power in ms^2
 
+
 @dataclass
 class HrvFrequencyMetrics:
     """Frequency domain HRV metric dataclass."""
+
     bands: list[HrvFrequencyBandMetrics] = field(default_factory=list)
     total_power: float = 0  # Total power in ms^2
 

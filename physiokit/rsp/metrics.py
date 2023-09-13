@@ -1,7 +1,8 @@
+from typing import Literal
+
 import numpy as np
 import numpy.typing as npt
 import scipy.interpolate as spi
-from typing import Literal
 
 from ..signal import filter_signal
 from .peaks import filter_peaks, find_peaks
@@ -73,14 +74,14 @@ def compute_respiratory_rate_from_fft(
 def compute_respiratory_rate_from_ppg(
     ppg: npt.NDArray,
     peaks: npt.NDArray,
-    troughs: npt.NDArray|None = None,
-    rri: npt.NDArray|None = None,
+    troughs: npt.NDArray | None = None,
+    rri: npt.NDArray | None = None,
     sample_rate: float = 1000,
     method: Literal["riav", "riiv", "rifv"] = "rifv",
     lowcut: float = 0.1,
     highcut: float = 1.0,
     order: int = 3,
-    threshold: float|None = 0.85,
+    threshold: float | None = 0.85,
 ) -> tuple[float, float]:
     """Compute respiratory rate from PPG signal using given method.
     Args:
@@ -127,9 +128,8 @@ def compute_respiratory_rate_from_ppg(
 
     rsp_bpm_weights = rsp_sp[fft_pk_indices]
     tgt_pwr = np.sum(rsp_bpm_weights)
-    background_pwr = np.sum(rsp_ps - tgt_pwr)
-    qnr = tgt_pwr / background_pwr
-    rsp_bpm = 60*np.sum(rsp_bpm_weights*freqs[fft_pk_indices])/tgt_pwr
+    qnr = tgt_pwr / np.mean(rsp_ps)
+    rsp_bpm = 60 * np.sum(rsp_bpm_weights * freqs[fft_pk_indices]) / tgt_pwr
     return rsp_bpm, qnr
 
 
