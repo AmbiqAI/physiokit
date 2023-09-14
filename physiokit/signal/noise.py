@@ -1,5 +1,8 @@
 """Add various noise sources to signal."""
+import random
+
 import neurokit2 as nk
+import numpy as np
 import numpy.typing as npt
 
 
@@ -20,6 +23,9 @@ def add_baseline_wander(
     Returns:
         npt.NDArray: Signal w/ baseline wander
     """
+    # skew = np.linspace(0, random.uniform(0, 2) * np.pi, data.size)
+    # skew = np.sin(skew) * random.uniform(amplitude / 10, amplitude)
+    # return data + skew
     return nk.signal_distort(
         data,
         sampling_rate=sample_rate,
@@ -128,6 +134,51 @@ def add_noise_sources(
     return nk.signal_distort(
         data, sampling_rate=sample_rate, noise_amplitude=amplitudes, noise_frequency=frequencies, silent=True
     )
+
+
+def add_emg_noise(data: npt.NDArray, scale: float = 1e-5, sample_rate: int = 1000) -> npt.NDArray:
+    """Add EMG noise to signal
+
+    Args:
+        data (npt.NDArray): Signal
+        scale (float, optional): Noise scale. Defaults to 1e-5.
+        sample_rate (int, optional): Sampling rate in Hz. Defaults to 1000.
+
+    Returns:
+        npt.NDArray: New signal
+    """
+    noise = np.repeat(
+        np.sin(np.linspace(-0.5 * np.pi, 1.5 * np.pi, sample_rate) * 10000),
+        np.ceil(data.size / sample_rate),
+    )
+    return data + scale * noise[: data.size]
+
+
+def add_lead_noise(data: npt.NDArray, scale: float = 1e-3) -> npt.NDArray:
+    """Add Lead noise
+
+    Args:
+        data (npt.NDArray): Signal
+        scale (float, optional): Noise scale. Defaults to 1.
+
+    Returns:
+        npt.NDArray: New signal
+    """
+    return data + np.random.normal(0, scale, size=data.shape)
+
+
+def add_random_scaling(data: npt.NDArray, lower: float = 0.5, upper: float = 2.0) -> npt.NDArray:
+    """Randomly scale signal.
+
+    Args:
+        data (npt.NDArray): Signal
+        lower (float, optional): Lower bound. Defaults to 0.5.
+        upper (float, optional): Upper bound. Defaults to 2.0.
+
+    Returns:
+        npt.NDArray: New signal
+    """
+    return data * random.uniform(lower, upper)
 
 
 def add_signal_attenuation():

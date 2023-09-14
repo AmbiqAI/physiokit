@@ -2,8 +2,8 @@ import functools
 
 import numpy as np
 import numpy.typing as npt
-import scipy.signal as sps
 import scipy.interpolate as spi
+import scipy.signal as sps
 
 
 @functools.cache
@@ -75,7 +75,7 @@ def resample_categorical(data: npt.NDArray, sample_rate: float, target_rate: flo
     ratio = target_rate / sample_rate
     actual_length = data.shape[axis]
     target_length = int(np.round(data.shape[axis] * ratio))
-    interp_fn = spi.interp1d(np.arange(0, actual_length), data, kind='nearest', axis=axis)
+    interp_fn = spi.interp1d(np.arange(0, actual_length), data, kind="nearest", axis=axis)
     return interp_fn(np.arange(0, target_length)).astype(data.dtype)
 
 
