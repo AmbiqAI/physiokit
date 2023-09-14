@@ -14,3 +14,4 @@ from .noise import (
     add_noise_sources,
     add_powerline_noise,
 )
+from .transform import rescale_signal
