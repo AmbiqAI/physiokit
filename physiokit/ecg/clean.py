@@ -9,6 +9,7 @@ def clean(
     lowcut: float = 0.5,
     highcut: float = 30,
     sample_rate: int = 1000,
+    order: int = 3,
     axis: int = -1,
 ) -> npt.NDArray:
     """Clean ECG signal by applying bandpass filter.
@@ -18,6 +19,7 @@ def clean(
         lowcut (float, optional): Lower cutoff in Hz. Defaults to 0.5 Hz.
         highcut (float, optional): Upper cutoff in Hz. Defaults to 30 Hz.
         sample_rate (int, optional): Sampling rate in Hz. Defaults to 1000 Hz.
+        order (int, optional): Filter order. Defaults to 3 (3rd order Butterworth filter).
         axis (int, optional): Axis to apply against. Defaults to -1.
 
     Returns:
@@ -26,7 +28,13 @@ def clean(
 
     # Bandpass filter
     ecg_clean = signal.filter_signal(
-        data=data, lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=3, forward_backward=True, axis=axis
+        data=data,
+        lowcut=lowcut,
+        highcut=highcut,
+        sample_rate=sample_rate,
+        order=order,
+        forward_backward=True,
+        axis=axis,
     )
 
     return ecg_clean

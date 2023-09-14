@@ -1,4 +1,5 @@
 import functools
+import os
 
 import numpy as np
 import numpy.typing as npt
@@ -38,6 +39,28 @@ def get_butter_sos(
         raise ValueError("At least one of lowcut or highcut must be specified")
     sos = sps.butter(order, freqs, btype=btype, output="sos")
     return sos
+
+
+def generate_arm_biquad_sos(
+    lowcut: float,
+    highcut: float,
+    sample_rate: float,
+    order: int = 3,
+    var_name: str = "biquadFilter",
+):
+    """Generate ARM second order section coefficients."""
+    sos = get_butter_sos(lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=order)
+    # Each section needs to be mapped as follows:
+    #   [b0, b1, b2, a0, a1, a2] -> [b0, b1, b2, -a1, -a2]
+    sec_len_name = f"{var_name.upper()}_NUM_SECS"
+    arm_sos = sos[:, [0, 1, 2, 4, 5]] * [1, 1, 1, -1, -1]
+    coef_str = ", ".join(f"{os.linesep:<4}{c}" if i % 5 == 0 else f"{c}" for i, c in enumerate(arm_sos.flatten()))
+    arm_str = (
+        f"#define {sec_len_name} ({order:0d}){os.linesep}"
+        f"static float32_t {var_name}State[2 * {sec_len_name}];{os.linesep}"
+        f"static float32_t {var_name}[5 * {sec_len_name}] = {{ {coef_str}\n}};{os.linesep}"
+    )
+    return arm_str
 
 
 def resample_signal(
@@ -201,6 +224,8 @@ def quotient_filter_mask(
     for _ in range(iterations):
         # Get indices of intervals to be filtered
         filt_idxs = np.where(mask == 0)[0]
+        if filt_idxs.size <= 1:
+            break
         filt_ints = data[filt_idxs]
         # Compute quotient of each interval with the next
         filt_deltas = np.zeros(filt_ints.size)
