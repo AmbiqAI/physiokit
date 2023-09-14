@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "physiokit"
-version = "0.1.0"
+version = "0.2.0"
 description = "PhysioKit, process raw ambulatory bio-signals."
 license = "BSD-3-Clause"
 authors = ["Adam Page <adam.page@ambiq.com>"]
@@ -18,10 +18,11 @@ lint = "pylint physiokit"
 test = "pytest tests/"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
+python = ">=3.11,<3.13"
 numpy = "^1.24.3"
 neurokit2 = "^0.2.4"
 scipy = "^1.10.1"
+requests = "^2.31.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "23.3.0"
