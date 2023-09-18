@@ -6,9 +6,9 @@ from .peaks import filter_peaks, find_peaks
 
 
 def compute_heart_rate(data: npt.NDArray, sample_rate: float = 1000, method: str = "fft"):
-    """Compute heart rate from ECG signal.
+    """Compute heart rate from PPG signal.
     Args:
-        data (array): ECG signal.
+        data (array): PPG signal.
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
         method (str, optional): Method to compute heart rate. Defaults to 'fft'.
     Returns:
@@ -28,9 +28,9 @@ def compute_heart_rate_from_peaks(
     data: npt.NDArray,
     sample_rate: float = 1000,
 ) -> float:
-    """Compute heart rate from peaks of ECG signal.
+    """Compute heart rate from peaks of PPG signal.
     Args:
-        data (array): ECG signal.
+        data (array): PPG signal.
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
     Returns:
         float: Heart rate in BPM.
@@ -47,12 +47,14 @@ def compute_heart_rate_from_peaks(
 
 
 def compute_heart_rate_from_fft(
-    data: npt.NDArray, sample_rate: float = 1000, lowcut: float = 0.7, highcut: float = 4.0
+    data: npt.NDArray, sample_rate: float = 1000, lowcut: float = 0.5, highcut: float = 4.0
 ) -> float:
     """Compute heart rate from FFT of PPG signal.
     Args:
         data (array): PPG signal.
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
+        lowcut (float, optional): Lowcut frequency in Hz. Defaults to 0.5 Hz.
+        highcut (float, optional): Highcut frequency in Hz. Defaults to 4.0 Hz.
     Returns:
         float: Heart rate in BPM.
     """
@@ -113,7 +115,7 @@ def compute_spo2_in_time(
     ppg2: npt.NDArray,
     coefs: tuple[float, float, float] = (1, 0, 0),
     sample_rate: float = 1000,
-    lowcut: float = 0.7,
+    lowcut: float = 0.5,
     highcut: float = 4,
 ) -> float:
     """Compute SpO2 from PPG signals in time domain.
@@ -121,8 +123,10 @@ def compute_spo2_in_time(
     Args:
         ppg1 (array): 1st PPG signal (e.g RED).
         ppg2 (array): 2nd PPG signal (e.g. IR).
-        sampling_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
         coefs (tuple[float, float, float], optional): Calibration coefficients. Defaults to (1, 0, 0).
+        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
+        lowcut (float, optional): Lowcut frequency in Hz. Defaults to 0.5 Hz.
+        highcut (float, optional): Highcut frequency in Hz. Defaults to 4.0 Hz.
     Returns:
         float: SpO2 value
     """
@@ -153,7 +157,7 @@ def compute_spo2_in_frequency(
     ppg2: npt.NDArray,
     coefs: tuple[float, float, float] = (1, 0, 0),
     sample_rate: float = 1000,
-    lowcut: float = 0.7,
+    lowcut: float = 0.5,
     highcut: float = 4.0,
     axis: int = -1,
 ) -> float:
@@ -163,7 +167,7 @@ def compute_spo2_in_frequency(
         ppg2 (array): 2nd PPG signal (e.g. IR).
         coefs (tuple[float, float, float], optional): Calibration coefficients. Defaults to (1, 0, 0).
         sampling_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
-        lowcut (float, optional): Lowcut frequency in Hz. Defaults to 0.7 Hz.
+        lowcut (float, optional): Lowcut frequency in Hz. Defaults to 0.5 Hz.
         highcut (float, optional): Highcut frequency in Hz. Defaults to 4.0 Hz.
         axis (int, optional): Axis along which to compute the FFT. Defaults to -1.
     Returns:

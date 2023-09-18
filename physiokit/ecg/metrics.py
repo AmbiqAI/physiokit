@@ -4,7 +4,7 @@ import numpy.typing as npt
 from .peaks import filter_peaks, find_peaks
 
 
-def compute_heart_rate(data: npt.NDArray, sample_rate: float = 1000, method: str = "peak"):
+def compute_heart_rate(data: npt.NDArray, sample_rate: float = 1000, method: str = "peak") -> float:
     """Compute heart rate from ECG signal.
     Args:
         data (array): ECG signal.

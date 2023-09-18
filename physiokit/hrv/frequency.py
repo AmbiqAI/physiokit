@@ -14,7 +14,15 @@ def compute_hrv_frequency(
     bands: list[tuple[float, float]],
     sample_rate: float = 1000,
 ) -> HrvFrequencyMetrics:
-    """Compute the frequency domain HRV features."""
+    """Compute the frequency domain HRV features.
+    Args:
+        peaks (array): R peaks.
+        rri (array): RR intervals.
+        bands (list): List of frequency bands.
+        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
+    Returns:
+        HrvFrequencyMetrics: Frequency domain HRV features.
+    """
 
     # Interpolate to get evenly spaced samples
     ts = np.arange(peaks[0], peaks[-1], 1)

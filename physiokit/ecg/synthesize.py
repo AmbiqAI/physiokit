@@ -1,4 +1,5 @@
 import neurokit2 as nk
+import numpy.typing as npt
 
 
 def synthesize(
@@ -7,7 +8,7 @@ def synthesize(
     heart_rate: int = 60,
     heart_rate_std: int = 1,
     leads: int = 1,
-):
+) -> npt.NDArray:
     """Generate synthetic ECG signal. Utilize pk.signal.noise methods to make more realistic.
 
     Args:

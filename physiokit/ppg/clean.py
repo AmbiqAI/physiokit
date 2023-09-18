@@ -6,7 +6,7 @@ def clean(data, lowcut: float = 0.5, highcut: float = 4, sample_rate=1000, order
 
     Args:
         data (npt.NDArray): Signal
-        lowcut (float, optional): Lower cutoff in Hz. Defaults to 0.7 Hz.
+        lowcut (float, optional): Lower cutoff in Hz. Defaults to 0.5 Hz.
         highcut (float, optional): Upper cutoff in Hz. Defaults to 4 Hz.
         sample_rate (int, optional): Sample rate in Hz. Defaults to 1000 Hz.
         order (int, optional): Filter order. Defaults to 3 (3rd order Butterworth filter).

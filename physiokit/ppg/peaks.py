@@ -12,7 +12,7 @@ def find_peaks(
     beat_window: float = 0.667,
     beat_offset: float = 0.02,
     peak_delay: float = 0.3,
-):
+) -> npt.NDArray:
     """Find systolic peaks in PPG signal.
     Implementation based on Elgendi M, Norton I, Brearley M, Abbott D, Schuurmans D (2013) Systolic Peak Detection in
     Acceleration Photoplethysmograms Measured from Emergency Responders in Tropical Conditions. PLoS ONE 8(10): e76585.
@@ -25,6 +25,8 @@ def find_peaks(
         beat_window (float, optional): Beat window in seconds. Defaults to 0.667 s.
         beat_offset (float, optional): Beat offset in seconds. Defaults to 0.02 s.
         peak_delay (float, optional): Peak delay in seconds. Defaults to 0.3 s.
+    Returns:
+        npt.NDArray: Peak locations.
     """
 
     # Clip negative values and square the signal

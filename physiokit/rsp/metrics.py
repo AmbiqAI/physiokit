@@ -59,6 +59,8 @@ def compute_respiratory_rate_from_fft(
     Args:
         data (array): RSP signal.
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
+        lowcut (float, optional): Lowcut frequency in Hz. Defaults to 0.05 Hz.
+        highcut (float, optional): Highcut frequency in Hz. Defaults to 3.0 Hz.
     Returns:
         float: Respiratory rate (BPM).
     """
@@ -113,7 +115,7 @@ def compute_respiratory_rate_from_ppg(
     rsp = spi.interp1d(peaks, rsp, kind="linear", fill_value="extrapolate")(ts)
     rsp = filter_signal(rsp, lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=order)
 
-    freqs, rsp_sp = compute_fft(ppg, sample_rate=sample_rate)
+    freqs, rsp_sp = compute_fft(rsp, sample_rate=sample_rate)
     l_idx = np.where(freqs >= lowcut)[0][0]
     r_idx = np.where(freqs >= highcut)[0][0]
     rsp_ps = 2 * np.abs(rsp_sp)
@@ -126,7 +128,7 @@ def compute_respiratory_rate_from_ppg(
     else:
         fft_pk_indices = [fft_pk_idx]
 
-    rsp_bpm_weights = rsp_sp[fft_pk_indices]
+    rsp_bpm_weights = rsp_ps[fft_pk_indices]
     tgt_pwr = np.sum(rsp_bpm_weights)
     qnr = tgt_pwr / np.mean(rsp_ps)
     rsp_bpm = 60 * np.sum(rsp_bpm_weights * freqs[fft_pk_indices]) / tgt_pwr
