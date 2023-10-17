@@ -1,24 +1,26 @@
 import numpy as np
 import numpy.typing as npt
 
-from .. import signal
+from ..signal import filter_signal
 
 
 def clean(
     data: npt.NDArray,
     lowcut: float = 0.5,
     highcut: float = 30,
-    sample_rate: int = 1000,
+    sample_rate: float = 1000,
     order: int = 3,
     axis: int = -1,
 ) -> npt.NDArray:
-    """Clean ECG signal by applying bandpass filter.
+    """Clean ECG signal by applying biquad filter.
+
+    By default, a 3rd order Butterworth bandpass filter from 0.5 to 30 Hz is applied.
 
     Args:
         data (npt.NDArray): ECG signal.
         lowcut (float, optional): Lower cutoff in Hz. Defaults to 0.5 Hz.
         highcut (float, optional): Upper cutoff in Hz. Defaults to 30 Hz.
-        sample_rate (int, optional): Sampling rate in Hz. Defaults to 1000 Hz.
+        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
         order (int, optional): Filter order. Defaults to 3 (3rd order Butterworth filter).
         axis (int, optional): Axis to apply against. Defaults to -1.
 
@@ -27,7 +29,7 @@ def clean(
     """
 
     # Bandpass filter
-    ecg_clean = signal.filter_signal(
+    ecg_clean = filter_signal(
         data=data,
         lowcut=lowcut,
         highcut=highcut,

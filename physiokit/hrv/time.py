@@ -13,7 +13,6 @@ def compute_hrv_time(
     Args:
         rr_intervals (npt.NDArray): RR intervals.
         sample_rate (float, optional): Sampling rate. Defaults to 1000 Hz.
-        axis (int, optional): Axis to compute HRV metrics. Defaults to -1.
     Returns:
         HrvTimeMetrics: Time domain HRV metrics.
     """

@@ -15,7 +15,9 @@ def get_butter_sos(
     order: int = 2,
 ) -> npt.NDArray:
     """Compute biquad filter coefficients as SOS. This function caches.
-
+    For lowpass, lowcut is required and highcut is ignored.
+    For highpass, highcut is required and lowcut is ignored.
+    For bandpass, both lowcut and highcut are required.
     Args:
         lowcut (float|None): Lower cutoff in Hz. Defaults to None.
         highcut (float|None): Upper cutoff in Hz. Defaults to None.
@@ -48,7 +50,16 @@ def generate_arm_biquad_sos(
     order: int = 3,
     var_name: str = "biquadFilter",
 ):
-    """Generate ARM second order section coefficients."""
+    """Generate ARM CMSIS second order section coefficients.
+    Args:
+        lowcut (float): Lower cutoff in Hz.
+        highcut (float): Upper cutoff in Hz.
+        sample_rate (float): Sampling rate in Hz.
+        order (int, optional): Filter order. Defaults to 3.
+        var_name (str, optional): Variable name. Defaults to 'biquadFilter'.
+    Returns:
+        str: ARM CMSIS second order section coefficients.
+    """
     sos = get_butter_sos(lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=order)
     # Each section needs to be mapped as follows:
     #   [b0, b1, b2, a0, a1, a2] -> [b0, b1, b2, -a1, -a2]

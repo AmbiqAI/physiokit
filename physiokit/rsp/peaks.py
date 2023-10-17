@@ -12,16 +12,21 @@ def find_peaks(
     breath_window: float = 2.0,
     breath_offset: float = 0.05,
     peak_delay: float = 0.3,
-):
+) -> npt.NDArray:
     """Find peaks in RSP signal.
+
     Assumes input data is bandpass filtered with a lowcut of .05 Hz and a highcut of 3 Hz.
+
     Args:
-        data (array): PPG signal.
+        data (array): RSP signal.
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
         peak_window (float, optional): Peak window in seconds. Defaults to 0.5 s.
         breath_window (float, optional): Breath window in seconds. Defaults to 2.0 s.
         breath_offset (float, optional): Breath offset in seconds. Defaults to 0.05 s.
         peak_delay (float, optional): Peak delay in seconds. Defaults to 0.3 s.
+
+    Returns:
+        npt.NDArray: Peak locations.
     """
 
     # Clip negative values and square the signal
@@ -64,13 +69,34 @@ def find_peaks(
 
 
 def filter_peaks(
-    peaks: npt.NDArray,
-    sample_rate: float = 1000,
+    peaks: npt.NDArray, sample_rate: float = 1000, min_rr: float = 0.5, max_rr: float = 20, min_delta: float = 0.5
 ) -> npt.NDArray:
-    """Filter out peaks with respiratory rate outside of normal range."""
+    """Filter out peaks with RR intervals outside of normal range.
 
-    peaks = [0] * sample_rate
-    return np.array(peaks, dtype=int)
+    Args:
+        peaks (array): Respiratory peaks.
+        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
+        min_rr (float, optional): Minimum RR interval in seconds. Defaults to 0.5 s.
+        max_rr (float, optional): Maximum RR interval in seconds. Defaults to 20 s.
+        min_delta (float, optional): Minimum RR interval delta. Defaults to 0.5.
+
+    Returns:
+        npt.NDArray: Filtered peaks.
+    """
+    if peaks.size <= 1:
+        return peaks
+    # Capture RR intervals
+    rr_ints = np.diff(peaks)
+    rr_ints = np.hstack((rr_ints[0], rr_ints))
+
+    # Filter out peaks with RR intervals outside of normal range
+    rr_mask = np.where((rr_ints < min_rr * sample_rate) | (rr_ints > max_rr * sample_rate), 1, 0)
+
+    # Filter out peaks that deviate more than delta
+    if min_delta is not None:
+        rr_mask = quotient_filter_mask(rr_ints, mask=rr_mask, lowcut=1 - min_delta, highcut=1 + min_delta)
+    filt_peaks = peaks[np.where(rr_mask == 0)[0]]
+    return filt_peaks
 
 
 def compute_rr_intervals(

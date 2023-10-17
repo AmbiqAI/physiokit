@@ -5,6 +5,7 @@ import numpy.typing as npt
 import scipy.interpolate
 import scipy.signal
 
+from ..signal import compute_fft
 from .defines import HrvFrequencyBandMetrics, HrvFrequencyMetrics
 
 
@@ -14,19 +15,25 @@ def compute_hrv_frequency(
     bands: list[tuple[float, float]],
     sample_rate: float = 1000,
 ) -> HrvFrequencyMetrics:
-    """Compute the frequency domain HRV features."""
+    """Compute the frequency domain HRV features.
+    Args:
+        peaks (array): R peaks.
+        rri (array): RR intervals.
+        bands (list): List of frequency bands.
+        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
+    Returns:
+        HrvFrequencyMetrics: Frequency domain HRV features.
+    """
 
     # Interpolate to get evenly spaced samples
     ts = np.arange(peaks[0], peaks[-1], 1)
     rri_int = scipy.interpolate.interp1d(peaks, rri, kind="linear")(ts)
 
-    fft_len = int(2 ** np.ceil(np.log2(ts.size)))
-    fft_win = np.blackman(ts.size)
-    amp_corr = 1.93
+    # NOTE: Use bands to determine amount of zero padding for freq bins
+    fft_len = int(2 ** np.ceil(np.log2(max(ts.size, 32 * sample_rate))))
 
-    freqs = np.fft.fftfreq(fft_len, 1 / sample_rate)
-    rri_fft = np.fft.fft(fft_win * rri_int, fft_len) / ts.size
-    rri_ps = 2 * amp_corr * np.abs(rri_fft)
+    freqs, rri_fft = compute_fft(rri_int, sample_rate=sample_rate, fft_len=fft_len, window="blackman", axis=-1)
+    rri_ps = 2 * np.abs(rri_fft)
 
     metrics = HrvFrequencyMetrics()
     for lowcut, highcut in bands:

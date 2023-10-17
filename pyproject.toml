@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "physiokit"
-version = "0.3.0"
+version = "0.4.0"
 description = "PhysioKit, process raw ambulatory bio-signals."
 license = "BSD-3-Clause"
 authors = ["Adam Page <adam.page@ambiq.com>"]
@@ -36,10 +36,9 @@ ipython = "^8.15.0"
 optional = true
 
 [tool.poetry.group.docs.dependencies]
-mkdocs = "^1.4.3"
-mkdocs-material = "^9.1.9"
-mkdocstrings-python = "^0.9.0"
-mkdocstrings = "^0.21.2"
+mkdocs = "^1.5.3"
+mkdocs-material = "^9.4.6"
+mkdocstrings-python = "^1.7.3"
 markdown-include = "^0.8.1"
 
 [build-system]

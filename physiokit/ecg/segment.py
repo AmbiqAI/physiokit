@@ -80,7 +80,7 @@ def apply_segmentation(
         q_waves.append(np.argmin(qrs[beg:peak]) + beg)
         r_waves.append(peak)
         s_waves.append(np.argmin(qrs[peak:end]) + peak)
-    # Given signal and lead name
+    # Given signal and lead placement
     # Identify R peaks
     # Extract nominal RR interval, filter out R peaks (mark as noise)
     # For each R peak, extract beat segment

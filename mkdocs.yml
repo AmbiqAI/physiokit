@@ -7,11 +7,19 @@ copyright: Copyright &copy; 2023 Ambiq
 
 nav:
   - PhysioKit: index.md
+  - Getting Started:
+    - Installation: ./tutorial/installation.md
+    - Quick Start: ./tutorial/quickstart.md
+  - API:
+    - ECG Signal: ./api/ecg.md
+    - PPG Signal: ./api/ppg.md
+    - RSP Signal: ./api/rsp.md
+    - HRV Analysis: ./api/hrv.md
 
 theme:
   name: material
   favicon: assets/favicon.png
-  logo: assets/logo-white.png
+  logo: assets/logo.png
   icon:
       repo: fontawesome/brands/github-alt
   font:
@@ -44,6 +52,7 @@ theme:
 plugins:
   - search
   - mkdocstrings:
+      default_handler: python
       handlers:
         python:
           import:
@@ -52,8 +61,8 @@ plugins:
           options:
             docstring_style: google
             docstring_section_style: list
-            line_length: 92
-            show_root_heading: true
+            line_length: 120
+            show_root_heading: false
 
 extra_css:
   - css/mkdocstrings.css

@@ -4,7 +4,7 @@ import numpy.typing as npt
 
 def synthesize(
     duration: float = 10,
-    sample_rate: int = 1000,
+    sample_rate: float = 1000,
     heart_rate: int = 60,
     frequency_modulation: float = 0,
     ibi_randomness: float = 0,
@@ -13,7 +13,7 @@ def synthesize(
 
     Args:
         duration (float, optional): Duration in seconds. Defaults to 10.
-        sample_rate (int, optional): Sample rate in Hz. Defaults to 1000 Hz.
+        sample_rate (float, optional): Sample rate in Hz. Defaults to 1000 Hz.
         heart_rate (int, optional): Heart rate in BPM. Defaults to 60 BPM.
         frequency_modulation (float, optional): Frequency modulation in Hz. Defaults to 0 Hz.
         ibi_randomness (float, optional): IBI randomness in Hz. Defaults to 0 Hz.

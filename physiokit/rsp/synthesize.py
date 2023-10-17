@@ -2,12 +2,12 @@ import neurokit2 as nk
 import numpy.typing as npt
 
 
-def synthesize(duration: float = 10, sample_rate: int = 1000, respiratory_rate: int = 15) -> npt.NDArray:
+def synthesize_signal(duration: float = 10, sample_rate: float = 1000, respiratory_rate: int = 15) -> npt.NDArray:
     """Generate synthetic respiratory signal. Utilize pk.signal.noise methods to make more realistic.
 
     Args:
         duration (float, optional): Duration in seconds. Defaults to 10.
-        sample_rate (int, optional): Sample rate in Hz. Defaults to 1000 Hz.
+        sample_rate (float, optional): Sample rate in Hz. Defaults to 1000 Hz.
         respiratory_rate (int, optional): Respiratory rate in breaths per minute. Defaults to 15 bpm.
 
     Returns:
