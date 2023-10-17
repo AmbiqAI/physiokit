@@ -8,6 +8,8 @@ from ..signal import resample_signal
 def compute_enmo(x: npt.NDArray, y: npt.NDArray, z: npt.NDArray) -> npt.NDArray:
     """Compute ENMO from x, y, and z accelerometer data.
 
+    Reference: https://doi.org/10.1371/journal.pone.0142533
+
     Args:
         x (npt.NDArray): x-axis accelerometer data
         y (npt.NDArray): y-axis accelerometer data
@@ -24,6 +26,8 @@ def compute_tilt_angles(
     x: npt.NDArray, y: npt.NDArray, z: npt.NDArray, in_radians: bool = True
 ) -> tuple[npt.NDArray, npt.NDArray, npt.NDArray]:
     """Compute tilt angles from x, y, and z accelerometer data.
+
+    Reference: https://doi.org/10.1371/journal.pone.0142533
 
     Args:
         x (npt.NDArray): x-axis accelerometer data
@@ -95,6 +99,8 @@ def compute_counts(
     data: npt.NDArray, sample_rate: float = 1000, epoch_len: int = 10, min_thresh: int = 4, max_thresh: int = 128
 ) -> npt.NDArray:
     """Compute counts from raw accelerometer data.
+
+    Reference: https://doi.org/10.1038/s41598-022-16003-x
 
     Args:
         data (npt.NDArray): 2-D raw accelerometer data [ts x axis] in G.
