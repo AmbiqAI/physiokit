@@ -10,7 +10,7 @@ def add_baseline_wander(
     data: npt.NDArray,
     amplitude: float = 0.1,
     frequency: float = 0.05,
-    sample_rate: int = 1000,
+    sample_rate: float = 1000,
 ) -> npt.NDArray:
     """Add baseline wander to signal.
 
@@ -18,7 +18,7 @@ def add_baseline_wander(
         data (npt.NDArray): Signal
         amplitude (float, optional): Amplitude in st dev. Defaults to 0.1.
         frequency (float, optional): Baseline wander frequency. Defaults to 0.05 Hz.
-        sample_rate (int, optional): Sample rate in Hz. Defaults to 1000 Hz.
+        sample_rate (float, optional): Sample rate in Hz. Defaults to 1000 Hz.
 
     Returns:
         npt.NDArray: Signal w/ baseline wander
@@ -39,7 +39,7 @@ def add_motion_noise(
     data: npt.NDArray,
     amplitude: float = 0.2,
     frequency: float = 0.5,
-    sample_rate: int = 1000,
+    sample_rate: float = 1000,
 ) -> npt.NDArray:
     """Add motion noise to signal.
 
@@ -47,7 +47,7 @@ def add_motion_noise(
         data (npt.NDArray): Signal
         amplitude (float, optional): Amplitude in st dev. Defaults to 0.2.
         frequency (float, optional): Motion frequency in Hz. Defaults to 0.5 Hz.
-        sample_rate (int, optional): Sample rate in Hz. Defaults to 1000 Hz.
+        sample_rate (float, optional): Sample rate in Hz. Defaults to 1000 Hz.
 
     Returns:
         npt.NDArray: Signal w/ motion noise
@@ -66,7 +66,7 @@ def add_burst_noise(
     amplitude: float = 1,
     frequency: float = 100,
     burst_number: int = 1,
-    sample_rate: int = 1000,
+    sample_rate: float = 1000,
 ) -> npt.NDArray:
     """Add high frequency burst noise to signal.
 
@@ -75,7 +75,7 @@ def add_burst_noise(
         amplitude (float, optional): Amplitude in st dev. Defaults to 1.
         frequency (float, optional): High frequency burst in Hz. Defaults to 100 Hz.
         burst_number (int, optional): # bursts to inject. Defaults to 1.
-        sample_rate (int, optional): Sample rate in Hz. Defaults to 1000 Hz.
+        sample_rate (float, optional): Sample rate in Hz. Defaults to 1000 Hz.
 
     Returns:
         npt.NDArray: Signal w/ burst noise
@@ -94,7 +94,7 @@ def add_powerline_noise(
     data: npt.NDArray,
     amplitude: float = 0.01,
     frequency: float = 50,
-    sample_rate: int = 1000,
+    sample_rate: float = 1000,
 ) -> npt.NDArray:
     """Add powerline noise to signal.
 
@@ -102,7 +102,7 @@ def add_powerline_noise(
         data (npt.NDArray): Signal
         amplitude (float, optional): Amplitude in st dev. Defaults to 0.01.
         frequency (float, optional): Powerline frequency in Hz. Defaults to 50 Hz.
-        sample_rate (int, optional): Sample rate in Hz. Defaults to 1000 Hz.
+        sample_rate (float, optional): Sample rate in Hz. Defaults to 1000 Hz.
     Returns:
         npt.NDArray: Signal w/ powerline noise
     """
@@ -119,7 +119,7 @@ def add_noise_sources(
     data: npt.NDArray,
     amplitudes: list[float],
     frequencies: list[float],
-    sample_rate: int = 1000,
+    sample_rate: float = 1000,
 ) -> npt.NDArray:
     """Add multiple noise sources to signal.
 
@@ -127,7 +127,7 @@ def add_noise_sources(
         data (npt.NDArray): Signal
         amplitudes (list[float]): Amplitudes in st dev.
         frequencies (list[float]): Frequencies in Hz.
-        sample_rate (int, optional): Sample rate in Hz. Defaults to 1000 Hz.
+        sample_rate (float, optional): Sample rate in Hz. Defaults to 1000 Hz.
     Returns:
         npt.NDArray: Signal w/ noise
     """
@@ -136,16 +136,16 @@ def add_noise_sources(
     )
 
 
-def add_emg_noise(data: npt.NDArray, scale: float = 1e-5, sample_rate: int = 1000) -> npt.NDArray:
-    """Add EMG noise to signal
+def add_emg_noise(data: npt.NDArray, scale: float = 1e-5, sample_rate: float = 1000) -> npt.NDArray:
+    """Add EMG noise to signal.
 
     Args:
         data (npt.NDArray): Signal
         scale (float, optional): Noise scale. Defaults to 1e-5.
-        sample_rate (int, optional): Sampling rate in Hz. Defaults to 1000.
+        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000.
 
     Returns:
-        npt.NDArray: New signal
+        npt.NDArray: Signal with EMG noise
     """
     noise = np.repeat(
         np.sin(np.linspace(-0.5 * np.pi, 1.5 * np.pi, sample_rate) * 10000),
@@ -155,14 +155,14 @@ def add_emg_noise(data: npt.NDArray, scale: float = 1e-5, sample_rate: int = 100
 
 
 def add_lead_noise(data: npt.NDArray, scale: float = 1e-3) -> npt.NDArray:
-    """Add Lead noise
+    """Add lead noise to signal.
 
     Args:
         data (npt.NDArray): Signal
         scale (float, optional): Noise scale. Defaults to 1.
 
     Returns:
-        npt.NDArray: New signal
+        npt.NDArray: Signal with lead noise
     """
     return data + np.random.normal(0, scale, size=data.shape)
 
@@ -176,7 +176,7 @@ def add_random_scaling(data: npt.NDArray, lower: float = 0.5, upper: float = 2.0
         upper (float, optional): Upper bound. Defaults to 2.0.
 
     Returns:
-        npt.NDArray: New signal
+        npt.NDArray: Signal with random scaling
     """
     return data * random.uniform(lower, upper)
 

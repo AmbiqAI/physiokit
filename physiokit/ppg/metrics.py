@@ -1,107 +1,165 @@
+from typing import Literal
+
 import numpy as np
 import numpy.typing as npt
+import scipy.interpolate
 
-from ..signal import filter_signal
-from .peaks import filter_peaks, find_peaks
+from ..signal import compute_fft, filter_signal
+from .peaks import compute_rr_intervals, filter_rr_intervals, find_peaks
 
 
-def compute_heart_rate(data: npt.NDArray, sample_rate: float = 1000, method: str = "fft"):
-    """Compute heart rate from PPG signal.
+def compute_heart_rate(
+    data: npt.NDArray, sample_rate: float = 1000, method: str = "fft", **kwargs: dict
+) -> tuple[float, float]:
+    """Compute heart rate in BPM from PPG signal.
+
     Args:
         data (array): PPG signal.
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
         method (str, optional): Method to compute heart rate. Defaults to 'fft'.
+        **kwargs (dict): Keyword arguments to pass to method.
+
     Returns:
         float: Heart rate in BPM.
     """
-
-    if method == "fft":
-        return compute_heart_rate_from_fft(data=data, sample_rate=sample_rate)
-
-    if method == "peak":
-        return compute_heart_rate_from_peaks(data=data, sample_rate=sample_rate)
-
-    raise NotImplementedError(f"Heart rate computation method {method} not implemented.")
+    match method:
+        case "fft":
+            bpm, qos = compute_heart_rate_from_fft(data=data, sample_rate=sample_rate, **kwargs)
+        case "peak":
+            bpm, qos = compute_heart_rate_from_peaks(data=data, sample_rate=sample_rate, **kwargs)
+        case _:
+            raise NotImplementedError(f"Heart rate computation method {method} not implemented.")
+    # END MATCH
+    return bpm, qos
 
 
 def compute_heart_rate_from_peaks(
-    data: npt.NDArray,
-    sample_rate: float = 1000,
-) -> float:
+    data: npt.NDArray, sample_rate: float = 1000, min_rr: float = 0.3, max_rr: float = 2.0, min_delta: float = 0.3
+) -> tuple[float, float]:
     """Compute heart rate from peaks of PPG signal.
+
     Args:
         data (array): PPG signal.
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
+
     Returns:
-        float: Heart rate in BPM.
+        tuple[float, float]: Heart rate (BPM) and qos metric.
     """
-    peaks = find_peaks(
-        data=data,
-        sample_rate=sample_rate,
-    )
-    peaks = filter_peaks(
-        peaks=peaks,
-        sample_rate=sample_rate,
-    )
-    return 60 / (np.diff(peaks).mean() / sample_rate)
+    peaks = find_peaks(data=data, sample_rate=sample_rate)
+    rri = compute_rr_intervals(peaks=peaks)
+    rmask = filter_rr_intervals(rr_ints=rri, sample_rate=sample_rate, min_rr=min_rr, max_rr=max_rr, min_delta=min_delta)
+    bpm = 60 / (np.nanmean(rri[rmask == 0]) / sample_rate)
+    qos = rmask[rmask == 0].size / rmask.size
+    return bpm, qos
 
 
 def compute_heart_rate_from_fft(
     data: npt.NDArray, sample_rate: float = 1000, lowcut: float = 0.5, highcut: float = 4.0
-) -> float:
+) -> tuple[float, float]:
     """Compute heart rate from FFT of PPG signal.
+
     Args:
         data (array): PPG signal.
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
         lowcut (float, optional): Lowcut frequency in Hz. Defaults to 0.5 Hz.
         highcut (float, optional): Highcut frequency in Hz. Defaults to 4.0 Hz.
+
     Returns:
-        float: Heart rate in BPM.
+        tuple[float, float]: Heart rate (BPM) and qos metric.
     """
     freqs, sp = compute_fft(data, sample_rate)
     l_idx = np.where(freqs >= lowcut)[0][0]
     r_idx = np.where(freqs >= highcut)[0][0]
-    ps = 2 * np.abs(sp)
-    fft_pk_idx = np.argmax(ps[l_idx:r_idx]) + l_idx
-    hr = 60 * freqs[fft_pk_idx]
-    return hr
+    freqs = freqs[l_idx:r_idx]
+    ps = 2 * np.abs(sp[l_idx:r_idx])
+    fft_pk_idx = np.argmax(ps)
+    bpm = 60 * freqs[fft_pk_idx]
+    qos = ps[fft_pk_idx] / np.mean(ps)
+    return bpm, qos
 
 
-def compute_fft(
-    data: npt.NDArray,
+def derive_respiratory_rate(
+    ppg: npt.NDArray,
+    peaks: npt.NDArray,
+    troughs: npt.NDArray | None = None,
+    rri: npt.NDArray | None = None,
     sample_rate: float = 1000,
-    axis: int = -1,
-) -> tuple[npt.NDArray, npt.NDArray]:
-    """Compute FFT of PPG signal.
-    Args:
-        data (array): PPG signal.
-        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
-        axis (int, optional): Axis to compute FFT. Defaults to -1.
-    Returns:
-        tuple[array, array]: Frequencies and FFT of PPG signal.
-    """
-    data_len = data.shape[axis]
-    fft_len = int(2 ** np.ceil(np.log2(data_len)))
-    fft_win = np.blackman(data_len)
-    amp_corr = 1.93
+    method: Literal["riav", "riiv", "rifv"] = "rifv",
+    lowcut: float = 0.1,
+    highcut: float = 1.0,
+    order: int = 3,
+    threshold: float | None = 0.85,
+    interpolate_method: str = "linear",
+) -> tuple[float, float]:
+    """Derive respiratory rate from PPG signal using given method.
 
-    freqs = np.fft.fftfreq(fft_len, 1 / sample_rate)
-    sp = amp_corr * np.fft.fft(fft_win * data, fft_len, axis=axis) / data_len
-    return freqs, sp
+    Args:
+        ppg (array): PPG signal.
+        peaks (array): Peaks of PPG signal.
+        troughs (array, optional): Troughs of PPG signal. Defaults to None.
+        rri (array, optional): Respiratory interval. Defaults to None.
+        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
+        method (str, optional): Method to compute respiratory rate. Defaults to 'riav'.
+        lowcut (float, optional): Lowcut frequency in Hz. Defaults to 0.1 Hz.
+        highcut (float, optional): Highcut frequency in Hz. Defaults to 1.0 Hz.
+        order (int, optional): Order of filter. Defaults to 3.
+        threshold (float, optional): Threshold for peak detection. Defaults to 0.85.
+
+    Returns:
+        tuple[float, float]: Respiratory rate (BPM) and qos metric.
+    """
+    if peaks.size < 4:
+        raise ValueError("At least 4 peaks are required to compute respiratory rate")
+
+    ts = np.arange(peaks[0], peaks[-1], 1)
+    match method:
+        case "riav":
+            rsp = ppg[peaks] - ppg[troughs]
+        case "riiv":
+            rsp = ppg[peaks]
+        case "rifv":
+            rsp = rri
+        case _:
+            raise ValueError(f"Method {method} not implemented")
+    rsp = scipy.interpolate.interp1d(peaks, rsp, kind=interpolate_method, fill_value="extrapolate")(ts)
+    rsp = filter_signal(rsp, lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=order)
+
+    freqs, rsp_sp = compute_fft(rsp, sample_rate=sample_rate)
+    l_idx = np.where(freqs >= lowcut)[0][0]
+    r_idx = np.where(freqs >= highcut)[0][0]
+    rsp_ps = 2 * np.abs(rsp_sp)
+    freqs = freqs[l_idx:r_idx]
+    rsp_ps = rsp_ps[l_idx:r_idx]
+
+    fft_pk_idx = np.argmax(rsp_ps)
+    if threshold is not None:
+        fft_pk_indices = np.where(rsp_ps > threshold * rsp_ps[fft_pk_idx])[0]
+    else:
+        fft_pk_indices = [fft_pk_idx]
+
+    rsp_bpm_weights = rsp_ps[fft_pk_indices]
+    tgt_pwr = np.sum(rsp_bpm_weights)
+    qos = tgt_pwr / np.mean(rsp_ps)
+    rsp_bpm = 60 * np.sum(rsp_bpm_weights * freqs[fft_pk_indices]) / tgt_pwr
+    return rsp_bpm, qos
 
 
 def compute_spo2_from_perfusion(
     dc1: float, ac1: float, dc2: float, ac2: float, coefs: tuple[float, float, float] = (1, 0, 0)
 ) -> float:
     """Compute SpO2 from ratio of perfusion indexes (AC/DC).
-        MAX30101: [1.5958422, -34.6596622, 112.6898759]
-        MAX8614X: [-16.666666, 8.333333, 100]
+
+    Device Coefficients:
+        * MAX30101: [1.5958422, -34.6596622, 112.6898759]
+        * MAX8614X: [-16.666666, 8.333333, 100]
+
     Args:
         dc1 (float): DC component of 1st PPG signal (e.g RED).
         ac1 (float): AC component of 1st PPG signal (e.g RED).
         dc2 (float): DC component of 2nd PPG signal (e.g. IR).
         ac2 (float): AC component of 2nd PPG signal (e.g. IR).
         coefs (tuple[float, float, float], optional): Calibration coefficients. Defaults to (1, 0, 0).
+
     Returns:
         float: SpO2 value clipped to [50, 100].
     """
@@ -127,6 +185,7 @@ def compute_spo2_in_time(
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
         lowcut (float, optional): Lowcut frequency in Hz. Defaults to 0.5 Hz.
         highcut (float, optional): Highcut frequency in Hz. Defaults to 4.0 Hz.
+
     Returns:
         float: SpO2 value
     """
@@ -159,29 +218,22 @@ def compute_spo2_in_frequency(
     sample_rate: float = 1000,
     lowcut: float = 0.5,
     highcut: float = 4.0,
-    axis: int = -1,
+    order: int = 3,
 ) -> float:
     """Compute SpO2 from PPG signals in frequency domain.
+
     Args:
         ppg1 (array): 1st PPG signal (e.g RED).
         ppg2 (array): 2nd PPG signal (e.g. IR).
         coefs (tuple[float, float, float], optional): Calibration coefficients. Defaults to (1, 0, 0).
-        sampling_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
+        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
         lowcut (float, optional): Lowcut frequency in Hz. Defaults to 0.5 Hz.
         highcut (float, optional): Highcut frequency in Hz. Defaults to 4.0 Hz.
-        axis (int, optional): Axis along which to compute the FFT. Defaults to -1.
+        order (int, optional): Order of filter. Defaults to 3.
+
     Returns:
         float: SpO2 value
     """
-
-    data_len = ppg1.shape[axis]
-    fft_len = int(2 ** np.ceil(np.log2(data_len)))
-    fft_win = np.blackman(data_len)
-    amp_corr = 1.93
-
-    freqs = np.fft.fftfreq(fft_len, 1 / sample_rate)
-    l_idx = np.where(freqs >= lowcut)[0][0]
-    r_idx = np.where(freqs >= highcut)[0][0]
 
     # Compute DC
     ppg1_dc = np.mean(ppg1)
@@ -189,20 +241,25 @@ def compute_spo2_in_frequency(
 
     # Bandpass filter
     ppg1_clean = filter_signal(
-        data=ppg1, lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=3, forward_backward=True
+        data=ppg1, lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=order, forward_backward=True
     )
-
     ppg2_clean = filter_signal(
-        data=ppg2, lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=3, forward_backward=True
+        data=ppg2, lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=order, forward_backward=True
     )
 
-    ppg1_fft = np.fft.fft(fft_win * ppg1_clean, fft_len, axis=axis) / data_len
-    ppg2_fft = np.fft.fft(fft_win * ppg2_clean, fft_len, axis=axis) / data_len
+    # Compute AC via FFT
+    freqs, ppg1_fft = compute_fft(ppg1_clean, sample_rate=sample_rate)
+    freqs, ppg2_fft = compute_fft(ppg2_clean, sample_rate=sample_rate)
 
-    ppg1_ps = 2 * amp_corr * np.abs(ppg1_fft)
-    ppg2_ps = 2 * amp_corr * np.abs(ppg2_fft)
+    l_idx = np.where(freqs >= lowcut)[0][0]
+    r_idx = np.where(freqs >= highcut)[0][0]
 
-    fft_pk_idx = np.argmax(ppg1_ps[l_idx:r_idx] + ppg2_ps[l_idx:r_idx]) + l_idx
+    freqs = freqs[l_idx:r_idx]
+    ppg1_ps = 2 * np.abs(ppg1_fft[l_idx:r_idx])
+    ppg2_ps = 2 * np.abs(ppg2_fft[l_idx:r_idx])
+
+    # Find peak
+    fft_pk_idx = np.argmax(ppg1_ps + ppg2_ps)
 
     # Compute AC
     ppg1_ac = ppg1_ps[fft_pk_idx]

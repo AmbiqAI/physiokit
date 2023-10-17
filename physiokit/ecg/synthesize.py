@@ -4,7 +4,7 @@ import numpy.typing as npt
 
 def synthesize(
     duration: float = 10,
-    sample_rate: int = 1000,
+    sample_rate: int = float,
     heart_rate: int = 60,
     heart_rate_std: int = 1,
     leads: int = 1,
@@ -13,7 +13,7 @@ def synthesize(
 
     Args:
         duration (float, optional): Duration in seconds. Defaults to 10 sec.
-        sample_rate (int, optional): Sample rate in Hz. Defaults to 1000 Hz.
+        sample_rate (float, optional): Sample rate in Hz. Defaults to 1000 Hz.
         heart_rate (int, optional): Heart rate in BPM. Defaults to 60 BPM.
         heart_rate_std (int, optional): Heart rate standard deviation in BPM. Defaults to 1 BPM.
         leads (int, optional): Number of leads. Defaults to 1.

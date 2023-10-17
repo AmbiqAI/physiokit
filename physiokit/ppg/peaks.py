@@ -14,10 +14,12 @@ def find_peaks(
     peak_delay: float = 0.3,
 ) -> npt.NDArray:
     """Find systolic peaks in PPG signal.
+
     Implementation based on Elgendi M, Norton I, Brearley M, Abbott D, Schuurmans D (2013) Systolic Peak Detection in
     Acceleration Photoplethysmograms Measured from Emergency Responders in Tropical Conditions. PLoS ONE 8(10): e76585.
     doi:10.1371/journal.pone.0076585.
     Assumes input data is bandpass filtered with a lowcut of .5 Hz and a highcut of 8 Hz.
+
     Args:
         data (array): PPG signal.
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
@@ -25,6 +27,7 @@ def find_peaks(
         beat_window (float, optional): Beat window in seconds. Defaults to 0.667 s.
         beat_offset (float, optional): Beat offset in seconds. Defaults to 0.02 s.
         peak_delay (float, optional): Peak delay in seconds. Defaults to 0.3 s.
+
     Returns:
         npt.NDArray: Peak locations.
     """
@@ -76,12 +79,14 @@ def filter_peaks(
     min_delta: float | None = 0.3,
 ) -> npt.NDArray:
     """Filter out peaks with RR intervals outside of normal range.
+
     Args:
         peaks (array): Systolic peaks.
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
         min_rr (float, optional): Minimum RR interval in seconds. Defaults to 0.3 s.
         max_rr (float, optional): Maximum RR interval in seconds. Defaults to 2.0 s.
         min_delta (float, optional): Minimum RR interval delta. Defaults to 0.3.
+
     Returns:
         npt.NDArray: Filtered peaks.
     """
