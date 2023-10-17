@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "physiokit"
-version = "0.3.0"
+version = "0.4.0"
 description = "PhysioKit, process raw ambulatory bio-signals."
 license = "BSD-3-Clause"
 authors = ["Adam Page <adam.page@ambiq.com>"]
