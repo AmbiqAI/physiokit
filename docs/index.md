@@ -3,6 +3,10 @@ title:
 ---
 #
 
+<p align="center">
+  <a href="https://github.com/AmbiqAI/physiokit"><img src="./assets/physiokit-banner.png" alt="PhysioKit"></a>
+</p>
+
 
 <p align="center">
 <a href="https://pypi.org/project/physiokit" target="_blank">
@@ -16,6 +20,9 @@ title:
 </a>
 <a href="https://github.com/AmbiqAI/physiokit" target="_blank">
     <img src="https://img.shields.io/github/stars/AmbiqAI/physiokit.svg?color=%2334D058" alt="Package downloads">
+</a>
+<a href="https://github.com/AmbiqAI/physiokit/LICENSE" target="_blank">
+    <img src="https://img.shields.io/pypi/l/physiokit" alt="License">
 </a>
 </p>
 

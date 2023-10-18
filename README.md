@@ -19,6 +19,9 @@
 <a href="https://github.com/AmbiqAI/physiokit" target="_blank">
     <img src="https://img.shields.io/github/stars/AmbiqAI/physiokit.svg?color=%2334D058" alt="Package downloads">
 </a>
+<a href="https://github.com/AmbiqAI/physiokit/LICENSE" target="_blank">
+    <img src="https://img.shields.io/pypi/l/physiokit" alt="License">
+</a>
 </p>
 
 ---
@@ -72,7 +75,6 @@ In this example, we will generate a synthetic ECG signal, clean it, and compute 
 
 
 ```python
-
 import physiokit as pk
 
 fs = 1000 # Hz
@@ -101,7 +103,6 @@ hrv_td = pk.hrv.compute_hrv_time(rri[mask == 0], sample_rate=fs)
 
 bands = [(0.04, 0.15), (0.15, 0.4), (0.4, 0.5)]
 hrv_fd = pk.hrv.compute_hrv_frequency(peaks[mask == 0], rri[mask == 0], bands=bands, sample_rate=fs)
-
 ```
 
 
