@@ -3,7 +3,7 @@ import numpy.typing as npt
 from ..signal import filter_signal
 
 
-def clean_signal(
+def clean(
     data: npt.NDArray,
     lowcut: float = 0.05,
     highcut: float = 3,
