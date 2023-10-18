@@ -106,9 +106,10 @@ def compute_rr_intervals(
     Returns:
         npt.NDArray: RR intervals.
     """
-    if peaks.size <= 1:
-        return np.array([])
+
     rr_ints = np.diff(peaks)
+    if rr_ints.size == 0:
+        return rr_ints
     rr_ints = np.hstack((rr_ints[0], rr_ints))
     return rr_ints
 
@@ -130,6 +131,8 @@ def filter_rr_intervals(
     Returns:
         npt.NDArray: Filtered RR intervals.
     """
+    if rr_ints.size == 0:
+        return np.array([])
 
     # Filter out peaks with RR intervals outside of normal range
     rr_mask = np.where((rr_ints < min_rr * sample_rate) | (rr_ints > max_rr * sample_rate), 1, 0)

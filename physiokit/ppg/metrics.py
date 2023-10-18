@@ -74,7 +74,7 @@ def compute_heart_rate_from_fft(
     ps = 2 * np.abs(sp[l_idx:r_idx])
     fft_pk_idx = np.argmax(ps)
     bpm = 60 * freqs[fft_pk_idx]
-    qos = ps[fft_pk_idx] / np.mean(ps)
+    qos = ps[fft_pk_idx] / np.sum(ps)
     return bpm, qos
 
 
@@ -139,7 +139,7 @@ def derive_respiratory_rate(
 
     rsp_bpm_weights = rsp_ps[fft_pk_indices]
     tgt_pwr = np.sum(rsp_bpm_weights)
-    qos = tgt_pwr / np.mean(rsp_ps)
+    qos = tgt_pwr / np.sum(rsp_ps)
     rsp_bpm = 60 * np.sum(rsp_bpm_weights * freqs[fft_pk_indices]) / tgt_pwr
     return rsp_bpm, qos
 

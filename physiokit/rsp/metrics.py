@@ -77,5 +77,5 @@ def compute_respiratory_rate_from_fft(
     ps = 2 * np.abs(sp)
     fft_pk_idx = np.argmax(ps[l_idx:r_idx]) + l_idx
     bpm = freqs[fft_pk_idx] * 60
-    qos = ps[fft_pk_idx] / np.mean(ps)
+    qos = ps[fft_pk_idx] / np.sum(ps)
     return bpm, qos
