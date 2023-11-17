@@ -12,17 +12,18 @@ def get_butter_sos(
     lowcut: float | None = None,
     highcut: float | None = None,
     sample_rate: float = 1000,
-    order: int = 2,
+    order: int = 3,
 ) -> npt.NDArray:
     """Compute biquad filter coefficients as SOS. This function caches.
     For lowpass, lowcut is required and highcut is ignored.
     For highpass, highcut is required and lowcut is ignored.
     For bandpass, both lowcut and highcut are required.
+
     Args:
         lowcut (float|None): Lower cutoff in Hz. Defaults to None.
         highcut (float|None): Upper cutoff in Hz. Defaults to None.
         sample_rate (float): Sampling rate in Hz. Defaults to 1000 Hz.
-        order (int, optional): Filter order. Defaults to 2.
+        order (int, optional): Filter order. Defaults to 3.
 
     Returns:
         npt.NDArray: SOS
@@ -49,14 +50,16 @@ def generate_arm_biquad_sos(
     sample_rate: float,
     order: int = 3,
     var_name: str = "biquadFilter",
-):
+) -> str:
     """Generate ARM CMSIS second order section coefficients.
+
     Args:
         lowcut (float): Lower cutoff in Hz.
         highcut (float): Upper cutoff in Hz.
         sample_rate (float): Sampling rate in Hz.
         order (int, optional): Filter order. Defaults to 3.
         var_name (str, optional): Variable name. Defaults to 'biquadFilter'.
+
     Returns:
         str: ARM CMSIS second order section coefficients.
     """
@@ -78,6 +81,8 @@ def resample_signal(
     data: npt.NDArray, sample_rate: float = 1000, target_rate: float = 500, axis: int = -1
 ) -> npt.NDArray:
     """Resample signal using scipy FFT-based resample routine.
+
+    NOTE: For very large signals, this may be slow. Consider using resample_poly instead.
 
     Args:
         data (npt.NDArray): Signal
@@ -202,6 +207,7 @@ def smooth_signal(
 
     Returns:
         npt.NDArray: Smoothed signal
+
     """
 
     if window_length is None:

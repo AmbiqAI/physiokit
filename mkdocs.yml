@@ -8,13 +8,21 @@ copyright: Copyright &copy; 2023 Ambiq
 nav:
   - PhysioKit: index.md
   - Getting Started:
-    - Installation: ./tutorial/installation.md
     - Quick Start: ./tutorial/quickstart.md
+  - Signals:
+    - ECG: ./signals/ecg.md
+    - PPG: ./signals/ppg.md
+    - RSP: ./signals/rsp.md
+    - IMU: ./signals/imu.md
+    - HRV: ./signals/hrv.md
+    - Signal: ./signals/signal.md
   - API:
-    - ECG Signal: ./api/ecg.md
-    - PPG Signal: ./api/ppg.md
-    - RSP Signal: ./api/rsp.md
-    - HRV Analysis: ./api/hrv.md
+    - ECG: ./api/ecg.md
+    - PPG: ./api/ppg.md
+    - RSP: ./api/rsp.md
+    - IMU: ./api/imu.md
+    - HRV: ./api/hrv.md
+    - Signal: ./api/signal.md
 
 theme:
   name: material
@@ -82,7 +90,8 @@ markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
-  - pymdownx.snippets
+  - pymdownx.snippets:
+      base_path: 'docs/'
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid

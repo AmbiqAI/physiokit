@@ -103,6 +103,7 @@ def add_powerline_noise(
         amplitude (float, optional): Amplitude in st dev. Defaults to 0.01.
         frequency (float, optional): Powerline frequency in Hz. Defaults to 50 Hz.
         sample_rate (float, optional): Sample rate in Hz. Defaults to 1000 Hz.
+
     Returns:
         npt.NDArray: Signal w/ powerline noise
     """
@@ -128,6 +129,7 @@ def add_noise_sources(
         amplitudes (list[float]): Amplitudes in st dev.
         frequencies (list[float]): Frequencies in Hz.
         sample_rate (float, optional): Sample rate in Hz. Defaults to 1000 Hz.
+
     Returns:
         npt.NDArray: Signal w/ noise
     """

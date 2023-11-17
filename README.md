@@ -24,15 +24,17 @@
 </a>
 </p>
 
----
+<p style="color:rgb(201,48,198); font-size: 1.2em;">
+🚧 PhysioKit is under active development
+</p>
 
+---
 
 **Documentation**: <a href="https://ambiqai.github.io/physiokit" target="_blank">https://ambiqai.github.io/physiokit</a>
 
 **Source Code**: <a href="https://github.com/AmbiqAI/physiokit" target="_blank">https://github.com/AmbiqAI/physiokit</a>
 
 ---
-
 
 **Key Features:**
 
@@ -41,40 +43,28 @@
 * Provide advanced signal processing and feature extraction methods.
 * Create synthetic signals for testing and benchmarking.
 
-
 ## Requirements
 
 * [Python 3.11+](https://www.python.org)
 
-
 ## Installation
 
-<div class="termy">
+Installing PhysioKit can be done using `Poetry` or `pip`.
 
 ```console
-$ pip install physiokit
-
+pip install physiokit
 ```
-</div>
-
-Or if using `Poetry`
-
-
-<div class="termy">
 
 ```console
-$ poetry add physiokit
-
+poetry add physiokit
 ```
-</div>
-
 
 ## Example
 
 In this example, we will generate a synthetic ECG signal, clean it, and compute heart rate and HRV metrics.
 
-
 ```python
+
 import physiokit as pk
 
 fs = 1000 # Hz
@@ -82,7 +72,12 @@ tgt_hr = 64 # BPM
 
 
 # Generate synthetic ECG signal
-ecg = pk.ecg.synthesize(duration=10, sample_rate=fs, heart_rate=tgt_hr, leads=1)
+ecg = pk.ecg.synthesize(
+    duration=10,
+    sample_rate=fs,
+    heart_rate=tgt_hr,
+    leads=1
+)
 
 # Clean ECG signal
 ecg_clean = pk.ecg.clean(ecg, sample_rate=fs)
@@ -102,9 +97,14 @@ hr_bpm = 60 / (np.nanmean(rri[mask == 0]) / fs)
 hrv_td = pk.hrv.compute_hrv_time(rri[mask == 0], sample_rate=fs)
 
 bands = [(0.04, 0.15), (0.15, 0.4), (0.4, 0.5)]
-hrv_fd = pk.hrv.compute_hrv_frequency(peaks[mask == 0], rri[mask == 0], bands=bands, sample_rate=fs)
-```
+hrv_fd = pk.hrv.compute_hrv_frequency(
+    peaks[mask == 0],
+    rri[mask == 0],
+    bands=bands,
+    sample_rate=fs
+)
 
+```
 
 ## License
 

@@ -13,8 +13,9 @@ def find_peaks(
     qrs_prom_weight: float = 1.5,
     qrs_min_len_weight: float = 0.4,
     qrs_min_delay: float = 0.3,
-):
+) -> npt.NDArray:
     """Find R peaks in ECG signal using QRS gradient method.
+
     Args:
         data (array): ECG signal.
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
@@ -23,6 +24,7 @@ def find_peaks(
         qrs_prom_weight (float, optional): Weight to compute minimum QRS height. Defaults to 1.5.
         qrs_min_len_weight (float, optional): Weight to compute minimum QRS length. Defaults to 0.4.
         qrs_min_delay (float, optional): Minimum delay between QRS complexes. Defaults to 0.3 s.
+
     Returns:
         npt.NDArray: R peaks.
     """
@@ -72,12 +74,14 @@ def filter_peaks(
     min_delta: float | None = 0.3,
 ) -> npt.NDArray:
     """Filter out peaks with RR intervals outside of normal range.
+
     Args:
         peaks (array): R peaks.
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
         min_rr (float, optional): Minimum RR interval in seconds. Defaults to 0.3 s.
         max_rr (float, optional): Maximum RR interval in seconds. Defaults to 2.0 s.
         min_delta (float, optional): Minimum RR interval delta. Defaults to 0.3.
+
     Returns:
         npt.NDArray: Filtered peaks.
     """
@@ -100,15 +104,17 @@ def compute_rr_intervals(
     peaks: npt.NDArray,
 ) -> npt.NDArray:
     """Compute RR intervals from R peaks.
+
     Args:
         peaks (array): R peaks.
-        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
+
     Returns:
         npt.NDArray: RR intervals.
     """
-    if peaks.size <= 1:
-        return np.array([])
+
     rr_ints = np.diff(peaks)
+    if rr_ints.size == 0:
+        return rr_ints
     rr_ints = np.hstack((rr_ints[0], rr_ints))
     return rr_ints
 
@@ -121,15 +127,19 @@ def filter_rr_intervals(
     min_delta: float | None = 0.3,
 ) -> npt.NDArray:
     """Filter out peaks with RR intervals outside of normal range.
+
     Args:
         rr_ints (array): RR intervals.
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
         min_rr (float, optional): Minimum RR interval in seconds. Defaults to 0.3 s.
         max_rr (float, optional): Maximum RR interval in seconds. Defaults to 2.0 s.
         min_delta (float, optional): Minimum RR interval delta. Defaults to 0.3.
+
     Returns:
-        npt.NDArray: Filtered RR intervals.
+        npt.NDArray: RR interval mask.
     """
+    if rr_ints.size == 0:
+        return np.array([])
 
     # Filter out peaks with RR intervals outside of normal range
     rr_mask = np.where((rr_ints < min_rr * sample_rate) | (rr_ints > max_rr * sample_rate), 1, 0)
