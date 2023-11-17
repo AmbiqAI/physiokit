@@ -19,7 +19,7 @@ class HrvTimeMetrics:
     cv_sd: float = 0
 
     # Robust
-    meadian_nn: float = 0  # Median of normal intervals
+    median_nn: float = 0  # Median of normal intervals
     mad_nn: float = 0  # Median absolute deviation of normal intervals
     mcv_nn: float = 0  # Median coefficient of variation of normal intervals
     iqr_nn: float = 0  # Interquartile range of normal intervals

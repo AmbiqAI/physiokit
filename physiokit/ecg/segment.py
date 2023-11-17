@@ -2,8 +2,6 @@ import numpy as np
 import numpy.typing as npt
 import scipy.ndimage as spn
 
-from .clean import clean as clean_ecg
-
 
 def locate_qrs(
     data: npt.NDArray,
@@ -13,8 +11,9 @@ def locate_qrs(
     qrs_prom_weight: float = 1.5,
     qrs_min_len_weight: float = 0.4,
     qrs_min_delay: float = 0.3,
-):
+) -> tuple[npt.NDArray, npt.NDArray, npt.NDArray]:
     """Find QRS segments in ECG signal using QRS gradient method.
+
     Args:
         data (array): ECG signal.
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
@@ -23,8 +22,9 @@ def locate_qrs(
         qrs_prom_weight (float, optional): Weight to compute minimum QRS height. Defaults to 1.5.
         qrs_min_len_weight (float, optional): Weight to compute minimum QRS length. Defaults to 0.4.
         qrs_min_delay (float, optional): Minimum delay between QRS complexes. Defaults to 0.3 s.
+
     Returns:
-        npt.NDArray: R peaks.
+        tuple[npt.NDArray, npt.NDArray, npt.NDArray]: QRS segments, beginning of QRS segments, end of QRS segments.
     """
 
     # Compute gradient of signal for both QRS and average.
@@ -71,24 +71,25 @@ def apply_segmentation(
 ):
     """Apply segmentation to ECG signal."""
 
-    qrs = clean_ecg(data, sample_rate=sample_rate, lowcut=10.0, highcut=30.0)
-    qrs_segs = locate_qrs(qrs, sample_rate=sample_rate)
-    q_waves = []
-    r_waves = []
-    s_waves = []
-    for beg, peak, end in qrs_segs:
-        q_waves.append(np.argmin(qrs[beg:peak]) + beg)
-        r_waves.append(peak)
-        s_waves.append(np.argmin(qrs[peak:end]) + peak)
-    # Given signal and lead placement
-    # Identify R peaks
-    # Extract nominal RR interval, filter out R peaks (mark as noise)
-    # For each R peak, extract beat segment
-    # Identify QRS segment -> delineate Q wave, R wave, S wave
-    # Identify P wave
-    # Identify T wave
-    # Optionally, identify U wave
-    # Derive PR interval, PR segment, QRS complex, ST segment, QT segment
+    raise NotImplementedError()
+    # qrs = clean_ecg(data, sample_rate=sample_rate, lowcut=10.0, highcut=30.0)
+    # qrs_segs = locate_qrs(qrs, sample_rate=sample_rate)
+    # q_waves = []
+    # r_waves = []
+    # s_waves = []
+    # for beg, peak, end in qrs_segs:
+    #     q_waves.append(np.argmin(qrs[beg:peak]) + beg)
+    #     r_waves.append(peak)
+    #     s_waves.append(np.argmin(qrs[peak:end]) + peak)
+    # # Given signal and lead placement
+    # # Identify R peaks
+    # # Extract nominal RR interval, filter out R peaks (mark as noise)
+    # # For each R peak, extract beat segment
+    # # Identify QRS segment -> delineate Q wave, R wave, S wave
+    # # Identify P wave
+    # # Identify T wave
+    # # Optionally, identify U wave
+    # # Derive PR interval, PR segment, QRS complex, ST segment, QT segment
 
 
 def find_pwave():

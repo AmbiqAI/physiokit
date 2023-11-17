@@ -103,9 +103,10 @@ def compute_rr_intervals(
     peaks: npt.NDArray,
 ) -> npt.NDArray:
     """Compute RR intervals from resp peaks.
+
     Args:
         peaks (array): R peaks.
-        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
+
     Returns:
         npt.NDArray: RR intervals.
     """
@@ -121,12 +122,14 @@ def filter_rr_intervals(
     rr_ints: npt.NDArray, sample_rate: float = 1000, min_rr: float = 0.5, max_rr: float = 20, min_delta: float = 0.5
 ) -> npt.NDArray:
     """Filter out peaks with RR intervals outside of normal range.
+
     Args:
         rr_ints (array): RR intervals.
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
         min_rr (float, optional): Minimum RR interval in seconds. Defaults to 0.5 s.
         max_rr (float, optional): Maximum RR interval in seconds. Defaults to 20 s.
         min_delta (float, optional): Minimum RR interval delta. Defaults to 0.5.
+
     Returns:
         npt.NDArray: Filtered RR intervals.
     """

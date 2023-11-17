@@ -10,9 +10,11 @@ def compute_hrv_time(
     sample_rate: float = 1000,
 ) -> HrvTimeMetrics:
     """Compute time domain HRV metrics.
+
     Args:
         rr_intervals (npt.NDArray): RR intervals.
         sample_rate (float, optional): Sampling rate. Defaults to 1000 Hz.
+
     Returns:
         HrvTimeMetrics: Time domain HRV metrics.
     """
@@ -55,7 +57,7 @@ def compute_hrv_time(
         sd_sd=sd_sd,
         cv_nn=cv_nn,
         cv_sd=cv_sd,
-        meadian_nn=median_nn,
+        median_nn=median_nn,
         mad_nn=mad_nn,
         mcv_nn=mcv_nn,
         iqr_nn=iqr_nn,

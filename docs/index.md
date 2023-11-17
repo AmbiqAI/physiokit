@@ -26,15 +26,17 @@ title:
 </a>
 </p>
 
----
+<p style="color:rgb(201,48,198); font-size: 1.2em;">
+🚧 PhysioKit is under active development
+</p>
 
+---
 
 **Documentation**: <a href="https://ambiqai.github.io/physiokit" target="_blank">https://ambiqai.github.io/physiokit</a>
 
 **Source Code**: <a href="https://github.com/AmbiqAI/physiokit" target="_blank">https://github.com/AmbiqAI/physiokit</a>
 
 ---
-
 
 **Key Features:**
 
@@ -43,40 +45,39 @@ title:
 * Provide advanced signal processing and feature extraction methods.
 * Create synthetic signals for testing and benchmarking.
 
-
 ## Requirements
 
 * [Python 3.11+](https://www.python.org)
 
-
 ## Installation
 
-<div class="termy">
+Installing PhysioKit can be done using `Poetry` or `pip`.
 
-```console
-$ pip install physiokit
+=== "via Poetry"
 
----> 100%
-```
-</div>
+    <div class="termy">
 
-Or if using `Poetry`
+    ```console
+    $ poetry add physiokit
 
+    ---> 100%
+    ```
+    </div>
 
-<div class="termy">
+=== "via pip"
 
-```console
-$ poetry add physiokit
+    <div class="termy">
 
----> 100%
-```
-</div>
+    ```console
+    $ pip install physiokit
 
+    ---> 100%
+    ```
+    </div>
 
 ## Example
 
 In this example, we will generate a synthetic ECG signal, clean it, and compute heart rate and HRV metrics.
-
 
 ```python
 
@@ -87,7 +88,12 @@ tgt_hr = 64 # BPM
 
 
 # Generate synthetic ECG signal
-ecg = pk.ecg.synthesize(duration=10, sample_rate=fs, heart_rate=tgt_hr, leads=1)
+ecg = pk.ecg.synthesize(
+    duration=10,
+    sample_rate=fs,
+    heart_rate=tgt_hr,
+    leads=1
+)
 
 # Clean ECG signal
 ecg_clean = pk.ecg.clean(ecg, sample_rate=fs)
@@ -107,10 +113,14 @@ hr_bpm = 60 / (np.nanmean(rri[mask == 0]) / fs)
 hrv_td = pk.hrv.compute_hrv_time(rri[mask == 0], sample_rate=fs)
 
 bands = [(0.04, 0.15), (0.15, 0.4), (0.4, 0.5)]
-hrv_fd = pk.hrv.compute_hrv_frequency(peaks[mask == 0], rri[mask == 0], bands=bands, sample_rate=fs)
+hrv_fd = pk.hrv.compute_hrv_frequency(
+    peaks[mask == 0],
+    rri[mask == 0],
+    bands=bands,
+    sample_rate=fs
+)
 
 ```
-
 
 ## License
 

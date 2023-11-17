@@ -41,6 +41,9 @@ def compute_heart_rate_from_peaks(
     Args:
         data (array): PPG signal.
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
+        min_rr (float, optional): Minimum RR interval in seconds. Defaults to 0.3 s.
+        max_rr (float, optional): Maximum RR interval in seconds. Defaults to 2.0 s.
+        min_delta (float, optional): Minimum RR interval delta. Defaults to 0.3.
 
     Returns:
         tuple[float, float]: Heart rate (BPM) and qos metric.
@@ -104,6 +107,7 @@ def derive_respiratory_rate(
         highcut (float, optional): Highcut frequency in Hz. Defaults to 1.0 Hz.
         order (int, optional): Order of filter. Defaults to 3.
         threshold (float, optional): Threshold for peak detection. Defaults to 0.85.
+        interpolate_method (str, optional): Interpolation method. Defaults to 'linear'.
 
     Returns:
         tuple[float, float]: Respiratory rate (BPM) and qos metric.
@@ -175,6 +179,7 @@ def compute_spo2_in_time(
     sample_rate: float = 1000,
     lowcut: float = 0.5,
     highcut: float = 4,
+    order: int = 3,
 ) -> float:
     """Compute SpO2 from PPG signals in time domain.
 
@@ -185,6 +190,7 @@ def compute_spo2_in_time(
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
         lowcut (float, optional): Lowcut frequency in Hz. Defaults to 0.5 Hz.
         highcut (float, optional): Highcut frequency in Hz. Defaults to 4.0 Hz.
+        order (int, optional): Order of filter. Defaults to 3.
 
     Returns:
         float: SpO2 value
@@ -196,11 +202,11 @@ def compute_spo2_in_time(
 
     # Bandpass filter
     ppg1_clean = filter_signal(
-        data=ppg1, lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=3, forward_backward=True
+        data=ppg1, lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=order, forward_backward=True
     )
 
     ppg2_clean = filter_signal(
-        data=ppg2, lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=3, forward_backward=True
+        data=ppg2, lowcut=lowcut, highcut=highcut, sample_rate=sample_rate, order=order, forward_backward=True
     )
 
     # Compute AC via RMS

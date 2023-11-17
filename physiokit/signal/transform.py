@@ -2,7 +2,9 @@ import numpy as np
 import numpy.typing as npt
 
 
-def rescale_signal(x, old_min: float, old_max: float, new_min: float, new_max: float, clip: bool = True):
+def rescale_signal(
+    x: npt.NDArray, old_min: float, old_max: float, new_min: float, new_max: float, clip: bool = True
+) -> npt.NDArray:
     """Rescale signal to new range.
 
     Args:
