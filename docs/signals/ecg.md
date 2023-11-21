@@ -4,7 +4,8 @@ Electrocardiography (ECG) is a non-invasive technique used to measure the electr
 
 ## Synthetic ECG
 
-PhysioKit provides a simple way to generate synthetic ECG signals using the `ecg.synthesize` function. By supplying only a handful of parameters, we can generate a fairly authentic ECG signal. PhysioKit also provides a more customizable way to generate synthetic ECG signals using either `ecg.generate_nsr` or `ecg.generate_afib`. In addition to returning the ECG signal, these advanced funtions also return the PQRST segmentations and fiducials.
+PhysioKit provides a simple way to generate synthetic ECG signals using the `ecg.synthesize` function. By supplying only a handful of parameters, we can generate a fairly authentic ECG signal. PhysioKit also provides a more customizable way to generate synthetic ECG signals. Check out the [Advanced Synthetic ECG](#advanced-synthetic-ecg) section for more details.
+
 
 ???+ example
     In the following snippet, we generate a synthetic ECG signal with a heart rate of 64 BPM sampled at 1000 Hz.
@@ -178,6 +179,74 @@ Respiratory sinus arrhythmia (RSA) is a phenomenon where the heart rate varies w
 
 !!! note
     In certain conditions such as noisy environments, certain subjects, ECG lead position, etc., the respiratory rate may not be accurately estimated. In these cases, the QoS metric will be low.
+
+---
+## Advanced Synthetic ECG
+
+PhysioKit provides a more customizable way to generate synthetic ECG signals. The `ecg.generate_nsr` and `ecg.generate_afib` functions in able generating normal sinus rhythm (NSR) and atrial fibrillation (AFib) ECG signals, respectively. In addition to returning the ECG signal, these advanced funtions also return the PQRST segmentations and fiducials. Both methods also allow tuning parameters such as cardiovasular presets (e.g. LBBB), p and t wave multipliers, signal impedance, and more.
+
+???+ example
+
+    In the following example, we generate a single lead normal sinus rhythm ECG signal with a heart rate of 64 BPM sampled at 1000 Hz.
+
+    ```python
+
+    tgt_hr = 64 # BPM
+    fs = 1000
+    duration = 10
+
+    # Generate NSR synthetic ECG signal
+    ecg_ts, ecg_sig, ecg_segs, ecg_fids, ecg_params = pk.ecg.generate_nsr(
+        leads=1,
+        signal_frequency=fs,
+        rate=tgt_hr,
+        preset="SR",
+        noise_multiplier=0.7,
+        impedance=1,
+        p_multiplier=1.5,
+        t_multiplier=1.2,
+        duration=duration,
+        voltage_factor=10
+    )
+
+    ```
+
+    <div class="sk-plotly-graph-div">
+    --8<-- "assets/pk_ecg_synthetic_nsr.html"
+    </div>
+
+???+ example
+
+    In the following example, we generate a single lead ECG signal containing atrial fibrillation (AFIB) with a heart rate of 64 BPM sampled at 1000 Hz.
+
+    ```python
+
+    tgt_hr = 64 # BPM
+    fs = 1000
+    duration = 10
+
+    # Generate NSR synthetic ECG signal
+    ecg_ts, ecg_sig, ecg_segs, ecg_fids, ecg_params = pk.ecg.generate_nsr(
+        leads=1,
+        signal_frequency=fs,
+        rate=tgt_hr,
+        preset="SR",
+        noise_multiplier=0.7,
+        impedance=1,
+        p_multiplier=1.5,
+        t_multiplier=1.2,
+        duration=duration,
+        voltage_factor=10
+    )
+
+    ```
+
+    <div class="sk-plotly-graph-div">
+    --8<-- "assets/pk_ecg_synthetic_afib.html"
+    </div>
+
+
+---
 
 ## ECG Segmentation
 

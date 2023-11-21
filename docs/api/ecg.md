@@ -4,12 +4,22 @@ Electrocardiography (ECG) is a non-invasive technique used to measure the electr
 
 ::: physiokit.ecg.defines
 
+---
+
 ::: physiokit.ecg.clean
+
+---
 
 ::: physiokit.ecg.metrics
 
+---
+
 ::: physiokit.ecg.peaks
 
+---
+
 ::: physiokit.ecg.segment
+
+---
 
 ::: physiokit.ecg.synthesize

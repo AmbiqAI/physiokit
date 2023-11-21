@@ -7,4 +7,4 @@ from .metrics import (
 )
 from .peaks import compute_rr_intervals, filter_peaks, filter_rr_intervals, find_peaks
 from .synthesize import synthesize
-from .synthetic import generate_afib, generate_nsr
+from .synthetic import generate_afib, generate_nsr, SyntheticFiducials, SyntheticSegments, SyntheticParameters, EcgPresets
