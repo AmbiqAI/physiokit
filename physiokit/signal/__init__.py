@@ -6,6 +6,7 @@ from .filter import (
     remove_baseline_wander,
     resample_signal,
     smooth_signal,
+    generate_arm_biquad_sos
 )
 from .noise import (
     add_baseline_wander,
