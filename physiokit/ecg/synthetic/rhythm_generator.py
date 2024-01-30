@@ -152,16 +152,18 @@ def generate_nsr(
                 x_p[: min(x_p.size, sizer - start)],
                 y_p[: min(x_p.size, sizer - start)],
             )
-
+            # Mark P-wave
             y_segs[start : min(start + y_p.size, sizer)] = SyntheticSegments.p_wave
             # if parameters.p_biphasics[h]:
             #   y_segs[start:min(start + y_p.size,sizer)] = SyntheticSegments.p_wave_biphasic
 
+            # T-on-P phenomenon
             if overlap > 0 and beat_counter > 0:
                 y_segs[start : start + overlap] = SyntheticSegments.tp_overlap
 
+            # Mark PR segment
             if start + y_p.size < sizer:
-                y_segs[start + y_p.size : start + parameters.pr_interval] = SyntheticSegments.pr_interval
+                y_segs[start + y_p.size : start + parameters.pr_interval] = SyntheticSegments.pr_segment
 
             y_fids[start] = SyntheticFiducials.p_wave
 
@@ -250,6 +252,7 @@ def generate_nsr(
                     y_st[: min(x_st.size, sizer - start)],
                 )
                 y_segs[start : start + x_st.size] = SyntheticSegments.st_segment
+
                 # # check if upsloping ST segment:
                 # if parameters.st_delta > 0:
                 #     y_segs[start:min(start + x_st.size,sizer)] = SyntheticSegments.st_segment_upsloping
@@ -285,6 +288,7 @@ def generate_nsr(
             )
             y_segs[start : start + x_t.size] = SyntheticSegments.t_wave
 
+            # Correct between T wave and ST segment
             if parameters.st_length > 5 and min(start + x_t.size, sizer) - start > 5:
                 t_grad = np.amax(np.abs(np.gradient(y[start : min(start + x_t.size, sizer)] * 1e5))) / 10
 
@@ -298,6 +302,9 @@ def generate_nsr(
                     else:
                         y_segs[t_value : min(start + x_t.size, sizer)] = SyntheticSegments.t_wave
                         break
+                    # END IF
+                # END FOR
+            # END IF
 
             # # if T wave inverted:
             # y_segs[start:min(start + x_t.size,sizer)] = SyntheticSegments.t_wave_inv
@@ -435,6 +442,16 @@ def generate_afib(
         while beat_start < sizer:
             start = beat_start
 
+            ################################################
+            ## P Wave
+            ################################################
+
+            # Not present in AFIB
+
+            ################################################
+            ## QRS
+            ################################################
+
             x_qrs, y_qrs, wave_peak_list = wg.syn_qrs_complex(
                 qrs_duration=parameters.qrs_duration,
                 q_depth=parameters.q_depths[h],
@@ -493,6 +510,10 @@ def generate_afib(
             if start >= sizer:
                 break
 
+            ################################################
+            ## ST Segment
+            ################################################
+
             if parameters.st_length > 0:
                 x_st, y_st = wg.syn_st_segment(
                     j_point=parameters.j_points[h],
@@ -504,6 +525,7 @@ def generate_afib(
                     x_st[: min(x_st.size, sizer - start)],
                     y_st[: min(x_st.size, sizer - start)],
                 )
+                y_segs[start : start + x_st.size] = SyntheticSegments.st_segment
 
                 # check if upsloping ST segment:
                 # if parameters.st_delta > 0:
@@ -511,8 +533,6 @@ def generate_afib(
                 # # if downsloping ST segment:
                 # elif parameters.st_delta < 0:
                 # 	y_segs[start:min(start + x_st.size,sizer)] = SyntheticSegments.st_segment_downsloping
-
-                y_segs[start : start + x_st.size] = SyntheticSegments.st_segment
 
                 # mark J point
                 y_fids[start] = SyntheticFiducials.j_point

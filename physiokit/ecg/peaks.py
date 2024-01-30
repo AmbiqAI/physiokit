@@ -1,8 +1,7 @@
 import numpy as np
 import numpy.typing as npt
-import scipy.ndimage as spn
 
-from ..signal import quotient_filter_mask
+from ..signal import moving_gradient_filter, quotient_filter_mask
 
 
 def find_peaks(
@@ -29,19 +28,14 @@ def find_peaks(
         npt.NDArray: R peaks.
     """
 
-    # Compute gradient of signal for both QRS and average.
-    abs_grad = np.abs(np.gradient(data))
-    qrs_kernel = int(np.rint(qrs_window * sample_rate))
-    avg_kernel = int(np.rint(avg_window * sample_rate))
-
-    # Smooth gradients
-    qrs_grad = spn.uniform_filter1d(abs_grad, qrs_kernel, mode="nearest")
-    avg_grad = spn.uniform_filter1d(qrs_grad, avg_kernel, mode="nearest")
-
-    min_qrs_height = qrs_prom_weight * avg_grad
-
     # Identify start and end of QRS complexes.
-    qrs = qrs_grad > min_qrs_height
+    qrs = (
+        moving_gradient_filter(
+            data, sample_rate=sample_rate, sig_window=qrs_window, avg_window=avg_window, sig_prom_weight=qrs_prom_weight
+        )
+        > 0
+    )
+
     beg_qrs = np.where(np.logical_and(np.logical_not(qrs[0:-1]), qrs[1:]))[0]
     end_qrs = np.where(np.logical_and(qrs[0:-1], np.logical_not(qrs[1:])))[0]
     end_qrs = end_qrs[end_qrs > beg_qrs[0]]

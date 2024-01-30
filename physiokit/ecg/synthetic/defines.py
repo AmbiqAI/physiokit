@@ -19,12 +19,13 @@ class SyntheticSegments(IntEnum):
 
     background = 0
     p_wave = 1
-    pr_interval = 2
-    qrs_complex = 3
-    st_segment = 4
-    t_wave = 5
-    tp_segment = 6
-    tp_overlap = 7
+    qrs_complex = 2
+    t_wave = 3
+    pr_segment = 11  # End of P-wave to start of QRS
+    st_segment = 12  # End of QRS to start of T-wave
+    tp_segment = 13  # End of T-wave to start of P-wave
+    tp_overlap = 14  # T-on-P
+
     # Below not currently used
     p_wave_biphasic = 16
     qrs_complex_wide_rsr = 17
@@ -57,7 +58,7 @@ class SyntheticParameters:
 
     # pylint: disable=R0902
     p_length: int = 80
-    pr_interval: int = 80
+    pr_interval: int = 80  # This is really PR segment
     qrs_duration: int = 50
     noisiness: float = 0
     st_length: int = 20
