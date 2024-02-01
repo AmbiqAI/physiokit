@@ -1,6 +1,6 @@
 """ECG module for PhysioKit"""
 from .clean import clean, square_filter_mask
-from .defines import ECGSegment
+from .defines import EcgFiducial, EcgSegment
 from .metrics import (
     compute_heart_rate,
     compute_heart_rate_from_peaks,
@@ -13,12 +13,10 @@ from .segment import (
     locate_qrs,
     locate_twave_from_qrs_anchor,
 )
-from .synthesize import synthesize
+from .synthesize import simulate_daubechies, simulate_ecgsyn, synthesize
 from .synthetic import (
-    EcgPresets,
-    SyntheticFiducials,
-    SyntheticParameters,
-    SyntheticSegments,
-    generate_afib,
-    generate_nsr,
+    EcgPreset,
+    EcgPresetParameters,
+    generate_preset_parameters,
+    simulate_brisk,
 )

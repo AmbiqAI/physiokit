@@ -1,7 +1,3 @@
-from .defines import (
-    EcgPresets,
-    SyntheticFiducials,
-    SyntheticParameters,
-    SyntheticSegments,
-)
-from .rhythm_generator import generate_afib, generate_nsr
+from .defines import EcgPreset, EcgPresetParameters
+from .presets import generate_preset_parameters
+from .rhythm_generator import simulate_brisk

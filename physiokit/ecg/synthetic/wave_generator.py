@@ -18,8 +18,8 @@ def syn_p_wave(
         p_voltage (float, optional): Magnitude of p wave in mV. Defaults to 0.25.
         p_biphasic (bool, optional): Whether p wave is biphasic. Defaults to False.
         p_biphasic_ratio (float, optional): Magnitude of second peak as a multiple of first peak. Defaults to 1.5.
-        p_lean (float, optional): Skew of p wave (does not apply to biphasic p waves). < 1 skews left, > 1 skews right. Defaults to 0.8.
-        flipper (float, optional): Voltage multiplier applied uniformly to wave (1: no effect, -1: flips wave). Defaults to 1.
+        p_lean (float, optional): Skew of p wave < 1 skews left, > 1 skews right. Defaults to 0.8.
+        flipper (float, optional): Voltage multiplier applied uniformly to wave (1: no, -1: flips). Defaults to 1.
 
     Returns:
         tuple[npt.NDArray, npt.NDArray]: x,y
@@ -98,18 +98,18 @@ def syn_qrs_complex(
         q_depth (float, optional): Magnitude of Q wave in mV. Defaults to 0.2.
         q_to_qr_duration_ratio (float, optional): Ratio of Q wave duration to QR complex duration. Defaults to 0.2.
         r_height (float, optional): Magnitude of R wave in mV. Defaults to 1.
-        r_1_upswing_ratio (float, optional): Duration of R wave upswing as a fraction of total R wave duration. Defaults to 0.5.
-        r_1_downswing_ratio (float, optional): Duration of initial R wave downswing as fraction of total R wave. Defaults to 0.25.
+        r_1_upswing_ratio (float, optional): Dur of R wave upswing as fraction of total. Defaults to 0.5.
+        r_1_downswing_ratio (float, optional): Dur of initial R wave downswing as frac of total. Defaults to 0.25.
         r_prime_present (float, optional): Boolean denoting presence of R' wave. Defaults to True.
         r_to_r_prime_duration_ratio (float, optional): Ratio of duration of R : R'. Defaults to 1.
         r_prime_height (float, optional): Magnitude of R' wave in mV. Defaults to 1.
-        r_2_upswing_ratio (float, optional): Duration of R' wave upswing as a fraction of total R' wave duration. Defaults to 0.5.
-        r_2_downswing_ratio (float, optional): Duration of initial R' wave downswing as fraction of total R' wave. Defaults to 0.25.
-        s_prime_height (float, optional): If S wave is "W" shaped, magnitude of positive mid-wave inflection in mV. Defaults to 0.2.
+        r_2_upswing_ratio (float, optional): Dur of R' wave upswing as frac of total R'. Defaults to 0.5.
+        r_2_downswing_ratio (float, optional): Dur of initial R' wave downswing as frac of total R'. Defaults to 0.25.
+        s_prime_height (float, optional): If S wave is "W", mag of pos mid-wave inflection in mV. Defaults to 0.2.
         s_present (bool, optional): Boolean denoting presence of S wave. Defaults to True.
         s_to_qrs_duration_ratio (float, optional): Ratio of S wave duration to QRS complex duration. Defaults to 0.1.
         s_depth (float, optional): Magnitude of S wave in mV. Defaults to 0.1.
-        flipper (float, optional): Voltage multiplier applied uniformly to entire wave (1: no effect, -1: flip). Defaults to 1.
+        flipper (float, optional): Voltage multiplier applied uniformly (-1: flip). Defaults to 1.
         j_point (float, optional): Magnitude of J point in mV. Defaults to 0.
 
     Returns:
@@ -301,10 +301,10 @@ def syn_st_segment(
 
     Args:
         j_point (float, optional): magnitude of J point in mV. Defaults to 0.
-        st_delta (float, optional): Change in magnitude of ST segment over entire wave in mV (0.1: up, -0.1: down). Defaults to 0.
+        st_delta (float, optional): Change in mag of ST segment over wave in mV (0.1: up, -0.1: down). Defaults to 0.
         st_length (float, optional): Duration of ST segment in mS. Defaults to 50.
         t_height (float, optional): Not used. Defaults to 0.5.
-        flipper (float, optional): Voltage multiplier applied uniformly to wave (1: no effect, -1: flips wave). Defaults to 1.
+        flipper (float, optional): Voltage multiplier applied uniformly (1: no effect, -1: flips wave). Defaults to 1.
 
     Returns:
         tuple[npt.NDArray, npt.NDArray]: x, y
@@ -344,7 +344,7 @@ def syn_t_wave(
         st_end (float, optional): Magnitude of the end of the ST segment in mV. Defaults to 0.
         t_height (float, optional): Magnitude of the T wave in mV. Defaults to 0.5.
         t_length (int, optional): Duration of the T wave in mS. Defaults to 150.
-        flipper (float, optional): Voltage multiplier applied uniformly to entire wave (1: no effect, -1: flips wave). Defaults to 1.
+        flipper (float, optional): Voltage multiplier applied uniformly (-1: flips wave). Defaults to 1.
         t_lean (float, optional): Skews T wave in order to increase variation in morphology. Defaults to 1.
 
     Returns:

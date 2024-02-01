@@ -6,80 +6,61 @@ import numpy.typing as npt
 import scipy.integrate
 import scipy.ndimage
 
+from .synthetic import EcgPreset, simulate_brisk
+
 
 def synthesize(
-    duration: float = 10,
-    sample_rate: int = float,
-    heart_rate: int = 60,
-    heart_rate_std: int = 1,
-    leads: tuple[int] = (1),
-    method: str = "ecgsyn",
-) -> npt.NDArray:
-    """Generate synthetic ECG signal. Utilize pk.signal.noise methods to make more realistic.
+    signal_length: int = 10000,
+    sample_rate: float = 1000,
+    leads: int = 12,
+    heart_rate: float = 60,
+    preset: EcgPreset = EcgPreset.SR,
+    noise_multiplier: float = 1.0,
+    impedance: float = 1.0,
+    p_multiplier: float = 1.0,
+    t_multiplier: float = 1.0,
+    voltage_factor: float = 300,
+) -> tuple[npt.NDArray, npt.NDArray, npt.NDArray]:
+    """Generate synthetic ECG signal via brisk method.
+
+    Utilize pk.signal.noise methods to make more realistic.
 
     Leads are indexed as follows:
         ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"]
 
     Args:
-        duration (float, optional): Duration in seconds. Defaults to 10 sec.
-        sample_rate (float, optional): Sample rate in Hz. Defaults to 1000 Hz.
-        heart_rate (int, optional): Heart rate in BPM. Defaults to 60 BPM.
-        heart_rate_std (int, optional): Heart rate standard deviation in BPM. Defaults to 1 BPM.
-        leads (int, optional): Number of leads. Defaults to 1.
+        signal_length (int, optional): Length of the ECG signal. Defaults to 10000.
+        sample_rate (float, optional): ECG sampling frequency. Defaults to 1000.
+        leads (int, optional): Number of leads. Defaults to 12.
+        heart_rate (float, optional): Mean heart rate. Defaults to 60.
+        preset (EcgPreset, optional): ECG preset. Defaults to EcgPreset.SR.
+        noise_multiplier (float, optional): Noise multiplier. Defaults to 1.0.
+        impedance (float, optional): Impedance. Defaults to 1.0.
+        p_multiplier (float, optional): P wave multiplier. Defaults to 1.0.
+        t_multiplier (float, optional): T wave multiplier. Defaults to 1.0.
+        voltage_factor (float, optional): Voltage factor. Defaults to 300.
 
     Returns:
         npt.NDArray: Synthetic ECG signals
     """
 
-    # Generate number of samples automatically if length is unspecified
-    length = np.rint(duration * sample_rate)
-    method = method.lower()
+    _, ecg, segs, fids, _ = simulate_brisk(
+        signal_length=signal_length,
+        sample_rate=sample_rate,
+        leads=leads,
+        heart_rate=heart_rate,
+        preset=preset,
+        noise_multiplier=noise_multiplier,
+        impedance=impedance,
+        p_multiplier=p_multiplier,
+        t_multiplier=t_multiplier,
+        voltage_factor=voltage_factor,
+    )
 
-    # Run appropriate method
-    if method == "daubechies":
-        signals = []
-        signals.append(_ecg_simulate_daubechies(duration=duration, length=length, heart_rate=heart_rate))
-    else:
-        approx_number_beats = int(np.round(duration * (heart_rate / 60)))
-        gamma = np.array(
-            [
-                [1, 0.1, 1, 1.2, 1],
-                [2, 0.2, 0.2, 0.2, 3],
-                [1, -0.1, -0.8, -1.1, 2.5],
-                [-1, -0.05, -0.8, -0.5, -1.2],
-                [0.05, 0.05, 1, 1, 1],
-                [1, -0.05, -0.1, -0.1, 3],
-                [-0.5, 0.05, 0.2, 0.5, 1],
-                [0.05, 0.05, 1.3, 2.5, 2],
-                [1, 0.05, 1, 2, 1],
-                [1.2, 0.05, 1, 2, 2],
-                [1.5, 0.1, 0.8, 1, 2],
-                [1.8, 0.05, 0.5, 0.1, 2],
-            ]
-        )
-        signals, _ = _ecg_simulate_ecgsyn(
-            sfecg=sample_rate,
-            N=approx_number_beats,
-            hrmean=heart_rate,
-            hrstd=heart_rate_std,
-            sfint=sample_rate,
-            gamma=gamma,
-        )
-    # END IF
-
-    # Convert to numpy array
-    ecg = np.zeros((len(leads), length))
-    for i, lead in enumerate(leads):
-        ecg[i, :] = signals[lead - 1][0:length]
-    # END FOR
-
-    return ecg
+    return ecg, segs, fids
 
 
-# =============================================================================
-# Daubechies
-# =============================================================================
-def _ecg_simulate_daubechies(duration: float, length: int, heart_rate=70):
+def simulate_daubechies(signal_length: int = 10000, sample_rate: float = 1000, heart_rate: float = 70) -> npt.NDArray:
     """Generate an artificial (synthetic) ECG signal of a given duration and sampling rate.
 
     It uses a 'Daubechies' wavelet that roughly approximates a single cardiac cycle.
@@ -94,6 +75,8 @@ def _ecg_simulate_daubechies(duration: float, length: int, heart_rate=70):
         npt.NDArray: Synthetic ECG signal
 
     """
+    duration = signal_length / sample_rate
+
     # The "Daubechies" wavelet is a rough approximation to a real, single, cardiac cycle
     cardiac = scipy.signal.daub(10)
 
@@ -110,38 +93,36 @@ def _ecg_simulate_daubechies(duration: float, length: int, heart_rate=70):
     ecg = ecg * 10
 
     # Resample
-    ecg = scipy.ndimage.zoom(ecg, length / len(ecg))
+    ecg = scipy.ndimage.zoom(ecg, signal_length / len(ecg))
 
-    # Return the signal in a list to match
-    # with the potential multichanel output of ecgsyn
+    ecg = ecg[:signal_length]
+
     return ecg
 
 
-# =============================================================================
-# ECGSYN
-# =============================================================================
-def _ecg_simulate_ecgsyn(
-    sfecg: float = 256,
-    N: int = 256,
-    hrmean: float = 60,
-    hrstd: float = 1,
+def simulate_ecgsyn(
+    signal_length: int = 10000,
+    sample_rate: float = 256,
+    leads: int = 12,
+    heart_rate: float = 60,
+    hr_std: float = 1,
     lfhfratio: float = 0.5,
     sfint: float = 512,
     ti: tuple[int] = (-70, -15, 0, 15, 100),
     ai: tuple[float] = (1.2, -5, 30, -7.5, 0.75),
     bi: tuple[float] = (0.25, 0.1, 0.1, 0.1, 0.4),
     gamma: npt.NDArray | None = None,
-) -> tuple[list[npt.NDArray], list[npt.NDArray]]:
+) -> npt.NDArray:
     """Simulate ECG using the ECGSYN algorithm.
 
     This function is a python translation of the matlab script by `McSharry & Clifford (2013)
     <https://physionet.org/content/ecgsyn>`_.
 
     Args:
-        sfecg (float, optional): ECG sampling frequency. Defaults to 256.
-        N (int, optional): Number of samples. Defaults to 256.
-        hrmean (float, optional): Mean heart rate. Defaults to 60.
-        hrstd (float, optional): Heart rate standard deviation. Defaults to 1.
+        signal_length (int, optional): Length of the ECG signal. Defaults to 10000.
+        sample_rate (float, optional): ECG sampling frequency. Defaults to 256.
+        heart_rate (float, optional): Mean heart rate. Defaults to 60.
+        hr_std (float, optional): Heart rate standard deviation. Defaults to 1.
         lfhfratio (float, optional): Low frequency high frequency ratio. Defaults to 0.5.
         sfint (float, optional): Internal sampling frequency. Defaults to 512.
         ti (tuple[int], optional): Time parameters. Defaults to (-70, -15, 0, 15, 100).
@@ -154,7 +135,24 @@ def _ecg_simulate_ecgsyn(
 
     """
     if gamma is None:
-        gamma = np.ones((1, 5))
+        gamma = np.array(
+            [
+                [1, 0.1, 1, 1.2, 1],
+                [2, 0.2, 0.2, 0.2, 3],
+                [1, -0.1, -0.8, -1.1, 2.5],
+                [-1, -0.05, -0.8, -0.5, -1.2],
+                [0.05, 0.05, 1, 1, 1],
+                [1, -0.05, -0.1, -0.1, 3],
+                [-0.5, 0.05, 0.2, 0.5, 1],
+                [0.05, 0.05, 1.3, 2.5, 2],
+                [1, 0.05, 1, 2, 1],
+                [1.2, 0.05, 1, 2, 2],
+                [1.5, 0.1, 0.8, 1, 2],
+                [1.8, 0.05, 0.5, 0.1, 2],
+            ]
+        )
+    # END IF
+
     if not isinstance(ti, np.ndarray):
         ti = np.array(ti)
     if not isinstance(ai, np.ndarray):
@@ -162,21 +160,26 @@ def _ecg_simulate_ecgsyn(
     if not isinstance(bi, np.ndarray):
         bi = np.array(bi)
 
+    duration = signal_length / sample_rate
+
+    # Number of beats
+    N = int(np.round(duration * (heart_rate / 60)))
+
     ti = ti * np.pi / 180
 
     # Adjust extrema parameters for mean heart rate
-    hrfact = np.sqrt(hrmean / 60)
+    hrfact = np.sqrt(heart_rate / 60)
     hrfact2 = np.sqrt(hrfact)
     bi = hrfact * bi
     ti = np.array([hrfact2, hrfact, 1, hrfact, hrfact2]) * ti
 
     # Check that sfint is an integer multiple of sfecg
-    q = np.round(sfint / sfecg)
-    qd = sfint / sfecg
+    q = np.round(sfint / sample_rate)
+    qd = sfint / sample_rate
     if q != qd:
         raise ValueError(
             "Internal sampling frequency (sfint) must be an integer multiple of the ECG sampling frequency"
-            " (sfecg). Your current choices are: sfecg = " + str(sfecg) + " and sfint = " + str(sfint) + "."
+            " (sfecg). Your current choices are: sfecg = " + str(sample_rate) + " and sfint = " + str(sfint) + "."
         )
 
     # Define frequency parameters for rr process
@@ -189,10 +192,10 @@ def _ecg_simulate_ecgsyn(
     # Calculate time scales for rr and total output
     sfrr = 1
     trr = 1 / sfrr
-    rrmean = 60 / hrmean
+    rrmean = 60 / heart_rate
     n = 2 ** (np.ceil(np.log2(N * rrmean / trr)))
 
-    rr0 = _ecg_simulate_rrprocess(flo, fhi, flostd, fhistd, lfhfratio, hrmean, hrstd, sfrr, n)
+    rr0 = _ecg_simulate_rrprocess(flo, fhi, flostd, fhistd, lfhfratio, heart_rate, hr_std, sfrr, n)
 
     # Upsample rr time series from 1 Hz to sfint Hz
     desired_length = int(np.round(len(rr0) * sfint / 1))
@@ -229,17 +232,15 @@ def _ecg_simulate_ecgsyn(
     # Because these are all starting at the same position, it may make sense to grab a random
     # segment within the series to simulate random phase and to forget the initial conditions
 
-    for gamma_col in gamma:
-        # as passing extra arguments to derivative function is not supported yet in solve_ivp
-        # lambda function is used to serve the purpose
+    for i in range(leads):
+        gamma_row = gamma[i, :]
         result = scipy.integrate.solve_ivp(
-            fun=functools.partial(_ecg_simulate_derivsecgsyn, rrn=rrn, ti=ti, sfint=sfint, ai=gamma_col * ai, bi=bi),
-            # lambda t, x: _ecg_simulate_derivsecgsyn(t, x, rrn, ti, sfint, gamma[lead] * ai, bi),
+            fun=functools.partial(_ecg_simulate_derivsecgsyn, rr=rrn, ti=ti, sfint=sfint, ai=gamma_row * ai, bi=bi),
             t_span=Tspan,
             y0=x0,
             t_eval=t_eval,
         )
-        results.append(result)  # store results
+        results.append(result)
         X0 = result.y  # get signal
 
         # downsample to required sfecg
@@ -253,8 +254,12 @@ def _ecg_simulate_ecgsyn(
         z = (z - zmin) * 1.6 / zrange - 0.4
 
         signals.append(z)
+    # END FOR
 
-    return signals, results
+    signals = np.hstack(signals)
+
+    signals = signals[:signal_length]
+    return signals
 
 
 def _ecg_simulate_derivsecgsyn(

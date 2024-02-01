@@ -2,7 +2,7 @@ import numpy as np
 import numpy.typing as npt
 
 from ..signal import moving_gradient_filter
-from .defines import ECGSegment
+from .defines import EcgSegment
 
 # from .clean import clean as clean_ecg
 
@@ -234,7 +234,7 @@ def apply_segmentation(
 ) -> npt.NDArray:
     """Apply segmentation to ECG signal."""
     segs = np.zeros(data.size, dtype=int)
-    segs[:] = ECGSegment.background
+    segs[:] = EcgSegment.background
 
     qrs_segs: list[tuple[int, int, int]] = []
     p_segs: list[tuple[int, int, int]] = []
@@ -247,18 +247,18 @@ def apply_segmentation(
     # For each QRS segment, extract P wave and T wave
     for qrs_seg in qrs_segs:
         print("QRS", qrs_seg)
-        segs[qrs_seg[0] : qrs_seg[2]] = ECGSegment.qrs_complex
+        segs[qrs_seg[0] : qrs_seg[2]] = EcgSegment.qrs_complex
         # Extract P wave and T wave
         print("P-wave")
         p_seg = locate_pwave_from_qrs_anchor(data, qrs_seg, sample_rate=sample_rate)
         if p_seg:
-            segs[p_seg[0] : p_seg[2]] = ECGSegment.p_wave
+            segs[p_seg[0] : p_seg[2]] = EcgSegment.p_wave
             p_segs.append(p_seg)
         # END IF
         print("T-wave")
         t_seg = locate_twave_from_qrs_anchor(data, qrs_seg, sample_rate=sample_rate)
         if t_seg:
-            segs[t_seg[0] : t_seg[2]] = ECGSegment.t_wave
+            segs[t_seg[0] : t_seg[2]] = EcgSegment.t_wave
             t_segs.append(t_seg)
         # END IF
     # END FOR

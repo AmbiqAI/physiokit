@@ -228,6 +228,9 @@ def add_signal_cutout():
     raise NotImplementedError()
 
 
-def add_signal_shift():
+def add_signal_shift(data: npt.NDArray, shift_amount: float = 0.1):
     """Add signal shift augmentation to signal."""
-    raise NotImplementedError()
+    shift_idx = random.randint(0, data.size)
+    rst = data.copy()
+    rst[shift_idx:] += shift_amount
+    return rst

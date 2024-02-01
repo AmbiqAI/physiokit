@@ -18,6 +18,8 @@ from .filter import (
 from .noise import (
     add_baseline_wander,
     add_burst_noise,
+    add_emg_noise,
+    add_lead_noise,
     add_motion_noise,
     add_noise_sources,
     add_powerline_noise,

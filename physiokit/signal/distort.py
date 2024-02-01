@@ -120,6 +120,8 @@ def create_noise_artifacts(
         frequency (float, optional): Noise frequency. Defaults to 0.
         amplitude (float, optional): Noise amplitude. Defaults to 0.1.
         num_artifacts (int, optional): Number of artifacts. Defaults to 5.
+        min_artifact_percent (int, optional): Min artifact duration percentage. Defaults to 0.001.
+        max_artifact_percent (int, optional): Max artifact duration percentage. Defaults to 0.01.
         artifacts_shape (str, optional): Noise shape. Defaults to "laplace".
 
     Returns:
@@ -214,7 +216,7 @@ def create_noise_distortions(
 
     frequencies = frequencies if isinstance(frequencies, Iterable) else [frequencies]
     amplitudes = amplitudes if isinstance(amplitudes, Iterable) else [amplitudes]
-    noise_shapes = noise_shapes if isinstance(noise_shapes, Iterable) else [noise_shapes]
+    noise_shapes = [noise_shapes] if isinstance(noise_shapes, str) else noise_shapes
 
     for frequency, amplitude, noise_shape in zip(frequencies, amplitudes, noise_shapes):
         if signal_sd is not None:
