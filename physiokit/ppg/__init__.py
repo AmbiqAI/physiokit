@@ -1,5 +1,6 @@
 """PPG module for PhysioKit"""
 from .clean import clean
+from .defines import PpgFiducial, PpgSegment
 from .metrics import (
     compute_heart_rate,
     compute_heart_rate_from_fft,

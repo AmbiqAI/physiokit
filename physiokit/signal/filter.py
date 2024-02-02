@@ -4,6 +4,7 @@ import os
 import numpy as np
 import numpy.typing as npt
 import scipy.interpolate as spi
+import scipy.ndimage as spn
 import scipy.signal as sps
 
 
@@ -189,36 +190,6 @@ def remove_baseline_wander(
     return sps.lfilter(b, a, data, axis=axis)
 
 
-def smooth_signal(
-    data: npt.NDArray,
-    window_length: int | None = None,
-    polyorder: int = 3,
-    sample_rate: float = 1000,
-    axis: int = -1,
-) -> npt.NDArray:
-    """Smooths signal using savitzky-golay filter
-
-    Args:
-        data (npt.NDArray): Signal
-        window_length (int | None, optional): Filter window length. Defaults to None.
-        polyorder (int, optional): Poly fit order. Defaults to 3.
-        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
-        axis (int, optional): Axis to filter along. Defaults to -1.
-
-    Returns:
-        npt.NDArray: Smoothed signal
-
-    """
-
-    if window_length is None:
-        window_length = sample_rate // 10
-
-    if window_length % 2 == 0 or window_length == 0:
-        window_length += 1
-
-    return sps.savgol_filter(data, window_length=window_length, polyorder=polyorder, axis=axis)
-
-
 def quotient_filter_mask(
     data: npt.NDArray, mask: npt.NDArray | None = None, iterations: int = 2, lowcut: float = 0.8, highcut: float = 1.2
 ) -> npt.NDArray:
@@ -258,3 +229,41 @@ def quotient_filter_mask(
     # END FOR
 
     return mask
+
+
+def moving_gradient_filter(
+    data: npt.NDArray,
+    sample_rate: float = 1000,
+    sig_window: float = 0.1,
+    avg_window: float = 1.0,
+    sig_prom_weight: float = 1.5,
+    mode: str = "nearest",
+    fval=0,
+) -> npt.NDArray:
+    """Compute moving gradient filter to identify peaks in stream of data.
+
+    Args:
+        data (array): Data stream.
+        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
+        sig_window (float, optional): Window size in seconds to compute signal gradient. Defaults to 0.1 s.
+        avg_window (float, optional): Window size in seconds to compute average gradient. Defaults to 1.0 s.
+        sig_prom_weight (float, optional): Weight to compute minimum signal height. Defaults to 1.5.
+
+    Returns:
+        array: Moving gradient filter.
+    """
+    # Compute gradient of signal and average.
+    abs_grad = np.abs(np.gradient(data))
+    sig_kernel = int(np.rint(sig_window * sample_rate))
+    avg_kernel = int(np.rint(avg_window * sample_rate))
+
+    # Smooth gradients
+    sig_grad = spn.uniform_filter1d(abs_grad, sig_kernel, mode=mode, cval=fval)
+    avg_grad = spn.uniform_filter1d(sig_grad, avg_kernel, mode=mode, cval=fval)
+
+    # Apply prominance weight
+    min_qrs_height = sig_prom_weight * avg_grad
+
+    # Remove baseline
+    rst = sig_grad - min_qrs_height
+    return rst

@@ -1,11 +1,12 @@
 from dataclasses import dataclass, field
-from enum import IntEnum, StrEnum
+from enum import StrEnum
 
 
-class EcgPresets(StrEnum):
-    """ECG synthetic presets"""
+class EcgPreset(StrEnum):
+    """ECG presets"""
 
     SR = "SR"
+    AFIB = "AFIB"
     ant_STEMI = "ant_STEMI"
     LAHB = "LAHB"
     LPHB = "LPHB"
@@ -14,50 +15,13 @@ class EcgPresets(StrEnum):
     random_morphology = "random_morphology"
 
 
-class SyntheticSegments(IntEnum):
-    """Synthetic Segment labels"""
-
-    background = 0
-    p_wave = 1
-    pr_interval = 2
-    qrs_complex = 3
-    st_segment = 4
-    t_wave = 5
-    tp_segment = 6
-    tp_overlap = 7
-    # Below not currently used
-    p_wave_biphasic = 16
-    qrs_complex_wide_rsr = 17
-    qrs_complex_wide = 18
-    qrs_complex_inv = 19
-    qrs_complex_wide_inv_rsr = 20
-    qrs_complex_wide_inv = 21
-    st_segment_upsloping = 22
-    st_segment_downsloping = 23
-    t_wave_inv = 24
-
-
-class SyntheticFiducials(IntEnum):
-    """Synthetic fiducials labels"""
-
-    p_wave = 8
-    q_wave = 9
-    q_trough = 10
-    r_peak = 11
-    rpr_peak = 12
-    s_trough = 13
-    j_point = 14
-    qt_segment = 15  # end
-    t_wave = 16  # end
-
-
 @dataclass
-class SyntheticParameters:
-    """Synthetic ECG parameters"""
+class EcgPresetParameters:
+    """ECG preset parameters"""
 
     # pylint: disable=R0902
     p_length: int = 80
-    pr_interval: int = 80
+    pr_interval: int = 80  # This is really PR segment
     qrs_duration: int = 50
     noisiness: float = 0
     st_length: int = 20

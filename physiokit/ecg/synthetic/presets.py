@@ -1,9 +1,9 @@
 import random
 
-from .defines import EcgPresets, SyntheticParameters
+from .defines import EcgPreset, EcgPresetParameters
 
 
-def _generate_lahb_parameters(parameters: SyntheticParameters) -> SyntheticParameters:
+def _generate_lahb_parameters(parameters: EcgPresetParameters) -> EcgPresetParameters:
     """Generate LAHB parameters
 
     Args:
@@ -44,7 +44,7 @@ def _generate_lahb_parameters(parameters: SyntheticParameters) -> SyntheticParam
     return parameters
 
 
-def _generate_lphb_parameters(parameters: SyntheticParameters) -> SyntheticParameters:
+def _generate_lphb_parameters(parameters: EcgPresetParameters) -> EcgPresetParameters:
     """Generate LPHB parameters
 
     Args:
@@ -76,7 +76,7 @@ def _generate_lphb_parameters(parameters: SyntheticParameters) -> SyntheticParam
     return parameters
 
 
-def _generate_htoff_parameters(parameters: SyntheticParameters) -> SyntheticParameters:
+def _generate_htoff_parameters(parameters: EcgPresetParameters) -> EcgPresetParameters:
     """Generate high take-off parameters
 
     Args:
@@ -92,7 +92,7 @@ def _generate_htoff_parameters(parameters: SyntheticParameters) -> SyntheticPara
     return parameters
 
 
-def _generate_lbbb_parameters(parameters: SyntheticParameters, rate: float) -> SyntheticParameters:
+def _generate_lbbb_parameters(parameters: EcgPresetParameters, rate: float) -> EcgPresetParameters:
     """Generate LBBB parameters
 
     Args:
@@ -209,7 +209,7 @@ def _generate_lbbb_parameters(parameters: SyntheticParameters, rate: float) -> S
     return parameters
 
 
-def _generate_ant_stemi_parameters(parameters: SyntheticParameters) -> SyntheticParameters:
+def _generate_ant_stemi_parameters(parameters: EcgPresetParameters) -> EcgPresetParameters:
     """Generate ANT STEMI parameters
 
     Args:
@@ -238,7 +238,7 @@ def _generate_ant_stemi_parameters(parameters: SyntheticParameters) -> Synthetic
     return parameters
 
 
-def _generate_rand_morph_parameters(parameters: SyntheticParameters) -> SyntheticParameters:
+def _generate_rand_morph_parameters(parameters: EcgPresetParameters) -> EcgPresetParameters:
     """Generate random morphology parameters
 
     Args:
@@ -280,7 +280,7 @@ def _generate_rand_morph_parameters(parameters: SyntheticParameters) -> Syntheti
     return parameters
 
 
-def generate_parameters(preset: EcgPresets, rate: float) -> SyntheticParameters:
+def generate_preset_parameters(preset: EcgPreset, rate: float) -> EcgPresetParameters:
     """Generate synthetic ECG parameters
 
     Args:
@@ -290,7 +290,7 @@ def generate_parameters(preset: EcgPresets, rate: float) -> SyntheticParameters:
     Returns:
         SyntheticParameters: parameters
     """
-    parameters = SyntheticParameters()
+    parameters = EcgPresetParameters()
     parameters.p_length = random.randint(80, 110)
     parameters.pr_interval = max(
         random.randint(80, 90),
@@ -341,16 +341,16 @@ def generate_parameters(preset: EcgPresets, rate: float) -> SyntheticParameters:
     parameters.t_heights = [random.randint(5, 30) * 0.1 for _ in range(12)]
     parameters.t_leans = [random.randint(5, 10) * -0.1] * 12
 
-    if preset == EcgPresets.LAHB:
+    if preset == EcgPreset.LAHB:
         parameters = _generate_lahb_parameters(parameters)
-    elif preset == EcgPresets.LPHB:
+    elif preset == EcgPreset.LPHB:
         parameters = _generate_lphb_parameters(parameters)
-    elif preset == EcgPresets.high_take_off:
+    elif preset == EcgPreset.high_take_off:
         parameters = _generate_htoff_parameters(parameters)
-    elif preset == EcgPresets.LBBB:
+    elif preset == EcgPreset.LBBB:
         parameters = _generate_lbbb_parameters(parameters, rate)
-    elif preset == EcgPresets.ant_STEMI:
+    elif preset == EcgPreset.ant_STEMI:
         parameters = _generate_ant_stemi_parameters(parameters)
-    elif preset == EcgPresets.random_morphology:
+    elif preset == EcgPreset.random_morphology:
         parameters = _generate_rand_morph_parameters(parameters)
     return parameters

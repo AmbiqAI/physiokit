@@ -1,9 +1,14 @@
 """Add various noise sources to signal."""
 import random
 
-import neurokit2 as nk
 import numpy as np
 import numpy.typing as npt
+
+from .distort import (
+    create_noise_artifacts,
+    create_noise_distortions,
+    create_powerline_noise,
+)
 
 
 def add_baseline_wander(
@@ -11,6 +16,7 @@ def add_baseline_wander(
     amplitude: float = 0.1,
     frequency: float = 0.05,
     sample_rate: float = 1000,
+    signal_sd: float | None = None,
 ) -> npt.NDArray:
     """Add baseline wander to signal.
 
@@ -19,19 +25,21 @@ def add_baseline_wander(
         amplitude (float, optional): Amplitude in st dev. Defaults to 0.1.
         frequency (float, optional): Baseline wander frequency. Defaults to 0.05 Hz.
         sample_rate (float, optional): Sample rate in Hz. Defaults to 1000 Hz.
+        signal_sd (float|None, optional): Signal standard deviation. Defaults to None.
 
     Returns:
         npt.NDArray: Signal w/ baseline wander
     """
-    # skew = np.linspace(0, random.uniform(0, 2) * np.pi, data.size)
-    # skew = np.sin(skew) * random.uniform(amplitude / 10, amplitude)
-    # return data + skew
-    return nk.signal_distort(
-        data,
-        sampling_rate=sample_rate,
-        noise_amplitude=amplitude,
-        noise_frequency=frequency,
-        silent=True,
+    if signal_sd is None:
+        signal_sd = np.nanstd(data)
+
+    return data + create_noise_distortions(
+        len(data),
+        signal_sd=signal_sd,
+        sample_rate=sample_rate,
+        frequencies=frequency,
+        amplitudes=amplitude,
+        noise_shapes="laplace",
     )
 
 
@@ -40,6 +48,7 @@ def add_motion_noise(
     amplitude: float = 0.2,
     frequency: float = 0.5,
     sample_rate: float = 1000,
+    signal_sd: float | None = None,
 ) -> npt.NDArray:
     """Add motion noise to signal.
 
@@ -48,16 +57,21 @@ def add_motion_noise(
         amplitude (float, optional): Amplitude in st dev. Defaults to 0.2.
         frequency (float, optional): Motion frequency in Hz. Defaults to 0.5 Hz.
         sample_rate (float, optional): Sample rate in Hz. Defaults to 1000 Hz.
+        signal_sd (float|None, optional): Signal standard deviation. Defaults to None.
 
     Returns:
         npt.NDArray: Signal w/ motion noise
     """
-    return nk.signal_distort(
-        data,
-        sampling_rate=sample_rate,
-        noise_amplitude=amplitude,
-        noise_frequency=frequency,
-        silent=True,
+    if signal_sd is None:
+        signal_sd = np.nanstd(data)
+
+    return data + create_noise_distortions(
+        len(data),
+        signal_sd=signal_sd,
+        sample_rate=sample_rate,
+        frequencies=frequency,
+        amplitudes=amplitude,
+        noise_shapes="laplace",
     )
 
 
@@ -65,8 +79,9 @@ def add_burst_noise(
     data: npt.NDArray,
     amplitude: float = 1,
     frequency: float = 100,
-    burst_number: int = 1,
+    num_bursts: int = 1,
     sample_rate: float = 1000,
+    signal_sd: float | None = None,
 ) -> npt.NDArray:
     """Add high frequency burst noise to signal.
 
@@ -74,19 +89,26 @@ def add_burst_noise(
         data (npt.NDArray): Signal
         amplitude (float, optional): Amplitude in st dev. Defaults to 1.
         frequency (float, optional): High frequency burst in Hz. Defaults to 100 Hz.
-        burst_number (int, optional): # bursts to inject. Defaults to 1.
+        num_bursts (int, optional): # bursts to inject. Defaults to 1.
         sample_rate (float, optional): Sample rate in Hz. Defaults to 1000 Hz.
+        signal_sd (float|None, optional): Signal standard deviation. Defaults to None.
 
     Returns:
         npt.NDArray: Signal w/ burst noise
     """
-    return nk.signal_distort(
-        data,
-        sampling_rate=sample_rate,
-        artifacts_amplitude=amplitude,
-        artifacts_frequency=frequency,
-        artifacts_number=burst_number,
-        silent=True,
+
+    if signal_sd is None:
+        signal_sd = np.nanstd(data)
+    return data + create_noise_artifacts(
+        len(data),
+        signal_sd=signal_sd,
+        sample_rate=sample_rate,
+        frequency=frequency,
+        amplitude=amplitude,
+        num_artifacts=num_bursts,
+        min_artifact_percent=0.001,
+        max_artifact_percent=0.01,
+        artifacts_shape="laplace",
     )
 
 
@@ -95,6 +117,7 @@ def add_powerline_noise(
     amplitude: float = 0.01,
     frequency: float = 50,
     sample_rate: float = 1000,
+    signal_sd: float | None = None,
 ) -> npt.NDArray:
     """Add powerline noise to signal.
 
@@ -103,16 +126,17 @@ def add_powerline_noise(
         amplitude (float, optional): Amplitude in st dev. Defaults to 0.01.
         frequency (float, optional): Powerline frequency in Hz. Defaults to 50 Hz.
         sample_rate (float, optional): Sample rate in Hz. Defaults to 1000 Hz.
+        signal_sd (float|None, optional): Signal standard deviation. Defaults to None.
 
     Returns:
         npt.NDArray: Signal w/ powerline noise
     """
-    return nk.signal_distort(
-        data,
-        sampling_rate=sample_rate,
-        powerline_amplitude=amplitude,
-        powerline_frequency=frequency,
-        silent=True,
+    return data + create_powerline_noise(
+        len(data),
+        signal_sd=signal_sd,
+        sample_rate=sample_rate,
+        frequency=frequency,
+        amplitude=amplitude,
     )
 
 
@@ -120,7 +144,9 @@ def add_noise_sources(
     data: npt.NDArray,
     amplitudes: list[float],
     frequencies: list[float],
+    noise_shapes: list[str],
     sample_rate: float = 1000,
+    signal_sd: float | None = None,
 ) -> npt.NDArray:
     """Add multiple noise sources to signal.
 
@@ -128,13 +154,23 @@ def add_noise_sources(
         data (npt.NDArray): Signal
         amplitudes (list[float]): Amplitudes in st dev.
         frequencies (list[float]): Frequencies in Hz.
+        noise_shapes (list[str]): Noise shapes.
         sample_rate (float, optional): Sample rate in Hz. Defaults to 1000 Hz.
+        signal_sd (float|None, optional): Signal standard deviation. Defaults to None.
 
     Returns:
         npt.NDArray: Signal w/ noise
     """
-    return nk.signal_distort(
-        data, sampling_rate=sample_rate, noise_amplitude=amplitudes, noise_frequency=frequencies, silent=True
+    if signal_sd is None:
+        signal_sd = np.nanstd(data)
+
+    return data + create_noise_distortions(
+        len(data),
+        signal_sd=signal_sd,
+        sample_rate=sample_rate,
+        frequencies=frequencies,
+        amplitudes=amplitudes,
+        noise_shapes=noise_shapes,
     )
 
 
@@ -193,6 +229,9 @@ def add_signal_cutout():
     raise NotImplementedError()
 
 
-def add_signal_shift():
+def add_signal_shift(data: npt.NDArray, shift_amount: float = 0.1):
     """Add signal shift augmentation to signal."""
-    raise NotImplementedError()
+    shift_idx = random.randint(0, data.size)
+    rst = data.copy()
+    rst[shift_idx:] += shift_amount
+    return rst

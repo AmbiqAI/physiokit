@@ -1,5 +1,6 @@
 """Respiratory signal module for PhysioKit."""
 from .clean import clean
+from .defines import RspFiducial, RspSegment
 from .metrics import (
     compute_dual_band_metrics,
     compute_respiratory_rate,

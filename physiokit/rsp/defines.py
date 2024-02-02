@@ -1,4 +1,20 @@
 from dataclasses import dataclass
+from enum import IntEnum
+
+
+class RspSegment(IntEnum):
+    """RSP Segment labels"""
+
+    background = 0
+    inhale = 1
+    exhale = 2
+
+
+class RspFiducial(IntEnum):
+    """RSP fiducials labels"""
+
+    inhale_peak = 1
+    exhale_trough = 2
 
 
 # pylint: disable=too-many-instance-attributes

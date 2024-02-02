@@ -8,19 +8,22 @@ PhysioKit provides a simple way to generate synthetic ECG signals using the `ecg
 
 
 ???+ example
-    In the following snippet, we generate a synthetic ECG signal with a heart rate of 64 BPM sampled at 1000 Hz.
+    In the following snippet, we generate a synthetic ECG signal with a heart rate of 64 BPM sampled at 1000 Hz. This routine also returns segmenation and fiducial mask of landmark features (e.g P-wave).
 
     ```python
     import physiokit as pk
 
-    fs = 1000 # Hz
-    tgt_hr = 64 # BPM
+    sample_rate = 1000 # Hz
+    heart_rate = 64 # BPM
+    signal_length = 8*sample_rate # 8 seconds
 
-    ecg = pk.ecg.synthesize(
-        duration=10, # in seconds
-        sample_rate=fs,
-        heart_rate=tgt_hr,
-        leads=1 # number of ECG leads
+    ecg, segs, fids = pk.ecg.synthesize(
+        signal_length=signal_length,
+        sample_rate=sample_rate,
+        heart_rate=heart_rate,
+        leads=1,
+        preset=pk.ecg.EcgPreset.SR,
+        noise_multiplier=0.1
     )
     ```
 
@@ -42,9 +45,9 @@ Often real world ECG signals are corrupted by a variaty of noise sources. To gen
     # Add baseline wander
     ecg = pk.signal.add_baseline_wander(
         data=ecg,
-        amplitude=2,
+        amplitude=1,
         frequency=1,
-        sample_rate=fs
+        sample_rate=sample_rate
     )
 
     # Add powerline noise
@@ -52,7 +55,7 @@ Often real world ECG signals are corrupted by a variaty of noise sources. To gen
         data=ecg,
         amplitude=0.05,
         frequency=60,
-        sample_rate=fs
+        sample_rate=sample_rate
     )
 
     # Add additional noise sources
@@ -60,8 +63,14 @@ Often real world ECG signals are corrupted by a variaty of noise sources. To gen
         data=ecg,
         amplitudes=[0.05, 0.05],
         frequencies=[60, 80],
-        sample_rate=fs
+        noise_shapes=['laplace', 'laplace']
+        sample_rate=sample_rate
     )
+    ecg = pk.signal.add_lead_noise(
+        data=ecg,
+        scale=5e-2
+    )
+
     ```
 
     <div class="sk-plotly-graph-div">
@@ -84,10 +93,10 @@ As mentioned above, ECG signals are often corrupted by noise and artifacts. The 
     # Using ECG signal from above ^
     ecg_clean = pk.ecg.clean(
         data=ecg,
-        lowcut=2,
+        lowcut=1,
         highcut=30,
         order=5,
-        sample_rate=fs
+        sample_rate=sample_rate
     )
     ```
 
@@ -109,14 +118,14 @@ A common task in ECG processing is to extract R-peaks and RR-intervals. The `ecg
     ...
 
     # Extract R-peaks
-    peaks = pk.ecg.find_peaks(data=ecg_clean, sample_rate=fs)
+    peaks = pk.ecg.find_peaks(data=ecg_clean, sample_rate=sample_rate)
 
     # Compute RR-intervals
     rri = pk.ecg.compute_rr_intervals(peaks=peaks)
 
     # Identify abnormal RR-intervals (e.g., ectopic beats)
     # Mask is a boolean array where 0 indicates a normal RR-interval
-    mask = pk.ecg.filter_rr_intervals(rr_ints=rri, sample_rate=fs)
+    mask = pk.ecg.filter_rr_intervals(rr_ints=rri, sample_rate=sample_rate)
 
     # Keep normal RR-intervals
     peaks_clean = peaks[mask == 0]
@@ -140,7 +149,7 @@ The `ecg.compute_heart_rate` function computes the heart rate based on the selec
     hr_bpm, hr_qos = pk.ecg.compute_heart_rate(
         ecg_clean,
         method="peak",
-        sample_rate=fs
+        sample_rate=sample_rate
     )
     ```
 
@@ -171,7 +180,7 @@ Respiratory sinus arrhythmia (RSA) is a phenomenon where the heart rate varies w
         peaks=peaks[mask == 0],
         rri=rri[mask == 0],
         method="rifv",
-        sample_rate=fs
+        sample_rate=sample_rate
     )
     ```
     __OUTPUT__: <br>
@@ -191,22 +200,20 @@ PhysioKit provides a more customizable way to generate synthetic ECG signals. Th
 
     ```python
 
-    tgt_hr = 64 # BPM
-    fs = 1000
-    duration = 10
+    heart_rate = 64 # BPM
+    sample_rate = 1000 # Hz
+    signal_length = 10*sample_rate # 10 seconds
 
     # Generate NSR synthetic ECG signal
-    ecg_ts, ecg_sig, ecg_segs, ecg_fids, ecg_params = pk.ecg.generate_nsr(
+    ecg, segs, fids = pk.ecg.synthesize(
+        signal_length=signal_length,
+        sample_rate=sample_rate,
+        heart_rate=heart_rate,
         leads=1,
-        signal_frequency=fs,
-        rate=tgt_hr,
-        preset="SR",
-        noise_multiplier=0.7,
-        impedance=1,
+        preset=pk.ecg.EcgPreset.SR,
         p_multiplier=1.5,
         t_multiplier=1.2,
-        duration=duration,
-        voltage_factor=10
+        noise_multiplier=0.2
     )
 
     ```
@@ -221,22 +228,20 @@ PhysioKit provides a more customizable way to generate synthetic ECG signals. Th
 
     ```python
 
-    tgt_hr = 64 # BPM
-    fs = 1000
-    duration = 10
+    heart_rate = 64 # BPM
+    sample_rate = 1000 # Hz
+    signal_length = 10*sample_rate # 10 seconds
 
     # Generate NSR synthetic ECG signal
-    ecg_ts, ecg_sig, ecg_segs, ecg_fids, ecg_params = pk.ecg.generate_nsr(
+    ecg, segs, fids = pk.ecg.synthesize(
+        signal_length=signal_length,
+        sample_rate=sample_rate,
+        heart_rate=heart_rate,
         leads=1,
-        signal_frequency=fs,
-        rate=tgt_hr,
-        preset="SR",
-        noise_multiplier=0.7,
-        impedance=1,
+        preset=pk.ecg.EcgPreset.AFIB,
         p_multiplier=1.5,
         t_multiplier=1.2,
-        duration=duration,
-        voltage_factor=10
+        noise_multiplier=0.2
     )
 
     ```
