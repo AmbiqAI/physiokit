@@ -13,13 +13,16 @@ We can generate a synthetic PPG signal using the `ppg.synthesize` function. The 
     ```python
     import physiokit as pk
 
-    fs = 1000  # Hz
-    tgt_hr = 64  # BPM
+    sample_rate = 1000  # Hz
+    heart_rate = 64  # BPM
+    signal_length = 10*sample_rate # 10 seconds
 
-    ppg = pk.ppg.synthesize(
-        duration=10,  # in seconds
-        sample_rate=fs,
-        heart_rate=tgt_hr,
+    ppg, segs, fids = pk.ppg.synthesize(
+        signal_length=signal_length,
+        sample_rate=sample_rate,
+        heart_rate=heart_rate,
+        frequency_modulation=0.3,
+        ibi_randomness=0.1
     )
     ```
 
@@ -41,9 +44,9 @@ We can additionally add noise to generate a more realistic PPG signal.
     # Add baseline wander
     ppg_noise = pk.signal.add_baseline_wander(
         data=ppg,
-        amplitude=2,
-        frequency=1,
-        sample_rate=fs
+        amplitude=1,
+        frequency=0.5,
+        sample_rate=sample_rate
     )
 
     # Add powerline noise
@@ -51,7 +54,7 @@ We can additionally add noise to generate a more realistic PPG signal.
         data=ppg_noise,
         amplitude=0.05,
         frequency=60,
-        sample_rate=fs
+        sample_rate=sample_rate
     )
 
     # Add additional noise sources
@@ -59,7 +62,8 @@ We can additionally add noise to generate a more realistic PPG signal.
         data=ppg_noise,
         amplitudes=[0.05, 0.05],
         frequencies=[10, 20],
-        sample_rate=fs
+        noise_shapes=["laplace", "laplace"],
+        sample_rate=sample_rate
     )
     ```
 
@@ -86,7 +90,7 @@ PPG signals are often corrupted by noise. The `ppg.clean` function provides a si
         lowcut=0.5,
         highcut=4,
         order=3,
-        sample_rate=fs
+        sample_rate=sample_rate
     )
     ```
 
@@ -108,14 +112,14 @@ A common task in PPG processing is to extract systolic peaks and peak-to-peak in
     ...
 
     # Extract s-peaks
-    peaks = pk.ppg.find_peaks(data=ppg_clean, sample_rate=fs)
+    peaks = pk.ppg.find_peaks(data=ppg_clean, sample_rate=sample_rate)
 
     # Compute peak-to-peak intervals
     rri = pk.ppg.compute_rr_intervals(peaks=peaks)
 
     # Identify abnormal RR-intervals (e.g., ectopic beats)
     # Mask is a boolean array where 0 indicates a normal RR-interval
-    mask = pk.ppg.filter_rr_intervals(rr_ints=rri, sample_rate=fs)
+    mask = pk.ppg.filter_rr_intervals(rr_ints=rri, sample_rate=sample_rate)
 
     # Keep normal RR-intervals
     peaks_clean = peaks[mask == 0]
@@ -141,7 +145,7 @@ The `ppg.compute_heart_rate` function computes the heart rate based on the selec
     hr_bpm, hr_qos = pk.ppg.compute_heart_rate(
         ppg_clean,
         method="fft",
-        sample_rate=fs
+        sample_rate=sample_rate
     )
     ```
 
@@ -174,7 +178,7 @@ Respiratory sinus arrhythmia (RSA) is a phenomenon where the heart rate varies w
         peaks=peaks[mask == 0],
         rri=rri[mask == 0],
         method="rifv",
-        sample_rate=fs
+        sample_rate=sample_rate
     )
     ```
     __OUTPUT__: <br>
@@ -209,7 +213,7 @@ Using two PPG signals with different wavelengths, we can compute the oxygen satu
         coefs=max8614x_coefs,
         lowcut=0.5,
         highcut=4,
-        sample_rate=fs
+        sample_rate=sample_rate
     )
 
     # Compute SpO2 in frequency domain
@@ -219,7 +223,7 @@ Using two PPG signals with different wavelengths, we can compute the oxygen satu
         coefs=max8614x_coefs,
         lowcut=0.5,
         highcut=4,
-        sample_rate=fs
+        sample_rate=sample_rate
     )
     ```
     __OUTPUT__: <br>

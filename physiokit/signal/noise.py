@@ -48,6 +48,7 @@ def add_motion_noise(
     amplitude: float = 0.2,
     frequency: float = 0.5,
     sample_rate: float = 1000,
+    signal_sd: float | None = None,
 ) -> npt.NDArray:
     """Add motion noise to signal.
 

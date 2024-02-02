@@ -15,7 +15,7 @@ def synthesize(
     """Generate synthetic PPG signal. Utilize pk.signal.noise methods to make more realistic.
 
     Args:
-        duration (float, optional): Duration in seconds. Defaults to 10.
+        signal_length (int, optional): Length of signal in samples. Defaults to 10000.
         sample_rate (float, optional): Sample rate in Hz. Defaults to 1000 Hz.
         heart_rate (float, optional): Heart rate in BPM. Defaults to 60 BPM.
         frequency_modulation (float, optional): Frequency modulation strength [0,1]. Defaults to 0.3.

@@ -12,14 +12,13 @@ We can generate a synthetic RSP signal using the `rsp.synthesize` function. The 
     ```python
     import physiokit as pk
 
-    fs = 1000 # Hz
-    tgt_rr = 12 # BPM
+    sample_rate = 1000 # Hz
+    respiratory_rate = 12 # BPM
 
-    rsp = pk.rsp.synthesize(
-        duration=10,
-        sample_rate=fs,
-        respiratory_rate=tgt_rr,
-        amplitude=1
+    rsp, segs, fids = pk.rsp.synthesize(
+        signal_length=signal_length,
+        sample_rate=sample_rate,
+        respiratory_rate=respiratory_rate,
     )
     ```
 
@@ -43,7 +42,7 @@ We can additionally add noise to generate a more realistic RSP signal.
         data=rsp,
         amplitude=2,
         frequency=.05,
-        sample_rate=fs
+        sample_rate=sample_rate
     )
 
     # Add powerline noise
@@ -51,7 +50,7 @@ We can additionally add noise to generate a more realistic RSP signal.
         data=rsp_noise,
         amplitude=0.05,
         frequency=60,
-        sample_rate=fs
+        sample_rate=sample_rate
     )
 
     # Add additional noise sources
@@ -59,7 +58,8 @@ We can additionally add noise to generate a more realistic RSP signal.
         data=rsp_noise,
         amplitudes=[0.05, 0.05],
         frequencies=[10, 20],
-        sample_rate=fs
+        noise_shapes=["laplace", "laplace"],
+        sample_rate=sample_rate
     )
     ```
 
@@ -86,7 +86,7 @@ We can clean the RSP signal using the `rsp.clean` function. By default, the rout
         lowcut=0.05,
         highcut=3,
         order=3,
-        sample_rate=fs
+        sample_rate=sample_rate
     )
     ```
 
@@ -106,13 +106,13 @@ A common task in RSP processing is to extract respiratory peaks. The `rsp.find_p
     ...
 
     # Extract respiratory cycles
-    peaks = pk.rsp.find_peaks(data=rsp_clean, sample_rate=fs)
+    peaks = pk.rsp.find_peaks(data=rsp_clean, sample_rate=sample_rate)
 
     # Compute RR-intervals
     rri = pk.rsp.compute_rr_intervals(peaks=peaks)
 
     # Filter RR-intervals
-    mask = pk.rsp.filter_rr_intervals(rr_ints=rri, sample_rate=fs)
+    mask = pk.rsp.filter_rr_intervals(rr_ints=rri, sample_rate=sample_rate)
 
     # Keep normal RR-intervals
     peaks_clean = peaks[mask == 0]
@@ -138,7 +138,7 @@ The `rsp.compute_respiratory_rate` function computes the respiratory rate in bre
     rr_bpm, rr_qos = pk.rsp.compute_respiratory_rate(
         data=rsp_clean,
         method="fft",
-        sample_rate=fs,
+        sample_rate=sample_rate,
         lowcut=0.05,
         highcut=1
     )
@@ -174,24 +174,24 @@ Using dual RIP bands, a ribcage (RC) band and a abdominal (AB) band, we can comp
     In the following example, we generate synthetic RC and AB band data, compute the dual band metrics, and plot the results. We compute the metrics over a sliding window with a length of 10 seconds and an overlap of 1 second.
 
     ```python
-    fs = 1000
-    tgt_rr = 12.2
+    sample_rate = 1000
+    respiratory_rate = 12.2
     rc_amp = 1.5
     ab_amp = 1.0
     dur_sec = 60
-    win_len = 10*fs
-    ovl_len = 1*fs
+    win_len = 10*sample_rate
+    ovl_len = 1*sample_rate
 
     # Synthesize RC and AB band data
     rc = rc_amp*pk.rsp.synthesize(
         duration=dur_sec,
-        sample_rate=fs,
-        respiratory_rate=tgt_rr
+        sample_rate=sample_rate,
+        respiratory_rate=respiratory_rate
     )
     ab = ab_amp*pk.rsp.synthesize(
         duration=dur_sec,
-        sample_rate=fs,
-        respiratory_rate=tgt_rr
+        sample_rate=sample_rate,
+        respiratory_rate=respiratory_rate
     )
 
     # Compute metrics over sliding window
@@ -199,11 +199,11 @@ Using dual RIP bands, a ribcage (RC) band and a abdominal (AB) band, we can comp
     for i in range(0, rc.size - win_len, ovl_len):
         rc_win = rc[i:i+win_len]
         ab_win = ab[i:i+win_len]
-        ts_metrics.append((i+win_len/2)/fs)
+        ts_metrics.append((i+win_len/2)/sample_rate)
         dual_metrics.append(pk.rsp.compute_dual_band_metrics(
             rc=rc_win,
             ab=ab_win,
-            sample_rate=fs,
+            sample_rate=sample_rate,
             pwr_threshold=0.9
         ))
 

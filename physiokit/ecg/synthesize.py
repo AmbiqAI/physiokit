@@ -67,9 +67,9 @@ def simulate_daubechies(signal_length: int = 10000, sample_rate: float = 1000, h
     This function is based on `this script <https://github.com/diarmaidocualain/ecg_simulation>`_.
 
     Args:
-        duration (float): Duration of the ECG in seconds.
-        length (int): Number of samples.
-        heart_rate (int, optional): Heart rate in BPM. Defaults to 70 BPM.
+        signal_length (int, optional): Length of the ECG signal. Defaults to 10000.
+        sample_rate (float, optional): ECG sampling frequency. Defaults to 1000.
+        heart_rate (float, optional): Heart rate in BPM. Defaults to 70.
 
     Returns:
         npt.NDArray: Synthetic ECG signal
