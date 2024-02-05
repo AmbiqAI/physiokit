@@ -37,6 +37,7 @@ def simulate_brisk(
     t_multiplier: float = 1.0,
     noise_multiplier: float = 1.0,
     voltage_factor: float = 300,
+    parameters: EcgPresetParameters|None = None,
 ) -> tuple[npt.NDArray, npt.NDArray, npt.NDArray, npt.NDArray, EcgPresetParameters]:
     """Generate synthetic ECG signals via WaSP-ECG
 
@@ -51,6 +52,7 @@ def simulate_brisk(
         t_multiplier (float, optional): T wave width multiplier. Defaults to 1.0.
         noise_multiplier (float, optional): Noise multiplier. Defaults to 1.0.
         voltage_factor (float, optional): Voltage factor. Defaults to 300.
+        parameters (EcgPresetParameters, optional): Preset parameters. Defaults to None.
 
     Returns:
         tuple[npt.NDArray, npt.NDArray, npt.NDArray, npt.NDArray, SyntheticParameters]: x, y, segs, fids, params
@@ -72,7 +74,8 @@ def simulate_brisk(
     Y_segs = np.zeros((leads, sizer))
     Y_fids = np.zeros((leads, sizer))
 
-    parameters = presets.generate_preset_parameters(preset, heart_rate)
+    if parameters is None:
+        parameters = presets.generate_preset_parameters(preset, heart_rate)
 
     for h in range(leads):
         x = np.linspace(0, sizer, sizer)
