@@ -40,11 +40,12 @@ Currently, the package is available on PyPI as a universal wheel for Python 3.11
 
     # Generate synthetic ECG signal
     ecg, segs, fids = pk.ecg.synthesize(
-        duration=10,
+        signal_length=signal_length,
         sample_rate=sample_rate,
         heart_rate=heart_rate,
         leads=1
     )
+    ecg = ecg.squeeze()
 
     # Clean ECG signal
     ecg_clean = pk.ecg.clean(ecg, sample_rate=sample_rate)

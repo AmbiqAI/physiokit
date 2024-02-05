@@ -10,6 +10,7 @@ def clean(
     sample_rate: float = 1000,
     order: int = 3,
     axis: int = -1,
+    forward_backward: bool = True,
 ) -> npt.NDArray:
     """Clean PPG signal using biquad filter.
 
@@ -22,6 +23,7 @@ def clean(
         sample_rate (float, optional): Sample rate in Hz. Defaults to 1000 Hz.
         order (int, optional): Filter order. Defaults to 3 (3rd order Butterworth filter).
         axis (int, optional): Axis to apply against. Defaults to -1.
+        forward_backward (bool, optional): Apply filter forward and backward. Defaults to True.
 
     Returns:
         npt.NDArray: Cleaned signal
@@ -33,6 +35,6 @@ def clean(
         highcut=highcut,
         sample_rate=sample_rate,
         order=order,
-        forward_backward=True,
         axis=axis,
+        forward_backward=forward_backward,
     )

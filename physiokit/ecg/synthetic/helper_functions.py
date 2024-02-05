@@ -67,13 +67,20 @@ def smooth_and_noise(
     y = y * (1 / impedance)
 
     # Generate baseline noise
-    n = np.zeros((y.size,), dtype=complex)
-    n[40:100] = np.exp(1j * np.random.uniform(0, np.pi * 2, (60,)))
-    atrial_fibrillation_noise = np.fft.ifft(n)
-    atrial_fibrillation_noise = savgol_filter(atrial_fibrillation_noise, 31, 2)
-    atrial_fibrillation_noise = atrial_fibrillation_noise[: y.size] * random.uniform(0.01, 0.1)
-    y = y + (atrial_fibrillation_noise * random.uniform(0, 1.3) * noise_multiplier)
+    if noise_multiplier > 0:
+        n = np.zeros((y.size,), dtype=complex)
+        n[40:100] = np.exp(1j * np.random.uniform(0, np.pi * 2, (60,)))
+        atrial_fibrillation_noise = np.fft.ifft(n)
+        atrial_fibrillation_noise = savgol_filter(atrial_fibrillation_noise, 31, 2)
+        atrial_fibrillation_noise = atrial_fibrillation_noise[: y.size] * random.uniform(0.01, 0.1)
+        y = y + (atrial_fibrillation_noise * random.uniform(0, 1.3) * noise_multiplier)
+    # END IF
+
+    # Smooth signal
     y = savgol_filter(y, 31, 2)
+
+    if noise_multiplier <= 0:
+        return y
 
     # Generate random electrical noise from leads
     lead_noise = np.random.normal(0, 1 * 10**-5, y.size)
@@ -88,8 +95,11 @@ def smooth_and_noise(
     # Combine lead and EMG noise, add to ECG
     noise = (emg_noise + lead_noise) * noise_multiplier
 
+    # Add EMG and lead noise to ECG
+    y += noise
+
     # Randomly vary global amplitude
-    y = (y + noise) * random.uniform(0.5, 3)
+    y = y * random.uniform(0.5, 3)
 
     # Add baseline wandering
     skew = np.linspace(0, random.uniform(0, 2) * np.pi, y.size)
