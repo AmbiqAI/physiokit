@@ -186,7 +186,7 @@ def add_emg_noise(data: npt.NDArray, scale: float = 1e-5, sample_rate: float = 1
         npt.NDArray: Signal with EMG noise
     """
     noise = np.tile(
-        np.sin(np.linspace(-0.5 * np.pi, 1.5 * np.pi, int(sample_rate)) * 10*sample_rate),
+        np.sin(np.linspace(-0.5 * np.pi, 1.5 * np.pi, int(sample_rate)) * 10 * sample_rate),
         int(np.ceil(data.size // sample_rate)),
     )
     return data + scale * noise[: data.size]
