@@ -55,6 +55,8 @@ theme:
         icon: material/brightness-4
         name: Switch to dark theme
   features:
+    - content.code.annotate
+    - content.code.copy
     - content.tabs.link
 
 plugins:

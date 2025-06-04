@@ -32,22 +32,28 @@ The `hrv.compute_hrv_time` function computes time-domain HRV metrics based on th
     In the following snippet, we generate a synthetic ECG signal, extract its r peaks and RR intervals, and finally compute time-domain HRV metrics.
 
     ```python
+    import numpy as np
+    import physiokit as pk
+
     tgt_hr = 64 # BPM
+    fs = 1000 # Hz
+    signal_length = 8 * fs # 8 seconds
 
     # Generate synthetic ECG signal
-    ecg = pk.ecg.synthesize(
-        duration=8,
+    ecg, segs, fids = pk.ecg.synthesize(
+        signal_length=signal_length,
         sample_rate=fs,
         heart_rate=tgt_hr,
         leads=1
     )
+    ecg = ecg.squeeze()
 
     # Create timestamps
     ts = np.arange(0, ecg.size) / fs
 
     # Clean ECG signal
     ecg_clean = pk.ecg.clean(
-        data=ecg_noise,
+        data=ecg,
         lowcut=2,
         highcut=30,
         order=5,

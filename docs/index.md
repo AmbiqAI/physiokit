@@ -47,18 +47,18 @@ title:
 
 ## Requirements
 
-* [Python 3.11+](https://www.python.org)
+* [Python 3.10+](https://www.python.org)
 
 ## Installation
 
-Installing PhysioKit can be done using `Poetry` or `pip`.
+Installing PhysioKit can be done using `uv` or `pip`.
 
-=== "via Poetry"
+=== "via uv"
 
     <div class="termy">
 
     ```console
-    $ poetry add physiokit
+    $ uv add physiokit
 
     ---> 100%
     ```
@@ -81,6 +81,7 @@ In this example, we will generate a synthetic ECG signal, clean it, and compute 
 
 ```python
 
+import numpy as np
 import physiokit as pk
 
 sample_rate = 1000 # Hz

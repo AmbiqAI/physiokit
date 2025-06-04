@@ -14,6 +14,7 @@ We can generate a synthetic RSP signal using the `rsp.synthesize` function. The 
 
     sample_rate = 1000 # Hz
     respiratory_rate = 12 # BPM
+    signal_length = 10 * sample_rate # 10 seconds
 
     rsp, segs, fids = pk.rsp.synthesize(
         signal_length=signal_length,
@@ -183,16 +184,19 @@ Using dual RIP bands, a ribcage (RC) band and a abdominal (AB) band, we can comp
     ovl_len = 1*sample_rate
 
     # Synthesize RC and AB band data
-    rc = rc_amp*pk.rsp.synthesize(
-        duration=dur_sec,
+    rc, segs, fids = pk.rsp.synthesize(
+        signal_length=dur_sec*sample_rate,
         sample_rate=sample_rate,
         respiratory_rate=respiratory_rate
     )
-    ab = ab_amp*pk.rsp.synthesize(
-        duration=dur_sec,
+    rc = rc * rc_amp
+
+    ab, segs, fids = pk.rsp.synthesize(
+        signal_length=dur_sec*sample_rate,
         sample_rate=sample_rate,
         respiratory_rate=respiratory_rate
     )
+    ab = ab * ab_amp
 
     # Compute metrics over sliding window
     ts_metrics, dual_metrics = [], []

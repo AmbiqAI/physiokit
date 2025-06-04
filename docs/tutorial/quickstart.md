@@ -2,14 +2,14 @@
 
 ## Installation
 
-Currently, the package is available on PyPI as a universal wheel for Python 3.11+. Installing PhysioKit can be done using `Poetry` or `pip`.
+Currently, the package is available on PyPI as a universal wheel for Python 3.11+. Installing PhysioKit can be done using `uv` or `pip`.
 
-=== "via Poetry"
+=== "via uv"
 
     <div class="termy">
 
     ```console
-    $ poetry add physiokit
+    $ uv add physiokit
 
     ---> 100%
     ```

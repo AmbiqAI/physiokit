@@ -11,6 +11,7 @@ PhysioKit provides a simple way to generate synthetic ECG signals using the `ecg
     In the following snippet, we generate a synthetic ECG signal with a heart rate of 64 BPM sampled at 1000 Hz. This routine also returns segmenation and fiducial mask of landmark features (e.g P-wave).
 
     ```python
+    import numpy as np
     import physiokit as pk
 
     sample_rate = 1000 # Hz
@@ -63,7 +64,7 @@ Often real world ECG signals are corrupted by a variaty of noise sources. To gen
         data=ecg,
         amplitudes=[0.05, 0.05],
         frequencies=[60, 80],
-        noise_shapes=['laplace', 'laplace']
+        noise_shapes=['laplace', 'laplace'],
         sample_rate=sample_rate
     )
     ecg = pk.signal.add_lead_noise(
@@ -118,6 +119,7 @@ A common task in ECG processing is to extract R-peaks and RR-intervals. The `ecg
     ...
 
     # Extract R-peaks
+    ecg_clean = ecg_clean.squeeze()
     peaks = pk.ecg.find_peaks(data=ecg_clean, sample_rate=sample_rate)
 
     # Compute RR-intervals
