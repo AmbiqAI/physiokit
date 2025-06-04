@@ -1,4 +1,5 @@
 """Add various noise sources to signal."""
+
 import random
 
 import numpy as np

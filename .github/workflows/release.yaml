@@ -1,38 +1,44 @@
-name: Release
+name: Release to PyPi
+
 on:
   release:
     types:
       - created
+  workflow_dispatch:
 
 jobs:
-  build-n-publish:
-    name: Publish Docs
-    environment: production
-    concurrency: ci-${{ github.ref }}
+  build:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+            enable-cache: true
+      - name: Install and Build 🔧
+        run: |
+          uv build
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+  publish:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    environment:
+      name: pypi
+      url: https://pypi.org/p/physiokit
     permissions:
-      contents: write
       id-token: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Install Poetry
-        run: pipx install poetry
-      - name: Install Python
-        uses: actions/setup-python@v4
+      - name: Download all the dists
+        uses: actions/download-artifact@v4
         with:
-          python-version: '3.12'
-          cache: 'poetry'
-      - name: Install Dependencies
-        run: |
-          poetry install --with docs --without dev
-          poetry build
-      - name: Build Docs
-        run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          git config --global user.email "adam.page@ambiq.com"
-          git remote rm origin
-          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          poetry run mkdocs gh-deploy --config-file "${GITHUB_WORKSPACE}/mkdocs.yml" --force
-      - name: Publish package
+          name: python-package-distributions
+          path: dist/
+      - name: Publish to PyPI 📦
         uses: pypa/gh-action-pypi-publish@release/v1

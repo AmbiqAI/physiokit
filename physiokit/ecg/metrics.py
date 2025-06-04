@@ -112,3 +112,33 @@ def derive_respiratory_rate(
     qos = tgt_pwr / np.mean(rsp_ps)
 
     return rsp_bpm, qos
+
+
+def compute_pulse_arrival_time(ecg: npt.NDArray, ppg: npt.NDArray, sample_rate: float, min_delay: int = 0.1) -> float:
+    """Compute pulse arrival time from ECG and PPG signals.
+
+    Args:
+        ecg (array): ECG signal.
+        ppg (array): PPG signal.
+        sample_rate (float): Sampling rate in Hz.
+        min_delay (int, optional): Minimum delay between ECG and PPG peaks in seconds. Defaults to 0.1.
+
+    Returns:
+        float: Mean pulse arrival time in samples.
+    """
+    ecg_peaks = find_peaks(ecg, sample_rate=sample_rate)
+    ecg_rri = compute_rr_intervals(ecg_peaks)
+    ecg_mask = filter_rr_intervals(ecg_rri, min_rr=0.3, max_rr=2.0, sample_rate=sample_rate)
+    mean_lag = 0
+    num_lags = 0
+    for i in range(0, len(ecg_mask) - 1):
+        if ecg_mask[i] == 0 and ecg_mask[i + 1] == 0:
+            # Enforce a minimum delay between ECG and PPG peaks
+            start = ecg_peaks[i] + round(sample_rate * min_delay)
+            ppg_peak = np.argmax(ppg[start : ecg_peaks[i + 1] + 1]) + start
+            mean_lag += ppg_peak - ecg_peaks[i]
+            num_lags += 1
+        # END IF
+    # END FOR
+    mean_lag /= num_lags
+    return mean_lag

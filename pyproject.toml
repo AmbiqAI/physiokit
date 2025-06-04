@@ -1,76 +1,77 @@
-[tool.poetry]
+[project]
 name = "physiokit"
-version = "0.8.1"
+version = "0.9.0"
 description = "PhysioKit, process raw ambulatory bio-signals."
-license = "BSD-3-Clause"
-authors = ["Adam Page <adam.page@ambiq.com>"]
 readme = "README.md"
-homepage = "https://ambiq.ai"
-repository = "https://github.com/AmbiqAI/physiokit"
+license = { text = "BSD-3-Clause" }
+
+authors = [
+  { name = "Adam Page", email = "adam.page@ambiq.com" },
+]
 keywords = ["physiology", "bio-signals", "ambulatory", "wearables"]
-packages = [
-    { include = "physiokit" },
+requires-python = ">=3.10,<3.14"
+
+dependencies = [
+  "numpy>=1.24.3,<3.0",
+  "scipy>=1.10.1,<2.0",
+  "requests>=2.31.0,<3.0",
 ]
 
-[tool.taskipy.tasks]
-format = "isort --profile black physiokit && black --line-length 120 physiokit"
-lint = "pylint physiokit"
-test = "pytest tests/"
+[project.urls]
+Homepage = 'https://ambiqai.github.io/physiokit'
+Source = 'https://github.com/AmbiqAI/physiokit'
 
-[tool.poetry.dependencies]
-python = ">=3.11,<3.13"
-numpy = "^1.24.3"
-scipy = "^1.10.1"
-requests = "^2.31.0"
-
-[tool.poetry.group.dev.dependencies]
-black = "23.3.0"
-pylint = "^3.0.3"
-pytest = "^8.0.0"
-taskipy = "^1.12.2"
-pre-commit = "^3.6.0"
-ipython = "^8.20.0"
-plotly = "^5.18.0"
-ipykernel = "^6.29.0"
-nbformat = "^5.9.2"
-tabulate = "^0.9.0"
-notebook = "^7.0.7"
-pandas = "^2.2.0"
-
-[tool.poetry.group.docs]
-optional = true
-
-[tool.poetry.group.docs.dependencies]
-mkdocs = "^1.5.3"
-mkdocs-material = "^9.4.6"
-mkdocstrings-python = "^1.7.3"
-markdown-include = "^0.8.1"
+[dependency-groups]
+dev = [
+  "pytest>=8.0.0,<9.0",
+  "taskipy>=1.12.2,<2.0",
+  "pre-commit>=3.6.0,<4.0",
+  "ipython>=8.20.0,<9.0",
+  "plotly>=5.18.0,<6.0",
+  "ipykernel>=6.29.0,<7.0",
+  "nbformat>=5.9.2,<6.0",
+  "tabulate>=0.9.0,<1.0",
+  "notebook>=7.0.7,<8.0",
+  "pandas>=2.2.0,<3.0",
+  "ruff>=0.5.1,<1.0",
+]
+docs = [
+    "mkdocs>=1.6.0",
+    "mkdocs-material>=9.5.28",
+    "mkdocstrings-python>=1.10.5",
+    "markdown-include>=0.8.1",
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
 
-[tool.isort]
-profile = 'black'
+[tool.setuptools]
+include-package-data = true
 
-[tool.black]
+[tool.setuptools.packages.find]
+where  = ["."]
+include = ["physiokit*"]
+
+
+[tool.taskipy.tasks]
+format = "ruff format"
+lint = "ruff check"
+test = "pytest tests/"
+
+[tool.ruff]
 line-length = 120
-
-[tool.pylint.message_control]
-disable = [
-    "missing-module-docstring",
-    "too-few-public-methods",
-    "duplicate-code",
-    "invalid-name"
+extend-exclude = [
 ]
 
-[tool.pylint.format]
-max-line-length = 120
+[tool.ruff.lint]
+ignore = []
 
-[tool.pylint.design]
-max-args = 50
-max-locals = 75
-max-statements = 100
-max-module-lines = 2000
-max-attributes = 10
-max-branches = 20
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.pyright]
+reportShadowedImports = "none"
+
+[tool.uv]
+package = true

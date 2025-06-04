@@ -1,4 +1,5 @@
 """Respiratory signal module for PhysioKit."""
+
 from .clean import clean
 from .defines import RspFiducial, RspSegment
 from .metrics import (

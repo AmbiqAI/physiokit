@@ -1,15 +1,16 @@
 # pylint: skip-file
-""" Generate synthetic ECG signals. Adapted from following:
-    authors:
-    - family-names: "Brisk"
-      given-names: "Rob"
-      orcid: "https://orcid.org/0000-0002-3865-0792"
-    title: "WaSP-ECG"
-    version: 1.0.0
-    doi: 0.3389/fphys.2022.760000
-    date-released: 2022-03-17
-    url: "https://github.com/docbrisky/WaSP-ECG"
+"""Generate synthetic ECG signals. Adapted from following:
+authors:
+- family-names: "Brisk"
+  given-names: "Rob"
+  orcid: "https://orcid.org/0000-0002-3865-0792"
+title: "WaSP-ECG"
+version: 1.0.0
+doi: 0.3389/fphys.2022.760000
+date-released: 2022-03-17
+url: "https://github.com/docbrisky/WaSP-ECG"
 """
+
 import logging
 import random
 
@@ -372,16 +373,16 @@ def _resample_syn_signals(
     xr = np.zeros_like(yr)
     yr_segs = np.zeros_like(yr)
     yr_fids = np.zeros_like(yr)
-    for l in range(xr.shape[0]):
+    for i in range(xr.shape[0]):
         # Time might not be evenly space so we interpolate it
-        ts_fn = scipy.interpolate.interp1d(np.arange(x[l].size), x[l], fill_value="extrapolate")
-        xr[l] = ts_fn(np.linspace(x[l][0], x[l][-1], numel))
+        ts_fn = scipy.interpolate.interp1d(np.arange(x[i].size), x[i], fill_value="extrapolate")
+        xr[i] = ts_fn(np.linspace(x[i][0], x[i][-1], numel))
         # Use nearest neighbor for segmentation
-        segs_fn = scipy.interpolate.interp1d(x[l], y_segs[l], kind="nearest", fill_value="extrapolate")
-        yr_segs[l] = segs_fn(xr[l])
+        segs_fn = scipy.interpolate.interp1d(x[i], y_segs[i], kind="nearest", fill_value="extrapolate")
+        yr_segs[i] = segs_fn(xr[i])
         # Adjust fiducials by resampling ratio
-        yr_fids_idxs = np.nonzero(y_fids[l])[0]
+        yr_fids_idxs = np.nonzero(y_fids[i])[0]
         yr_fids_adj_idxs = yr_fids_idxs * (target_frequency / sampling_frequency)
         yr_fids_adj_idxs = yr_fids_adj_idxs.astype(int)
-        yr_fids[l, yr_fids_adj_idxs] = y_fids[l, yr_fids_idxs]
+        yr_fids[i, yr_fids_adj_idxs] = y_fids[i, yr_fids_idxs]
     return xr, yr, yr_segs, yr_fids

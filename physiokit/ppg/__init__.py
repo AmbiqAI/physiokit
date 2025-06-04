@@ -1,4 +1,5 @@
 """PPG module for PhysioKit"""
+
 from .clean import clean
 from .defines import PpgFiducial, PpgSegment
 from .metrics import (

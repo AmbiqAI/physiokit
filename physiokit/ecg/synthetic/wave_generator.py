@@ -201,7 +201,7 @@ def syn_qrs_complex(
 
     # QR wavelet
     x, duration_counter = sin_wave_generator(-0.5, 0, duration, duration_counter, waves)
-    qr = (((np.sin(x) + 1)) * (r_height + q_depth)) - q_depth
+    qr = ((np.sin(x) + 1) * (r_height + q_depth)) - q_depth
     if (not r_prime_present or (s_prime_height <= r_height) or (r_height > 0 and s_prime_height < 0)) and (
         not (r_prime_height > r_height and s_prime_height > r_height)
     ):
@@ -260,7 +260,7 @@ def syn_qrs_complex(
         x, duration_counter = sin_wave_generator(1.25, 1.5, duration, duration_counter, waves)
         if s_present:
             # rs2 is second half of downwards inflection after R prime peak (to S trough)
-            rs2 = (((np.sin(x) + 1)) * (r_height + s_depth)) - s_depth
+            rs2 = ((np.sin(x) + 1) * (r_height + s_depth)) - s_depth
             rs = np.concatenate((rs1, rs2[1:]))
             s_peak = q.size + qr.size + rs.size
             x, duration_counter = sin_wave_generator(-0.5, 0.5, duration, duration_counter, waves)
@@ -270,7 +270,7 @@ def syn_qrs_complex(
         else:
             s_depth = 0
             # rs2 is second half of downwards inflection after R peak to J point
-            rs2 = ((np.sin(x) + 1)) * (r_height - (j_point * 2)) + (j_point)
+            rs2 = (np.sin(x) + 1) * (r_height - (j_point * 2)) + (j_point)
             rs = np.concatenate((rs1, rs2[1:]))
             y = np.concatenate((q, qr, rs))
 
@@ -365,7 +365,7 @@ def syn_t_wave(
     else:
         droppy_t_switch = False
         y = y + angler
-        last_downslope = 0
+        # last_downslope = 0
         if t_height > st_end:
             for a in range(y.size // 3):
                 if y[a] < st_end:
