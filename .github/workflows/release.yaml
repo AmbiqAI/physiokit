@@ -31,6 +31,7 @@ jobs:
       - build
     environment:
       name: pypi
+      environment: production
       url: https://pypi.org/p/physiokit
     permissions:
       id-token: write
