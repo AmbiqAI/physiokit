@@ -41,7 +41,7 @@ jobs:
   build-pypi:
     if: needs.release-please.outputs.release_created == 'true'
     needs: [release-please]
-    uses: ./.github/workflows/pypi.yml
+    uses: ./.github/workflows/pypi.yaml
     with:
       release_tag: ${{ needs.release-please.outputs.tag_name }}
     secrets: inherit
@@ -52,7 +52,7 @@ jobs:
   docs:
     if: needs.release-please.outputs.release_created == 'true'
     needs: [release-please]
-    uses: ./.github/workflows/docs.yml
+    uses: ./.github/workflows/docs.yaml
     secrets: inherit
     permissions:
       contents: write
