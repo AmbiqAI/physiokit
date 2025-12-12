@@ -1,6 +1,6 @@
 [project]
 name = "physiokit"
-version = "0.10.0"
+version = "0.10.1"
 description = "PhysioKit, process raw ambulatory bio-signals."
 readme = "README.md"
 license = { text = "BSD-3-Clause" }

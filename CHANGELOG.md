@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/AmbiqAI/physiokit/compare/v0.10.0...v0.10.1) (2025-12-12)
+
+
+### Bug Fixes
+
+* PyPi doesnt support reusable workflows. ([3e09bf6](https://github.com/AmbiqAI/physiokit/commit/3e09bf69dca7646acceb29c024be6dd684d6c0dd))
+
 ## [0.10.0](https://github.com/AmbiqAI/physiokit/compare/v0.9.0...v0.10.0) (2025-12-12)
 
 
