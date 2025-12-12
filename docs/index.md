@@ -26,11 +26,6 @@ title:
 </a>
 </p>
 
-<p style="color:rgb(201,48,198); font-size: 1.2em;">
-🚧 PhysioKit is under active development
-</p>
-
----
 
 **Documentation**: <a href="https://ambiqai.github.io/physiokit" target="_blank">https://ambiqai.github.io/physiokit</a>
 
@@ -38,12 +33,14 @@ title:
 
 ---
 
-**Key Features:**
+**Key Features**
 
-* Handles a variety of physiological signals including ECG, PPG, RSP, and IMU.
-* Geared towards real-time, noisy wearable sensor data.
-* Provide advanced signal processing and feature extraction methods.
-* Create synthetic signals for testing and benchmarking.
+- Multi-signal coverage: ECG, PPG, RSP, IMU, and HRV.
+- Wearable-first: robust to noisy, real-time data.
+- Batteries included: cleaning, peak detection, metrics, and synthesis.
+- Extensible utilities: shared filters, smoothing, FFT, and noise/distortion.
+
+PhysioKit is built to be modular: each signal family has a consistent API for cleaning, peak finding, intervals, and downstream metrics. Shared `pk.signal` primitives keep filtering and resampling uniform so you can mix modalities without rewriting glue code. Synthetic generators let you prototype quickly or build regression data for your own pipelines.
 
 ## Requirements
 
@@ -75,58 +72,67 @@ Installing PhysioKit can be done using `uv` or `pip`.
     ```
     </div>
 
-## Example
+## Quickstart
 
-In this example, we will generate a synthetic ECG signal, clean it, and compute heart rate and HRV metrics.
+=== "ECG: synth → clean → HR/HRV"
 
-```python
+    ```python
+    import numpy as np
+    import physiokit as pk
 
-import numpy as np
-import physiokit as pk
+    fs = 500
+    ecg, segs, fids = pk.ecg.synthesize(signal_length=5*fs, sample_rate=fs, heart_rate=70, leads=1)
+    ecg = ecg.squeeze()
 
-sample_rate = 1000 # Hz
-heart_rate = 64 # BPM
-signal_length = 8*sample_rate # 8 seconds
+    ecg_clean = pk.ecg.clean(ecg, sample_rate=fs)
+    peaks = pk.ecg.find_peaks(ecg_clean, sample_rate=fs)
+    rri = pk.ecg.compute_rr_intervals(peaks)
+    mask = pk.ecg.filter_rr_intervals(rri, sample_rate=fs)
 
-# Generate synthetic ECG signal
-ecg, segs, fids = pk.ecg.synthesize(
-    signal_length=signal_length,
-    sample_rate=sample_rate,
-    heart_rate=heart_rate,
-    leads=1
-)
-ecg = ecg.squeeze()
+    hr_bpm, _ = pk.ecg.compute_heart_rate(ecg_clean, sample_rate=fs)
+    hrv_td = pk.hrv.compute_hrv_time(rri[mask == 0], sample_rate=fs)
+    ```
 
-# Clean ECG signal
-ecg_clean = pk.ecg.clean(ecg, sample_rate=sample_rate)
+=== "PPG: HR + SpO₂"
 
-# Compute heart rate
-hr_bpm, _ = pk.ecg.compute_heart_rate(ecg_clean, sample_rate=sample_rate)
+    ```python
+    import numpy as np
+    import physiokit as pk
 
-# Extract R-peaks and RR-intervals
-peaks = pk.ecg.find_peaks(ecg_clean, sample_rate=sample_rate)
-rri = pk.ecg.compute_rr_intervals(peaks)
-mask = pk.ecg.filter_rr_intervals(rri, sample_rate=sample_rate)
+    fs = 100
+    t = np.arange(0, 10, 1/fs)
+    ppg = np.sin(2*np.pi*1.1*t)
 
-# Re-compute heart rate
-hr_bpm = 60 / (np.nanmean(rri[mask == 0]) / sample_rate)
+    hr_bpm, qos = pk.ppg.compute_heart_rate(ppg, sample_rate=fs, method="peak")
+    spo2 = pk.ppg.compute_spo2_in_time(ppg, ppg, sample_rate=fs)
+    ```
 
-# Compute HRV metrics
-hrv_td = pk.hrv.compute_hrv_time(rri[mask == 0], sample_rate=sample_rate)
+=== "RSP: rate from peaks"
 
-bands = [(0.04, 0.15), (0.15, 0.4), (0.4, 0.5)]
-hrv_fd = pk.hrv.compute_hrv_frequency(
-    peaks[mask == 0],
-    rri[mask == 0],
-    bands=bands,
-    sample_rate=sample_rate
-)
+    ```python
+    import numpy as np
+    import physiokit as pk
 
-```
+    fs = 25
+    t = np.arange(0, 40, 1/fs)
+    rsp = np.sin(2*np.pi*0.2*t)
 
-<div class="sk-plotly-graph-div">
---8<-- "assets/pk-synthetic-ecg-raw.html"
-</div>
+    bpm, qos = pk.rsp.compute_respiratory_rate(rsp, sample_rate=fs, method="peak")
+    ```
+
+=== "Signal helpers"
+
+    ```python
+    import numpy as np
+    import physiokit as pk
+
+    fs = 100
+    t = np.arange(0, 5, 1/fs)
+    sig = np.sin(2*np.pi*2*t) + 0.2*np.random.randn(t.size)
+
+    clean = pk.signal.filter_signal(sig, lowcut=0.5, highcut=20, sample_rate=fs)
+    freqs, sp = pk.signal.compute_fft(clean, sample_rate=fs)
+    ```
 
 
 ## License

@@ -14,13 +14,20 @@ def compute_heart_rate(
     """Compute heart rate from ECG signal.
 
     Args:
-        data (array): ECG signal.
-        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
-        method (str, optional): Method to compute heart rate. Defaults to 'peak'.
-        **kwargs (dict): Keyword arguments to pass to method.
+        data (npt.NDArray): ECG signal (1-D).
+        sample_rate (float): Sampling rate in Hz.
+        method (str): Heart-rate method, currently supports ``"peak"``.
+        **kwargs: Additional keyword arguments for the selected method.
 
     Returns:
-        tuple[float, float]: Heart rate in BPM and qos metric.
+        tuple[float, float]: (bpm, quality score in [0, 1]).
+
+    Example:
+        >>> import numpy as np
+        >>> ecg = np.sin(2 * np.pi * 1.2 * np.arange(0, 2, 1/1000))
+        >>> bpm, _ = compute_heart_rate(ecg, sample_rate=1000)
+        >>> int(round(bpm))
+        72
     """
     match method:
         case "peak":
@@ -41,16 +48,26 @@ def compute_heart_rate_from_peaks(
     """Compute heart rate from peaks of ECG signal.
 
     Args:
-        data (array): ECG signal.
-        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
+        data (npt.NDArray): ECG signal (1-D).
+        sample_rate (float): Sampling rate in Hz.
+        min_rr (float): Minimum RR interval (s) allowed.
+        max_rr (float): Maximum RR interval (s) allowed.
+        min_delta (float | None): Allowed fractional RR deviation; ``None`` to skip quotient filtering.
 
     Returns:
-        tuple[float, float]: Heart rate in BPM and qos metric.
+        tuple[float, float]: (bpm, quality score in [0, 1]).
+
+    Example:
+        >>> import numpy as np
+        >>> ecg = np.sin(2 * np.pi * 1.1 * np.arange(0, 2, 1/250))
+        >>> bpm, qos = compute_heart_rate_from_peaks(ecg, sample_rate=250)
+        >>> bpm > 60, qos > 0
+        (True, True)
     """
     peaks = find_peaks(data=data, sample_rate=sample_rate)
     rri = compute_rr_intervals(peaks=peaks)
     rmask = filter_rr_intervals(rr_ints=rri, sample_rate=sample_rate, min_rr=min_rr, max_rr=max_rr, min_delta=min_delta)
-    bpm = 60 / (np.nanmean(rri[rmask == 0]) / sample_rate)
+    bpm = float(60 / (np.nanmean(rri[rmask == 0]) / sample_rate))
     qos = rmask[rmask == 0].size / rmask.size
     return bpm, qos
 
@@ -69,17 +86,25 @@ def derive_respiratory_rate(
     """Derive respiratory rate from ECG signal using given method.
 
     Args:
-        peaks (array): QRS peaks of ECG signal.
-        rri (array, optional): RR intervals. Defaults to None.
-        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
-        method (str, optional): Method to compute respiratory rate. Defaults to 'riav'.
-        lowcut (float, optional): Lowcut frequency in Hz. Defaults to 0.1 Hz.
-        highcut (float, optional): Highcut frequency in Hz. Defaults to 1.0 Hz.
-        order (int, optional): Order of filter. Defaults to 3.
-        threshold (float, optional): Threshold for peak detection. Defaults to 0.85.
+        peaks (npt.NDArray): QRS peaks (indices).
+        rri (npt.NDArray | None): RR intervals; required for ``"rifv"``.
+        sample_rate (float): Sampling rate in Hz.
+        method (Literal["rifv"]): Respiratory method; only ``"rifv"`` supported.
+        lowcut (float): Lowcut frequency in Hz for respiration band.
+        highcut (float): Highcut frequency in Hz for respiration band.
+        order (int): Filter order.
+        threshold (float | None): Threshold for FFT peak selection; ``None`` to keep max only.
+        interpolate_method (str): Interpolation method for resampling the RR-derived signal.
 
     Returns:
-        tuple[float, float]: Respiratory rate in BPM and qos metric.
+        tuple[float, float]: (respiratory bpm, quality score).
+
+    Example:
+        >>> import numpy as np
+        >>> peaks = np.arange(0, 500, 50)
+        >>> rri = np.full(peaks.size, 50)
+        >>> derive_respiratory_rate(peaks=peaks, rri=rri, sample_rate=1000)
+        (72.0, np.float64(1.0))
     """
     if peaks.size < 4:
         raise ValueError("At least 4 peaks are required to compute respiratory rate")
@@ -114,17 +139,24 @@ def derive_respiratory_rate(
     return rsp_bpm, qos
 
 
-def compute_pulse_arrival_time(ecg: npt.NDArray, ppg: npt.NDArray, sample_rate: float, min_delay: int = 0.1) -> float:
+def compute_pulse_arrival_time(ecg: npt.NDArray, ppg: npt.NDArray, sample_rate: float, min_delay: float = 0.1) -> float:
     """Compute pulse arrival time from ECG and PPG signals.
 
     Args:
-        ecg (array): ECG signal.
-        ppg (array): PPG signal.
+        ecg (npt.NDArray): ECG signal (1-D).
+        ppg (npt.NDArray): PPG signal (aligned, 1-D).
         sample_rate (float): Sampling rate in Hz.
-        min_delay (int, optional): Minimum delay between ECG and PPG peaks in seconds. Defaults to 0.1.
+        min_delay (float): Minimum delay between ECG and PPG peaks in seconds.
 
     Returns:
         float: Mean pulse arrival time in samples.
+
+    Example:
+        >>> import numpy as np
+        >>> ecg = np.zeros(200); ppg = np.zeros(200)
+        >>> ecg[[50, 150]] = 1; ppg[[55, 155]] = 1
+        >>> round(compute_pulse_arrival_time(ecg, ppg, sample_rate=100))
+        5
     """
     ecg_peaks = find_peaks(ecg, sample_rate=sample_rate)
     ecg_rri = compute_rr_intervals(ecg_peaks)

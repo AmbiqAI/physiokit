@@ -221,4 +221,4 @@ Using dual RIP bands, a ribcage (RC) band and a abdominal (AB) band, we can comp
 
 ## API
 
-[Refer to RSP API for more details](../api/rsp.md)
+[Refer to RSP API for more details](/api/physiokit/rsp)

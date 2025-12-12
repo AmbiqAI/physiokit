@@ -264,7 +264,7 @@ def simulate_ecgsyn(
 
 def _ecg_simulate_derivsecgsyn(
     t: float, x: npt.NDArray, rr: npt.NDArray, ti: npt.NDArray, sfint: float, ai: npt.NDArray, bi: npt.NDArray
-):
+) -> npt.NDArray:
     """"""
     ta = math.atan2(x[1], x[0])
     r0 = 1

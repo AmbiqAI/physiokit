@@ -18,7 +18,7 @@ def add_distortions(
     artifacts_number: int = 5,
     linear_drift: bool = False,
     epsilon: float = 1e-6,
-):
+) -> npt.NDArray:
     """Add various distortions to the signal.
 
     Args:
@@ -108,10 +108,10 @@ def create_noise_artifacts(
     frequency: float = 0,
     amplitude: float = 0.1,
     num_artifacts: int = 5,
-    min_artifact_percent=0.001,
-    max_artifact_percent=0.01,
+    min_artifact_percent: float = 0.001,
+    max_artifact_percent: float = 0.01,
     artifacts_shape: str = "laplace",
-):
+) -> npt.NDArray:
     """Create noise artifact blips.
 
     Args:
@@ -167,11 +167,12 @@ def create_powerline_noise(
     sample_rate: float = 1000,
     frequency: float = 50,
     amplitude: float = 0.1,
-):
+) -> npt.NDArray:
     """Create powerline noise.
 
     Args:
-        signal (npt.NDArray): Signal.
+        signal_len (int): Signal length.
+        signal_sd (float | None, optional): Signal standard deviation. Defaults to None.
         sample_rate (float, optional): Sampling rate. Defaults to 1000.
         frequency (float, optional): Noise frequency. Defaults to 50.
         amplitude (float, optional): Noise amplitude. Defaults to 0.1.

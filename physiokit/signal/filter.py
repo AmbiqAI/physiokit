@@ -86,13 +86,18 @@ def resample_signal(
     NOTE: For very large signals, this may be slow. Consider using resample_poly instead.
 
     Args:
-        data (npt.NDArray): Signal
-        sample_rate (float): Signal sampling rate. Defaults to 1000 Hz.
-        target_rate (float): Target sampling rate. Defaults to 500 Hz.
+        data (npt.NDArray): Signal.
+        sample_rate (float): Signal sampling rate (Hz).
+        target_rate (float): Target sampling rate (Hz).
         axis (int, optional): Axis to resample along. Defaults to -1.
 
     Returns:
-        npt.NDArray: Resampled signal
+        npt.NDArray: Resampled signal.
+
+    Example:
+        >>> import numpy as np
+        >>> resample_signal(np.arange(10), sample_rate=10, target_rate=5).size
+        5
     """
     desired_length = int(np.round(data.shape[axis] * target_rate / sample_rate))
     return sps.resample(data, desired_length, axis=axis)
@@ -102,13 +107,17 @@ def resample_categorical(data: npt.NDArray, sample_rate: float, target_rate: flo
     """Resample categorical data using nearest neighbor.
 
     Args:
-        data (npt.NDArray): Signal
-        sample_rate (float): Signal sampling rate
-        target_rate (float): Target sampling rate
+        data (npt.NDArray): Categorical sequence.
+        sample_rate (float): Original sampling rate.
+        target_rate (float): Target sampling rate.
         axis (int, optional): Axis to resample along. Defaults to 0.
 
     Returns:
-        npt.NDArray: Resampled signal
+        npt.NDArray: Resampled signal.
+
+    Example:
+        >>> resample_categorical(np.array([0, 1, 1, 2]), sample_rate=4, target_rate=2).tolist()
+        [0, 1]
     """
     if sample_rate == target_rate:
         return data
@@ -204,6 +213,11 @@ def quotient_filter_mask(
 
     Returns:
         npt.NDArray: Rejection mask 0=accept, 1=reject.
+
+    Example:
+        >>> import numpy as np
+        >>> quotient_filter_mask(np.array([10, 10, 30, 10])).tolist()
+        [0, 0, 1, 1]
     """
 
     if mask is None:
@@ -238,19 +252,26 @@ def moving_gradient_filter(
     avg_window: float = 1.0,
     sig_prom_weight: float = 1.5,
     mode: str = "nearest",
-    fval=0,
+    fval: float = 0.0,
 ) -> npt.NDArray:
     """Compute moving gradient filter to identify peaks in stream of data.
 
     Args:
-        data (array): Data stream.
+        data (npt.NDArray): Data stream (1-D).
         sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
         sig_window (float, optional): Window size in seconds to compute signal gradient. Defaults to 0.1 s.
         avg_window (float, optional): Window size in seconds to compute average gradient. Defaults to 1.0 s.
         sig_prom_weight (float, optional): Weight to compute minimum signal height. Defaults to 1.5.
+        mode (str, optional): Boundary mode passed to ``uniform_filter1d``. Defaults to "nearest".
+        fval: Fill value for boundaries when mode supports it.
 
     Returns:
-        array: Moving gradient filter.
+        npt.NDArray: Moving gradient filter.
+
+    Example:
+        >>> import numpy as np
+        >>> moving_gradient_filter(np.array([0, 1, 3, 1, 0]), sample_rate=10).shape
+        (5,)
     """
     # Compute gradient of signal and average.
     abs_grad = np.abs(np.gradient(data))

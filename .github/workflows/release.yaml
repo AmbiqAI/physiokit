@@ -1,42 +1,60 @@
-name: Release to PyPi
+name: Release (via Release Please)
 
 on:
-  release:
-    types:
-      - created
+  push:
+    branches: [ main ]
   workflow_dispatch:
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-            enable-cache: true
-      - name: Install and Build 🔧
-        run: |
-          uv build
-      - name: Store the distribution packages
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-package-distributions
-          path: dist/
+permissions: {}  # default none
 
-  publish:
-    runs-on: ubuntu-latest
-    needs:
-      - build
-    environment: production
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+
+  # 1) Let Release Please manage versions, tags, notes, and release PRs.
+  release-please:
+    name: Release Please
+    runs-on: ubuntu-22.04
     permissions:
-      id-token: write
+      contents: write
+      pull-requests: write
+      issues: write
+
+    outputs:
+      release_created: ${{ steps.rp.outputs.release_created }}
+      tag_name:        ${{ steps.rp.outputs.tag_name }}
+      version:         ${{ steps.rp.outputs.version }}
+      sha:             ${{ steps.rp.outputs.sha }}
     steps:
-      - name: Download all the dists
-        uses: actions/download-artifact@v4
+      - name: Run Release Please
+        id: rp
+        uses: googleapis/release-please-action@v4
         with:
-          name: python-package-distributions
-          path: dist/
-      - name: Publish to PyPI 📦
-        uses: pypa/gh-action-pypi-publish@release/v1
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+
+  # 2) Build & publish Python wheel to PyPi.
+  build-pypi:
+    if: needs.release-please.outputs.release_created == 'true'
+    needs: [release-please]
+    uses: ./.github/workflows/pypi.yml
+    with:
+      release_tag: ${{ needs.release-please.outputs.tag_name }}
+    secrets: inherit
+    permissions:
+      contents: write
+
+    # 4) Build & publish docs on each release.
+  docs:
+    if: needs.release-please.outputs.release_created == 'true'
+    needs: [release-please]
+    uses: ./.github/workflows/docs.yml
+    secrets: inherit
+    permissions:
+      contents: write
+      pages: write
+      id-token: write

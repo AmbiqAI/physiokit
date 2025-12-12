@@ -11,12 +11,17 @@ def compute_enmo(x: npt.NDArray, y: npt.NDArray, z: npt.NDArray) -> npt.NDArray:
     Reference: https://doi.org/10.1371/journal.pone.0142533
 
     Args:
-        x (npt.NDArray): x-axis accelerometer data
-        y (npt.NDArray): y-axis accelerometer data
-        z (npt.NDArray): z-axis accelerometer data
+        x (npt.NDArray): x-axis accelerometer data (G).
+        y (npt.NDArray): y-axis accelerometer data (G).
+        z (npt.NDArray): z-axis accelerometer data (G).
 
     Returns:
-        npt.NDArray: ENMO data
+        npt.NDArray: ENMO data (G).
+
+    Example:
+        >>> import numpy as np
+        >>> compute_enmo(np.array([0]), np.array([0]), np.array([1]))
+        array([0.])
     """
     enmo = np.maximum(np.sqrt(x**2 + y**2 + z**2) - 1, 0)
     return enmo
@@ -36,7 +41,12 @@ def compute_tilt_angles(
         in_radians (bool, optional): If True, return angles in radians. Defaults to True.
 
     Returns:
-        tuple[npt.NDArray, npt.NDArray, npt.NDArray]: Tilt angles in radians or degrees
+        tuple[npt.NDArray, npt.NDArray, npt.NDArray]: Tilt angles in radians or degrees.
+
+    Example:
+        >>> import numpy as np
+        >>> compute_tilt_angles(np.array([0]), np.array([0]), np.array([1]), in_radians=False)
+        (array([0.]), array([0.]), array([90.]))
 
     """
     x2 = x**2
@@ -110,7 +120,13 @@ def compute_counts(
         max_thresh (int, optional): Maximum threshold. Defaults to 128.
 
     Returns:
-        npt.NDArray: 2-D counts data [ts x axis] in counts.
+        npt.NDArray: 2-D counts data [epoch x axis] in counts.
+
+    Example:
+        >>> import numpy as np
+        >>> data = np.ones((100, 3)) * 10
+        >>> compute_counts(data, sample_rate=30, epoch_len=1).shape[0]
+        3
     """
 
     # 1. Resample to 30 Hz
