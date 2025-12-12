@@ -263,4 +263,4 @@ Coming soon...
 
 ## API
 
-[Refer to ECG API for more details](../api/ecg.md)
+[Refer to ECG API for more details](/api/physiokit/ecg)

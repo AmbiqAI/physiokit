@@ -113,4 +113,4 @@ The `signal` submodule contains lots of underlying signal processing functionali
 
 ## API
 
-[Refer to signal API for more details](../api/signal.md)
+[Refer to signal API for more details](/api/physiokit/signal)

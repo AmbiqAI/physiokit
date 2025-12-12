@@ -5,7 +5,7 @@ from enum import Enum
 class StrEnum(str, Enum):
     """Backport of StrEnum from Python 3.11 to 3.10"""
 
-    def __str__(self):
+    def __str__(self: "StrEnum") -> str:
         return self.value
 
 

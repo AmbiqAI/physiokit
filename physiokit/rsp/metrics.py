@@ -12,13 +12,20 @@ def compute_respiratory_rate(
     """Compute respiratory rate in BPM from signal.
 
     Args:
-        data (array): RSP signal.
-        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
-        method (str, optional): Method to compute respiratory rate. Defaults to 'fft'.
-        **kwargs (dict): Keyword arguments to pass to method.
+        data (npt.NDArray): RSP signal (1-D).
+        sample_rate (float): Sampling rate in Hz.
+        method (str): Method to compute respiratory rate, ``"fft"`` or ``"peak"``.
+        **kwargs: Keyword arguments to pass to the selected method.
 
     Returns:
-        tuple[float, float]: Respiratory rate (BPM) and qos metric.
+        tuple[float, float]: (respiratory BPM, quality score).
+
+    Example:
+        >>> import numpy as np
+        >>> rsp = np.sin(2 * np.pi * 0.25 * np.arange(0, 40, 0.1))
+        >>> bpm, _ = compute_respiratory_rate(rsp, sample_rate=10)
+        >>> int(round(bpm))
+        15
     """
     match method:
         case "fft":
@@ -37,14 +44,21 @@ def compute_respiratory_rate_from_peaks(
     """Compute respiratory rate in BPM from peaks of PPG signal.
 
     Args:
-        data (array): RSP signal.
-        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
-        min_rr (float, optional): Minimum RR interval in seconds. Defaults to 0.5 s.
-        max_rr (float, optional): Maximum RR interval in seconds. Defaults to 20 s.
-        min_delta (float, optional): Minimum delta between RR intervals in seconds. Defaults to 0.5 s.
+        data (npt.NDArray): RSP signal (1-D).
+        sample_rate (float): Sampling rate in Hz.
+        min_rr (float): Minimum RR interval in seconds.
+        max_rr (float): Maximum RR interval in seconds.
+        min_delta (float): Minimum delta between RR intervals in seconds.
 
     Returns:
-        float: Respiratory rate (BPM).
+        tuple[float, float]: (respiratory BPM, quality score).
+
+    Example:
+        >>> import numpy as np
+        >>> rsp = np.sin(2 * np.pi * 0.2 * np.arange(0, 50, 0.1))
+        >>> bpm, qos = compute_respiratory_rate_from_peaks(rsp, sample_rate=10)
+        >>> bpm > 10 and qos > 0
+        True
     """
     peaks = find_peaks(data=data, sample_rate=sample_rate)
     rri = compute_rr_intervals(peaks=peaks)
@@ -64,13 +78,19 @@ def compute_respiratory_rate_from_fft(
     """Compute respiratory rate in BPM from FFT of respiratory signal.
 
     Args:
-        data (array): RSP signal.
-        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
-        lowcut (float, optional): Lowcut frequency in Hz. Defaults to 0.05 Hz.
-        highcut (float, optional): Highcut frequency in Hz. Defaults to 3.0 Hz.
+        data (npt.NDArray): RSP signal (1-D).
+        sample_rate (float): Sampling rate in Hz.
+        lowcut (float): Lowcut frequency in Hz.
+        highcut (float): Highcut frequency in Hz.
 
     Returns:
-        float: Respiratory rate (BPM).
+        tuple[float, float]: (respiratory BPM, quality score).
+
+    Example:
+        >>> import numpy as np
+        >>> rsp = np.sin(2 * np.pi * 0.3 * np.arange(0, 30, 0.1))
+        >>> int(round(compute_respiratory_rate_from_fft(rsp, sample_rate=10)[0]))
+        18
     """
     freqs, sp = compute_fft(data, sample_rate=sample_rate, window="blackman")
     l_idx = np.where(freqs >= lowcut)[0][0]
@@ -95,16 +115,25 @@ def compute_dual_band_metrics(
     """Compute respiratory dual band metrics.
 
     Args:
-        rc (array): Ribcage band.
-        ab (array): Abdominal band.
-        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
-        lowcut (float, optional): Lowcut frequency in Hz. Defaults to 0.05 Hz.
-        highcut (float, optional): Highcut frequency in Hz. Defaults to 3.0 Hz.
-        fft_len (int, optional): FFT length. Defaults to None.
-        pwr_threshold (float, optional): Power threshold. Defaults to 0.80.
+        rc (npt.NDArray): Ribcage band (1-D).
+        ab (npt.NDArray): Abdominal band (1-D).
+        sample_rate (float): Sampling rate in Hz.
+        lowcut (float): Lowcut frequency in Hz.
+        highcut (float): Highcut frequency in Hz.
+        fft_len (int | None): FFT length; defaults to signal length.
+        pwr_threshold (float): Power threshold for peak inclusion.
 
     Returns:
-        RspDualMetrics: Respiratory dual band metrics.
+        RspDualMetrics: Aggregated dual-band respiratory metrics.
+
+    Example:
+        >>> import numpy as np
+        >>> t = np.arange(0, 20, 0.1)
+        >>> rc = np.sin(2 * np.pi * 0.2 * t)
+        >>> ab = 0.8 * np.sin(2 * np.pi * 0.2 * t + 0.1)
+        >>> metrics = compute_dual_band_metrics(rc=rc, ab=ab, sample_rate=10)
+        >>> round(metrics.vt_rr)
+        12
     """
 
     # Remove DC

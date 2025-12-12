@@ -220,17 +220,17 @@ def add_random_scaling(data: npt.NDArray, lower: float = 0.5, upper: float = 2.0
     return data * random.uniform(lower, upper)
 
 
-def add_signal_attenuation():
+def add_signal_attenuation() -> None:
     """Add signal attenuation to signal."""
     raise NotImplementedError()
 
 
-def add_signal_cutout():
+def add_signal_cutout() -> None:
     """Add cutout augmentation to signal."""
     raise NotImplementedError()
 
 
-def add_signal_shift(data: npt.NDArray, shift_amount: float = 0.1):
+def add_signal_shift(data: npt.NDArray, shift_amount: float = 0.1) -> npt.NDArray:
     """Add signal shift augmentation to signal."""
     shift_idx = random.randint(0, data.size)
     rst = data.copy()

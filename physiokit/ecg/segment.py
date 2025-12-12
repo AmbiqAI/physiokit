@@ -265,16 +265,16 @@ def apply_segmentation(
     return segs
 
 
-def find_pwave():
+def find_pwave() -> None:
     """Find P wave in ECG signal"""
     raise NotImplementedError()
 
 
-def find_twave():
+def find_twave() -> None:
     """Find T wave in ECG signal"""
     raise NotImplementedError()
 
 
-def find_qrs():
+def find_qrs() -> None:
     """Find QRS complex in ECG signal"""
     raise NotImplementedError()

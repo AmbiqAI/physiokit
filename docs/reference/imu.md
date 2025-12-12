@@ -81,4 +81,4 @@ Euclidean Norm Minus One (ENMO) is a measure of activity intensity. ENMO is calc
 
 ## API
 
-[Refer to IMU API for more details](../api/imu.md)
+[Refer to IMU API for more details](/api/physiokit/imu)

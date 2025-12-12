@@ -83,7 +83,7 @@ def signal_smooth_median(data: npt.NDArray, size: int = 5) -> npt.NDArray:
     return smoothed
 
 
-def signal_smooth_conv(data: npt.NDArray, kernel: str, size: int = 5):
+def signal_smooth_conv(data: npt.NDArray, kernel: str, size: int = 5) -> npt.NDArray:
     """Smooth signal using convolution.
 
     Args:

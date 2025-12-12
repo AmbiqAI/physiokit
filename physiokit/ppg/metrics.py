@@ -14,13 +14,20 @@ def compute_heart_rate(
     """Compute heart rate in BPM from PPG signal.
 
     Args:
-        data (array): PPG signal.
-        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
-        method (str, optional): Method to compute heart rate. Defaults to 'fft'.
-        **kwargs (dict): Keyword arguments to pass to method.
+        data (npt.NDArray): PPG signal (1-D).
+        sample_rate (float): Sampling rate in Hz.
+        method (str): Method to compute heart rate, ``"fft"`` or ``"peak"``.
+        **kwargs: Keyword arguments to pass to the selected method.
 
     Returns:
-        float: Heart rate in BPM.
+        tuple[float, float]: (heart rate in BPM, quality score).
+
+    Example:
+        >>> import numpy as np
+        >>> ppg = np.sin(2 * np.pi * 1.2 * np.arange(0, 5, 1/100))
+        >>> bpm, _ = compute_heart_rate(ppg, sample_rate=100)
+        >>> int(round(bpm))
+        72
     """
     match method:
         case "fft":
@@ -39,14 +46,21 @@ def compute_heart_rate_from_peaks(
     """Compute heart rate from peaks of PPG signal.
 
     Args:
-        data (array): PPG signal.
-        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
-        min_rr (float, optional): Minimum RR interval in seconds. Defaults to 0.3 s.
-        max_rr (float, optional): Maximum RR interval in seconds. Defaults to 2.0 s.
-        min_delta (float, optional): Minimum RR interval delta. Defaults to 0.3.
+        data (npt.NDArray): PPG signal (1-D).
+        sample_rate (float): Sampling rate in Hz.
+        min_rr (float): Minimum RR interval (s).
+        max_rr (float): Maximum RR interval (s).
+        min_delta (float): Allowed fractional RR deviation.
 
     Returns:
-        tuple[float, float]: Heart rate (BPM) and qos metric.
+        tuple[float, float]: (BPM, quality score).
+
+    Example:
+        >>> import numpy as np
+        >>> ppg = np.sin(2 * np.pi * 1.0 * np.arange(0, 5, 1/50))
+        >>> bpm, qos = compute_heart_rate_from_peaks(ppg, sample_rate=50)
+        >>> bpm > 50 and qos > 0
+        True
     """
     peaks = find_peaks(data=data, sample_rate=sample_rate)
     rri = compute_rr_intervals(peaks=peaks)
@@ -62,13 +76,20 @@ def compute_heart_rate_from_fft(
     """Compute heart rate from FFT of PPG signal.
 
     Args:
-        data (array): PPG signal.
-        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
-        lowcut (float, optional): Lowcut frequency in Hz. Defaults to 0.5 Hz.
-        highcut (float, optional): Highcut frequency in Hz. Defaults to 4.0 Hz.
+        data (npt.NDArray): PPG signal (1-D).
+        sample_rate (float): Sampling rate in Hz.
+        lowcut (float): Lowcut frequency in Hz.
+        highcut (float): Highcut frequency in Hz.
 
     Returns:
-        tuple[float, float]: Heart rate (BPM) and qos metric.
+        tuple[float, float]: (BPM, quality score).
+
+    Example:
+        >>> import numpy as np
+        >>> ppg = np.sin(2 * np.pi * 1.3 * np.arange(0, 5, 1/100))
+        >>> bpm, _ = compute_heart_rate_from_fft(ppg, sample_rate=100)
+        >>> int(round(bpm))
+        78
     """
     freqs, sp = compute_fft(data, sample_rate)
     l_idx = np.where(freqs >= lowcut)[0][0]
@@ -97,20 +118,29 @@ def derive_respiratory_rate(
     """Derive respiratory rate from PPG signal using given method.
 
     Args:
-        ppg (array): PPG signal.
-        peaks (array): Peaks of PPG signal.
-        troughs (array, optional): Troughs of PPG signal. Defaults to None.
-        rri (array, optional): Respiratory interval. Defaults to None.
-        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
-        method (str, optional): Method to compute respiratory rate. Defaults to 'riav'.
-        lowcut (float, optional): Lowcut frequency in Hz. Defaults to 0.1 Hz.
-        highcut (float, optional): Highcut frequency in Hz. Defaults to 1.0 Hz.
-        order (int, optional): Order of filter. Defaults to 3.
-        threshold (float, optional): Threshold for peak detection. Defaults to 0.85.
-        interpolate_method (str, optional): Interpolation method. Defaults to 'linear'.
+        ppg (npt.NDArray): PPG signal.
+        peaks (npt.NDArray): Peak indices of PPG signal.
+        troughs (npt.NDArray | None): Trough indices (required for ``"riav"``).
+        rri (npt.NDArray | None): RR intervals (required for ``"rifv"``).
+        sample_rate (float): Sampling rate in Hz.
+        method (Literal["riav", "riiv", "rifv"]): Respiratory method.
+        lowcut (float): Lowcut frequency in Hz.
+        highcut (float): Highcut frequency in Hz.
+        order (int): Filter order.
+        threshold (float | None): Threshold for FFT peak selection.
+        interpolate_method (str): Interpolation method for resampling the derived respiratory signal.
 
     Returns:
-        tuple[float, float]: Respiratory rate (BPM) and qos metric.
+        tuple[float, float]: (respiratory BPM, quality score).
+
+    Example:
+        >>> import numpy as np
+        >>> t = np.arange(0, 10, 0.1)
+        >>> ppg = np.sin(2 * np.pi * 0.2 * t)
+        >>> peaks = np.array([5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95])
+        >>> troughs = peaks + 2
+        >>> derive_respiratory_rate(ppg=ppg, peaks=peaks, troughs=troughs[troughs < ppg.size], sample_rate=10, method="riiv")[0]
+        12.0
     """
     if peaks.size < 4:
         raise ValueError("At least 4 peaks are required to compute respiratory rate")
@@ -166,6 +196,10 @@ def compute_spo2_from_perfusion(
 
     Returns:
         float: SpO2 value clipped to [50, 100].
+
+    Example:
+        >>> compute_spo2_from_perfusion(dc1=1.0, ac1=0.2, dc2=1.0, ac2=0.2, coefs=(1, 0, 90))
+        90.0
     """
     r = (ac1 / dc1) / (ac2 / dc2)
     spo2 = coefs[0] * r**2 + coefs[1] * r + coefs[2]
@@ -184,16 +218,24 @@ def compute_spo2_in_time(
     """Compute SpO2 from PPG signals in time domain.
 
     Args:
-        ppg1 (array): 1st PPG signal (e.g RED).
-        ppg2 (array): 2nd PPG signal (e.g. IR).
-        coefs (tuple[float, float, float], optional): Calibration coefficients. Defaults to (1, 0, 0).
-        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
-        lowcut (float, optional): Lowcut frequency in Hz. Defaults to 0.5 Hz.
-        highcut (float, optional): Highcut frequency in Hz. Defaults to 4.0 Hz.
-        order (int, optional): Order of filter. Defaults to 3.
+        ppg1 (npt.NDArray): 1st PPG signal (e.g RED).
+        ppg2 (npt.NDArray): 2nd PPG signal (e.g. IR).
+        coefs (tuple[float, float, float]): Calibration coefficients.
+        sample_rate (float): Sampling rate in Hz.
+        lowcut (float): Lowcut frequency in Hz.
+        highcut (float): Highcut frequency in Hz.
+        order (int): Order of filter.
 
     Returns:
-        float: SpO2 value
+        float: SpO2 value.
+
+    Example:
+        >>> import numpy as np
+        >>> t = np.arange(0, 2, 0.01)
+        >>> ppg1 = 1.0 + 0.1 * np.sin(2 * np.pi * t)
+        >>> ppg2 = 1.0 + 0.1 * np.sin(2 * np.pi * t + 0.1)
+        >>> 50 <= compute_spo2_in_time(ppg1, ppg2, sample_rate=100) <= 100
+        True
     """
 
     # Compute DC
@@ -229,16 +271,24 @@ def compute_spo2_in_frequency(
     """Compute SpO2 from PPG signals in frequency domain.
 
     Args:
-        ppg1 (array): 1st PPG signal (e.g RED).
-        ppg2 (array): 2nd PPG signal (e.g. IR).
-        coefs (tuple[float, float, float], optional): Calibration coefficients. Defaults to (1, 0, 0).
-        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
-        lowcut (float, optional): Lowcut frequency in Hz. Defaults to 0.5 Hz.
-        highcut (float, optional): Highcut frequency in Hz. Defaults to 4.0 Hz.
-        order (int, optional): Order of filter. Defaults to 3.
+        ppg1 (npt.NDArray): 1st PPG signal (e.g RED).
+        ppg2 (npt.NDArray): 2nd PPG signal (e.g. IR).
+        coefs (tuple[float, float, float]): Calibration coefficients.
+        sample_rate (float): Sampling rate in Hz.
+        lowcut (float): Lowcut frequency in Hz.
+        highcut (float): Highcut frequency in Hz.
+        order (int): Order of filter.
 
     Returns:
-        float: SpO2 value
+        float: SpO2 value.
+
+    Example:
+        >>> import numpy as np
+        >>> t = np.arange(0, 2, 0.01)
+        >>> ppg1 = 1.0 + 0.1 * np.sin(2 * np.pi * t)
+        >>> ppg2 = 1.0 + 0.1 * np.sin(2 * np.pi * t + 0.2)
+        >>> 50 <= compute_spo2_in_frequency(ppg1, ppg2, sample_rate=100) <= 100
+        True
     """
 
     # Compute DC

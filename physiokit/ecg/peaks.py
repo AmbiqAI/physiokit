@@ -38,15 +38,36 @@ def find_peaks(
 
     beg_qrs = np.where(np.logical_and(np.logical_not(qrs[0:-1]), qrs[1:]))[0]
     end_qrs = np.where(np.logical_and(qrs[0:-1], np.logical_not(qrs[1:])))[0]
+    # Handle masks that start or end inside a QRS so we always have matching edges.
+    if qrs.size > 0 and qrs[0]:
+        beg_qrs = np.insert(beg_qrs, 0, 0)
+    if qrs.size > 0 and qrs[-1]:
+        end_qrs = np.append(end_qrs, qrs.size - 1)
+
+    if beg_qrs.size == 0 or end_qrs.size == 0:
+        return np.array([], dtype=int)
+
     end_qrs = end_qrs[end_qrs > beg_qrs[0]]
+    if end_qrs.size == 0:
+        return np.array([], dtype=int)
 
     num_qrs = min(beg_qrs.size, end_qrs.size)
-    min_qrs_len = np.mean(end_qrs[:num_qrs] - beg_qrs[:num_qrs]) * qrs_min_len_weight
+    beg_qrs = beg_qrs[:num_qrs]
+    end_qrs = end_qrs[:num_qrs]
+
+    qrs_lengths = end_qrs - beg_qrs
+    valid_qrs_lengths = qrs_lengths[qrs_lengths > 0]
+    if valid_qrs_lengths.size == 0:
+        return np.array([], dtype=int)
+
+    min_qrs_len = np.mean(valid_qrs_lengths) * qrs_min_len_weight
     min_qrs_delay = int(np.rint(qrs_min_delay * sample_rate))
 
     peaks = []
-    for i in range(num_qrs):
-        beg, end = beg_qrs[i], end_qrs[i]
+    for beg, end in zip(beg_qrs, end_qrs):
+        if end <= beg:
+            continue
+
         peak = beg + np.argmax(data[beg:end])
         qrs_len = end - beg
         qrs_delay = peak - peaks[-1] if peaks else min_qrs_delay

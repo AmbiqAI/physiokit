@@ -3,26 +3,28 @@ site_dir: "site"
 site_description: PhysioKit, process raw ambulatory bio-signals
 repo_name: AmbiqAI/physiokit
 repo_url: https://github.com/AmbiqAI/physiokit
-copyright: Copyright &copy; 2023 Ambiq
+copyright: Copyright &copy; 2025 Ambiq
 
 nav:
-  - PhysioKit: index.md
+
+  - Home:
+    - Home: index.md
+    - Getting Started: ./tutorial/quickstart.md
+    - Reference: reference/index.md
+    - API: api/index.md
+
   - Getting Started:
     - Quick Start: ./tutorial/quickstart.md
-  - Signals:
-    - ECG: ./signals/ecg.md
-    - PPG: ./signals/ppg.md
-    - RSP: ./signals/rsp.md
-    - IMU: ./signals/imu.md
-    - HRV: ./signals/hrv.md
-    - Signal: ./signals/signal.md
-  - API:
-    - ECG: ./api/ecg.md
-    - PPG: ./api/ppg.md
-    - RSP: ./api/rsp.md
-    - IMU: ./api/imu.md
-    - HRV: ./api/hrv.md
-    - Signal: ./api/signal.md
+  - Reference:
+    - ./reference/index.md
+    - ECG: ./reference/ecg.md
+    - PPG: ./reference/ppg.md
+    - RSP: ./reference/rsp.md
+    - IMU: ./reference/imu.md
+    - HRV: ./reference/hrv.md
+    - Signal: ./reference/signal.md
+
+  - API: api/
 
 theme:
   name: material
@@ -57,10 +59,31 @@ theme:
   features:
     - content.code.annotate
     - content.code.copy
-    - content.tabs.link
+    - content.tooltips
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+    - navigation.top
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.prune
+    - navigation.path
+    - navigation.footer
+    - navigation.tracking
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.indexes
+    - navigation.expand  # navigation.expand or navigation.sections
+    - content.tabs.link # all code tabs change simultaneously
 
 plugins:
   - search
+  - gen-files:
+      scripts:
+      - scripts/gen_api_pages.py
+  - literate-nav:
+      nav_file: summary.md
   - mkdocstrings:
       default_handler: python
       handlers:
@@ -73,7 +96,12 @@ plugins:
             docstring_section_style: list
             heading_level: 3
             line_length: 120
-            show_root_heading: true
+            show_root_heading: false
+            show_symbol_type_heading: true
+            group_by_category: true
+            show_category_heading: true
+            modernize_annotations: true
+            filters: ["!^_", "^__init__$"]
 
 extra_css:
   - css/mkdocstrings.css

@@ -101,4 +101,4 @@ The `hrv.compute_hrv_frequency` function computes frequency-domain HRV metrics b
 
 ## API
 
-[Refer to HRV API for more details](../api/hrv.md)
+[Refer to HRV API for more details](/api/physiokit/hrv)

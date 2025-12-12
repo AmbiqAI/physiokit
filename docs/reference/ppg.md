@@ -236,4 +236,4 @@ Using two PPG signals with different wavelengths, we can compute the oxygen satu
 
 ## API
 
-[Refer to PPG API for more details](../api/ppg.md)
+[Refer to PPG API for more details](/api/physiokit/ppg)
