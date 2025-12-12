@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/AmbiqAI/physiokit"><img src="./docs/assets/physiokit-banner.png" alt="PhysioKit"></a>
+  <a href="https://github.com/AmbiqAI/physiokit"><img src="https://raw.githubusercontent.com/AmbiqAI/physiokit/main/docs/assets/physiokit-banner.png" alt="PhysioKit"></a>
 </p>
 
 <p align="center">
@@ -22,10 +22,6 @@
 <a href="https://github.com/AmbiqAI/physiokit/LICENSE" target="_blank">
     <img src="https://img.shields.io/pypi/l/physiokit" alt="License">
 </a>
-</p>
-
-<p style="color:rgb(201,48,198); font-size: 1.2em;">
-🚧 PhysioKit is under active development
 </p>
 
 ---
