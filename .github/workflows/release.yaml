@@ -47,6 +47,7 @@ jobs:
     secrets: inherit
     permissions:
       contents: write
+      id-token: write
 
     # 4) Build & publish docs on each release.
   docs:
