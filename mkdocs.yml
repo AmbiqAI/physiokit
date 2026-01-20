@@ -1,6 +1,6 @@
-site_name: PhysioKit
+site_name: physioKIT
 site_dir: "site"
-site_description: PhysioKit, process raw ambulatory bio-signals
+site_description: physioKIT, process raw ambulatory bio-signals
 repo_name: AmbiqAI/physiokit
 repo_url: https://github.com/AmbiqAI/physiokit
 copyright: Copyright &copy; 2025 Ambiq
@@ -15,7 +15,7 @@ nav:
 
   - Getting Started:
     - Quick Start: ./tutorial/quickstart.md
-  - Reference:
+  - Examples:
     - ./reference/index.md
     - ECG: ./reference/ecg.md
     - PPG: ./reference/ppg.md
@@ -29,7 +29,7 @@ nav:
 theme:
   name: material
   favicon: assets/favicon.png
-  logo: assets/logo.png
+  logo: assets/logo-white.png
   icon:
       repo: fontawesome/brands/github-alt
   font:

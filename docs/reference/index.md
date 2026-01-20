@@ -1,6 +1,6 @@
 # Signals Overview
 
-PhysioKit bundles end-to-end utilities for common wearable signals—ECG, PPG, respiratory (RSP), inertial (IMU), and derived HRV. Each module ships cleaning, peak detection, metrics, and synthetic data helpers built on a consistent API.
+physioKIT bundles end-to-end utilities for common wearable signals—ECG, PPG, respiratory (RSP), inertial (IMU), and derived HRV. Each module ships cleaning, peak detection, metrics, and synthetic data helpers built on a consistent API.
 
 ## Modules at a Glance
 

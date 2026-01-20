@@ -1,7 +1,7 @@
 /**
  * @file pk_ecg.c
  * @author Adam Page (adam.page@ambiq.com)
- * @brief PhysioKit: ECG
+ * @brief physioKIT: ECG
  * @version 1.0
  * @date 2023-12-13
  *

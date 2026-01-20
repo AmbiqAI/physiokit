@@ -1,7 +1,7 @@
 /**
  * @file pk_imu.h
  * @author Adam Page (adam.page@ambiq.com)
- * @brief PhysioKit: IMU
+ * @brief physioKIT: IMU
  * @version 1.0
  * @date 2023-12-13
  *

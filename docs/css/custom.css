@@ -214,8 +214,6 @@ th, td {
   margin-bottom: 2rem;
 }
 
-.sk-h2-span {
-  color:rgb(201,48,198);
-  font-size: 24px;
-  font-weight: 300;
+.md-typeset h2 {
+  color: #2094F3;
 }

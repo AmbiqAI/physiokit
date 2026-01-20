@@ -1,6 +1,6 @@
 # IMU Processing
 
-Inertial measurement units (IMUs) are electronic devices that measure and report a body's specific force (acceleration and angular velocity) and orientation (roll, pitch, and yaw). IMU signals are often used to measure activity, posture, and gait. In PhysioKit, we provide a variety of routines for processing IMU signals.
+Inertial measurement units (IMUs) are electronic devices that measure and report a body's specific force (acceleration and angular velocity) and orientation (roll, pitch, and yaw). IMU signals are often used to measure activity, posture, and gait. In physioKIT, we provide a variety of routines for processing IMU signals.
 
 ## Compute ENMO
 
@@ -52,7 +52,7 @@ Euclidean Norm Minus One (ENMO) is a measure of activity intensity. ENMO is calc
 
 ## Compute "Counts"
 
-"Counts" is a measure of activity intensity and typically reported by actigraphy watches. Unfortunately, "Counts" is not a standardized measure and is calculated differently by different manufacturers. In PhysioKit, we compute counts based on algorithms reported by [ActiGraph](https://doi.org/10.1038/s41598-022-16003-x).
+"Counts" is a measure of activity intensity and typically reported by actigraphy watches. Unfortunately, "Counts" is not a standardized measure and is calculated differently by different manufacturers. In physioKIT, we compute counts based on algorithms reported by [ActiGraph](https://doi.org/10.1038/s41598-022-16003-x).
 
 ???+ example
 

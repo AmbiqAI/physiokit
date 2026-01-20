@@ -1,10 +1,10 @@
 # Electrocardiography (ECG)
 
-Electrocardiography (ECG) is a non-invasive technique used to measure the electrical activity of the heart. ECG signals are often used to measure heart rate, heart rate variability (HRV), and respiratory rate. In PhysioKit, we provide a variety of routines for processing ECG signals.
+Electrocardiography (ECG) is a non-invasive technique used to measure the electrical activity of the heart. ECG signals are often used to measure heart rate, heart rate variability (HRV), and respiratory rate. In physioKIT, we provide a variety of routines for processing ECG signals.
 
 ## Synthetic ECG
 
-PhysioKit provides a simple way to generate synthetic ECG signals using the `ecg.synthesize` function. By supplying only a handful of parameters, we can generate a fairly authentic ECG signal. PhysioKit also provides a more customizable way to generate synthetic ECG signals. Check out the [Advanced Synthetic ECG](#advanced-synthetic-ecg) section for more details.
+physioKIT provides a simple way to generate synthetic ECG signals using the `ecg.synthesize` function. By supplying only a handful of parameters, we can generate a fairly authentic ECG signal. physioKIT also provides a more customizable way to generate synthetic ECG signals. Check out the [Advanced Synthetic ECG](#advanced-synthetic-ecg) section for more details.
 
 
 ???+ example
@@ -36,7 +36,7 @@ PhysioKit provides a simple way to generate synthetic ECG signals using the `ecg
 
 ## Noise Injection
 
-Often real world ECG signals are corrupted by a variaty of noise sources. To generate a more realistic ECG signal, PhysioKit provides a number of noise injection routines such as baseline wander, powerline noise, and custom noise sources.
+Often real world ECG signals are corrupted by a variaty of noise sources. To generate a more realistic ECG signal, physioKIT provides a number of noise injection routines such as baseline wander, powerline noise, and custom noise sources.
 
 ???+ example
 
@@ -194,7 +194,7 @@ Respiratory sinus arrhythmia (RSA) is a phenomenon where the heart rate varies w
 ---
 ## Advanced Synthetic ECG
 
-PhysioKit provides a more customizable way to generate synthetic ECG signals. The `ecg.generate_nsr` and `ecg.generate_afib` functions in able generating normal sinus rhythm (NSR) and atrial fibrillation (AFib) ECG signals, respectively. In addition to returning the ECG signal, these advanced funtions also return the PQRST segmentations and fiducials. Both methods also allow tuning parameters such as cardiovasular presets (e.g. LBBB), p and t wave multipliers, signal impedance, and more.
+physioKIT provides a more customizable way to generate synthetic ECG signals. The `ecg.generate_nsr` and `ecg.generate_afib` functions in able generating normal sinus rhythm (NSR) and atrial fibrillation (AFib) ECG signals, respectively. In addition to returning the ECG signal, these advanced funtions also return the PQRST segmentations and fiducials. Both methods also allow tuning parameters such as cardiovasular presets (e.g. LBBB), p and t wave multipliers, signal impedance, and more.
 
 ???+ example
 

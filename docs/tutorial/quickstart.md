@@ -2,7 +2,7 @@
 
 ## Installation
 
-Currently, the package is available on PyPI as a universal wheel for Python 3.11+. Installing PhysioKit can be done using `uv` or `pip`.
+Currently, the package is available on PyPI as a universal wheel for Python 3.12+. Installing physioKIT can be done using `uv` or `pip`.
 
 === "via uv"
 
