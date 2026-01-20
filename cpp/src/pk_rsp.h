@@ -1,7 +1,7 @@
 /**
  * @file pk_rsp.h
  * @author Adam Page (adam.page@ambiq.com)
- * @brief PhysioKit: RSP
+ * @brief physioKIT: RSP
  * @version 1.0
  * @date 2023-12-13
  *

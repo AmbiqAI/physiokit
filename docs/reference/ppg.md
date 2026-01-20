@@ -1,6 +1,6 @@
 # Photoplethysmography (PPG)
 
-Photoplethysmography (PPG) is a non-invasive optical technique used to measure blood volume changes in the microvascular bed of tissue. PPG signals are often used to measure heart rate, heart rate variability (HRV), respiratory rate, and oxygen saturation (SpO2). In PhysioKit, we provide a variety of routines for processing PPG signals.
+Photoplethysmography (PPG) is a non-invasive optical technique used to measure blood volume changes in the microvascular bed of tissue. PPG signals are often used to measure heart rate, heart rate variability (HRV), respiratory rate, and oxygen saturation (SpO2). In physioKIT, we provide a variety of routines for processing PPG signals.
 
 ## Synthetic PPG
 
@@ -191,7 +191,7 @@ Respiratory sinus arrhythmia (RSA) is a phenomenon where the heart rate varies w
 
 ## Compute SpO2
 
-Using two PPG signals with different wavelengths, we can compute the oxygen saturation (SpO2). In PhysioKit, we can compute SpO2 in time domain using `ppg.compute_spo2_in_time` or frequency domain using `ppg.compute_spo2_in_frequency`.
+Using two PPG signals with different wavelengths, we can compute the oxygen saturation (SpO2). In physioKIT, we can compute SpO2 in time domain using `ppg.compute_spo2_in_time` or frequency domain using `ppg.compute_spo2_in_frequency`.
 
 ???+ example
 

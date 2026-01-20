@@ -1,54 +1,38 @@
----
-title:
----
 #
 
-<p align="center">
-  <a href="https://github.com/AmbiqAI/physiokit"><img src="./assets/physiokit-banner.png" alt="PhysioKit"></a>
-</p>
+[![](./assets/physiokit-logo-light.png#only-light)](https://ambiqai.github.io/physiokit/)
+[![](./assets/physiokit-logo-dark.png#only-dark)](https://ambiqai.github.io/physiokit/)
 
+*An AI Development Kit (ADK) for physiological signal processing in ambulatory health monitoring and wearable technology.*
 
-<p align="center">
-<a href="https://pypi.org/project/physiokit" target="_blank">
-    <img src="https://img.shields.io/pypi/v/physiokit?color=%2334D058&label=pypi%20package" alt="Package version">
-</a>
-<a href="https://pypi.org/project/physiokit" target="_blank">
-    <img src="https://img.shields.io/pypi/pyversions/physiokit.svg?color=%2334D058" alt="Supported Python versions">
-</a>
-<a href="https://pypi.python.org/pypi/physiokit" target="_blank">
-    <img src="https://img.shields.io/pypi/dm/physiokit.svg?color=%2334D058" alt="Package downloads">
-</a>
-<a href="https://github.com/AmbiqAI/physiokit" target="_blank">
-    <img src="https://img.shields.io/github/stars/AmbiqAI/physiokit.svg?color=%2334D058" alt="Package downloads">
-</a>
-<a href="https://github.com/AmbiqAI/physiokit/LICENSE" target="_blank">
-    <img src="https://img.shields.io/pypi/l/physiokit" alt="License">
-</a>
-</p>
+[![PyPI](https://img.shields.io/pypi/v/physiokit?color=%2334D058&label=PyPI)](https://pypi.org/project/physiokit/)
+[![Python](https://img.shields.io/badge/python-3.12%2B-34D058)](https://pypi.org/project/physiokit/)
+[![Downloads](https://img.shields.io/pypi/dm/physiokit.svg?color=%2334D058)](https://pypi.org/project/physiokit/)
+[![GitHub Stars](https://img.shields.io/github/stars/AmbiqAI/physiokit.svg?color=%2334D058)](https://github.com/AmbiqAI/physiokit)
+[![License](https://img.shields.io/pypi/l/physiokit)](https://github.com/AmbiqAI/physiokit/blob/main/LICENSE)
 
+## Overview
 
-**Documentation**: <a href="https://ambiqai.github.io/physiokit" target="_blank">https://ambiqai.github.io/physiokit</a>
-
-**Source Code**: <a href="https://github.com/AmbiqAI/physiokit" target="_blank">https://github.com/AmbiqAI/physiokit</a>
-
----
+physioKIT is an AI Development Kit (ADK) for physiological signal processing in ambulatory health monitoring and wearable technology. It offers tools to process, analyze, and synthesize signals commonly captured by wearable sensors, including ECG, PPG, RSP, and IMU data. Its modular design and consistent APIs help researchers and developers integrate advanced signal processing and feature extraction into applications, speeding up development and deployment of health monitoring solutions.
 
 **Key Features**
 
-- Multi-signal coverage: ECG, PPG, RSP, IMU, and HRV.
-- Wearable-first: robust to noisy, real-time data.
-- Batteries included: cleaning, peak detection, metrics, and synthesis.
-- Extensible utilities: shared filters, smoothing, FFT, and noise/distortion.
+- **Multi-signal coverage**: ECG, PPG, RSP, IMU, and HRV out of the box.
+- **End-to-end pipeline**: Cleaning, peak detection, intervals, metrics, and synthesis.
+- **Shared utilities**: Filtering, smoothing, FFT, resampling, distortion/noise.
+- **Synthetic data**: Generate realistic signals for testing and benchmarking.
+- **Realtime-friendly**: Functions designed for streaming and incremental use.
 
-PhysioKit is built to be modular: each signal family has a consistent API for cleaning, peak finding, intervals, and downstream metrics. Shared `pk.signal` primitives keep filtering and resampling uniform so you can mix modalities without rewriting glue code. Synthetic generators let you prototype quickly or build regression data for your own pipelines.
+## Getting Started
 
-## Requirements
+- **Install** physioKIT with pip and get running in minutes. &nbsp; [:material-clock-fast: Install physioKIT](./tutorial/quickstart.md#installation){ .md-button }
+- **Check out** quickstart examples for ECG, PPG, RSP, and IMU. &nbsp; [:material-rocket-launch: Quickstart Examples](./reference/index.md){ .md-button }
+- **Explore** the [API Reference](api/physiokit) for detailed docs. &nbsp; [:material-book-open-page-variant: API Reference](api/physiokit){ .md-button }
 
-* [Python 3.10+](https://www.python.org)
 
 ## Installation
 
-Installing PhysioKit can be done using `uv` or `pip`.
+Install physioKIT using `uv` or `pip`.
 
 === "via uv"
 
@@ -138,3 +122,9 @@ Installing PhysioKit can be done using `uv` or `pip`.
 ## License
 
 This project is licensed under the terms of BSD 3-Clause.
+
+## Quick links
+
+- **Docs**: https://ambiqai.github.io/physiokit
+- **Reference**: [reference/index.md](reference/index.md)
+- **Source**: https://github.com/AmbiqAI/physiokit

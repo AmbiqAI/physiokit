@@ -1,6 +1,6 @@
 """
 
-# :material-heart-pulse: PhysioKit API
+# :material-heart-pulse: physioKIT API
 
 The top-level package exposes core physiology processing modules.
 

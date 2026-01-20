@@ -1,7 +1,7 @@
 /**
  * @file pk_ppg.h
  * @author Adam Page (adam.page@ambiq.com)
- * @brief PhysioKit: PPG
+ * @brief physioKIT: PPG
  * @version 1.0
  * @date 2023-12-13
  *

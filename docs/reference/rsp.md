@@ -1,6 +1,6 @@
 # Respiratory (RSP)
 
-Respiratory rate is often measured on the chest using a respiration belt or a respiratory inductance plethysmography (RIP) sensor. PhysioKit provides a set of functions to process RSP signals. The functions can be used to generate synthetic RSP signals, clean noisy RSP signals, extract respiratory peaks, compute respiratory rate, and compute dual band metrics.
+Respiratory rate is often measured on the chest using a respiration belt or a respiratory inductance plethysmography (RIP) sensor. physioKIT provides a set of functions to process RSP signals. The functions can be used to generate synthetic RSP signals, clean noisy RSP signals, extract respiratory peaks, compute respiratory rate, and compute dual band metrics.
 
 ## Synthetic RSP
 

@@ -1,89 +1,101 @@
-name: Release (via Release Please)
+name: Release
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - ready_for_review
+      - reopened
   workflow_dispatch:
 
-permissions: {}  # default none
-
-concurrency:
-  group: release-${{ github.ref }}
-  cancel-in-progress: false
+env:
+  PACKAGE_NAME: physiokit
+  PYTHON_VERSION: '3.12'
 
 jobs:
-
-  # 1) Let Release Please manage versions, tags, notes, and release PRs.
   release-please:
-    name: Release Please
-    runs-on: ubuntu-22.04
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
     permissions:
       contents: write
       pull-requests: write
       issues: write
-
-    outputs:
-      release_created: ${{ steps.rp.outputs.release_created }}
-      tag_name:        ${{ steps.rp.outputs.tag_name }}
-      version:         ${{ steps.rp.outputs.version }}
-      sha:             ${{ steps.rp.outputs.sha }}
     steps:
-      - name: Run Release Please
-        id: rp
+      - id: release
         uses: googleapis/release-please-action@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
-
-  # 2) Build & publish Python wheel to PyPi.
-  build-pypi:
-    if: needs.release-please.outputs.release_created == 'true'
-    needs: [release-please]
+  update-uv-lock:
+    if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'release-please--')
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - name: Checkout 🛎️
+      - name: Checkout release PR branch
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-      - name: Install and Build 🔧
+      - name: Regenerate uv.lock
+        run: uv lock
+      - name: Commit updated lockfile
+        if: ${{ !cancelled() }}
         run: |
-          uv build
-      - name: Store the distribution packages
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-package-distributions
-          path: dist/
+          if git diff --quiet -- uv.lock; then
+            echo "uv.lock already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add uv.lock
+          git commit -m "chore: sync uv.lock after version bump"
+          git push
 
   publish-pypi:
-    if: needs.release-please.outputs.release_created == 'true'
-    needs: [build-pypi]
-    runs-on: ubuntu-latest
-    environment: production
+    needs: release-please
+    if: needs.release-please.outputs.releases_created == 'true' || needs.release-please.outputs.release_created == 'true'
+    environment:
+      name: pypi
+      url: https://pypi.org/p/${{ env.PACKAGE_NAME }}
     permissions:
+      contents: read
       id-token: write
-      contents: write
+    runs-on: ubuntu-latest
     steps:
-      - name: Download all the dists
-        uses: actions/download-artifact@v4
+      - name: Checkout tag
+        uses: actions/checkout@v4
         with:
-          name: python-package-distributions
-          path: dist/
+          ref: ${{ needs.release-please.outputs.tag_name }}
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Build distributions
+        run: uv build
       - name: Publish to PyPI 📦
         uses: pypa/gh-action-pypi-publish@release/v1
 
-    # 4) Build & publish docs on each release.
-  docs:
-    if: needs.release-please.outputs.release_created == 'true'
-    needs: [release-please]
-    uses: ./.github/workflows/docs.yaml
-    secrets: inherit
+  publish-docs:
+    needs: release-please
+    if: needs.release-please.outputs.releases_created == 'true' || needs.release-please.outputs.release_created == 'true'
     permissions:
-      contents: write
+      contents: read
       pages: write
       id-token: write
+    uses: ./.github/workflows/docs.yaml
+    with:
+      ref: ${{ needs.release-please.outputs.tag_name }}
+    secrets: inherit

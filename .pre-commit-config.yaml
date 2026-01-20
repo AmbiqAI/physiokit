@@ -10,7 +10,7 @@ repos:
     rev: 23.3.0
     hooks:
       - id: black
-        language_version: python3.11
+        language_version: python3.12
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
@@ -24,15 +24,10 @@ repos:
       - id: name-tests-test
       - id: no-commit-to-branch
       - id: trailing-whitespace
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.5.1
     hooks:
-      - id: isort
-        args: ["--profile", "black", "--filter-files"]
-  - repo: local
-    hooks:
-      - id: pylint
-        name: pylint
-        entry: bash -c 'uv run task lint'
-        language: system
-        types: [python]
+      - id: ruff
+        args: [ --config=pyproject.toml ]
+      - id: ruff-format
+        args: [ --config=pyproject.toml ]

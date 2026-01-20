@@ -1,7 +1,7 @@
 /**
  * @file pk_transform.h
  * @author Adam Page (adam.page@ambiq.com)
- * @brief PhysioKit: Transforms
+ * @brief physioKIT: Transforms
  * @version 1.0
  * @date 2023-12-13
  *

@@ -1,36 +1,15 @@
-<p align="center">
-  <a href="https://github.com/AmbiqAI/physiokit"><img src="https://raw.githubusercontent.com/AmbiqAI/physiokit/main/docs/assets/physiokit-banner.png" alt="PhysioKit"></a>
-</p>
+# physioKIT
 
-<p align="center">
-    <em>A Python toolkit to process raw ambulatory bio-signals. </em>
-</p>
+> An AI Development Kit (ADK) for physiological signal processing in Python.
 
-<p align="center">
-<a href="https://pypi.org/project/physiokit" target="_blank">
-    <img src="https://img.shields.io/pypi/v/physiokit?color=%2334D058&label=pypi%20package" alt="Package version">
-</a>
-<a href="https://pypi.org/project/physiokit" target="_blank">
-    <img src="https://img.shields.io/pypi/pyversions/physiokit.svg?color=%2334D058" alt="Supported Python versions">
-</a>
-<a href="https://pypi.python.org/pypi/physiokit" target="_blank">
-    <img src="https://img.shields.io/pypi/dm/physiokit.svg?color=%2334D058" alt="Package downloads">
-</a>
-<a href="https://github.com/AmbiqAI/physiokit" target="_blank">
-    <img src="https://img.shields.io/github/stars/AmbiqAI/physiokit.svg?color=%2334D058" alt="Package downloads">
-</a>
-<a href="https://github.com/AmbiqAI/physiokit/LICENSE" target="_blank">
-    <img src="https://img.shields.io/pypi/l/physiokit" alt="License">
-</a>
-</p>
+[![PyPI](https://img.shields.io/pypi/v/physiokit?color=%2334D058&label=PyPI)](https://pypi.org/project/physiokit/)
+[![Python](https://img.shields.io/badge/python-3.12%2B-34D058)](https://pypi.org/project/physiokit/)
+[![Downloads](https://img.shields.io/pypi/dm/physiokit.svg?color=%2334D058)](https://pypi.org/project/physiokit/)
+[![GitHub Stars](https://img.shields.io/github/stars/AmbiqAI/physiokit.svg?color=%2334D058)](https://github.com/AmbiqAI/physiokit)
+[![License](https://img.shields.io/pypi/l/physiokit)](https://github.com/AmbiqAI/physiokit/blob/main/LICENSE)
 
----
 
-**Documentation**: <a href="https://ambiqai.github.io/physiokit" target="_blank">https://ambiqai.github.io/physiokit</a>
-
-**Source Code**: <a href="https://github.com/AmbiqAI/physiokit" target="_blank">https://github.com/AmbiqAI/physiokit</a>
-
----
+physioKIT is an open-source Python package designed for processing and analyzing physiological signals commonly acquired from wearable sensors. It provides a comprehensive suite of tools for signal processing, feature extraction, and synthetic signal generation, making it ideal for researchers and developers working in the field of ambulatory health monitoring and wearable technology.
 
 **Key Features:**
 
@@ -41,11 +20,11 @@
 
 ## Requirements
 
-* [Python 3.11+](https://www.python.org)
+* [Python 3.12+](https://www.python.org)
 
 ## Installation
 
-Installing PhysioKit can be done using `uv` or `pip`.
+Installing physioKIT can be done using `uv` or `pip`.
 
 ```console
 pip install physiokit
