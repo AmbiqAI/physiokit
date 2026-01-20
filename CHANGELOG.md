@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.11.0](https://github.com/AmbiqAI/physiokit/compare/v0.10.1...v0.11.0) (2026-01-20)
+
+
+### Features
+
+* Update name and branding. ([b363894](https://github.com/AmbiqAI/physiokit/commit/b3638943ce62f66638e26b084eb1d64dbd9487bb))
+* Update name and branding. ([d8f7188](https://github.com/AmbiqAI/physiokit/commit/d8f7188609b6db0389e0a895569d4ee436055c77))
+
 ## [0.10.1](https://github.com/AmbiqAI/physiokit/compare/v0.10.0...v0.10.1) (2025-12-12)
 
 
