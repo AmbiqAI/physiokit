@@ -16,6 +16,9 @@ env:
   PACKAGE_NAME: physiokit
   PYTHON_VERSION: '3.12'
 
+# Every job declares its own permissions.
+permissions: {}
+
 jobs:
   release-please:
     if: github.event_name != 'pull_request'
