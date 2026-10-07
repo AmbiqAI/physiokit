@@ -15,7 +15,7 @@ const capabilities = [
 ---
 {data.hero?.tagline ? <>
   <section class="physiokit-hero" aria-labelledby="_top">
-    <div class="hero-meta"><span class="product">physioKIT</span><span class="version">v{version}</span></div>
+    <div class="hero-meta"><span class="product"><img src={`${base}/assets/favicon.png`} alt="" width="28" height="28" />physioKIT</span><span class="version">v{version}</span></div>
     <div class="hero-layout">
       <div class="hero-copy">
         <h1 id="_top">Understand the signals<br /><span>behind wearable health.</span></h1>
@@ -36,26 +36,26 @@ const capabilities = [
   </nav>
 </> : <DefaultHero />}
 <style>
-  .physiokit-hero { background: #101318; color: #d6d9e0; border: 1px solid #292f38; border-radius: 1.5rem; padding: clamp(1.5rem, 4vw, 3.5rem); }
-  .hero-meta { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 2.25rem; }
-  .product { color: #f1f3f7; font-size: clamp(1.75rem, 3vw, 2.4rem); font-weight: 750; letter-spacing: -.04em; }
-  .product::before { content: ''; display: inline-block; width: .5rem; height: .5rem; background: #38a8ef; border-radius: 50%; margin: 0 .65rem .35rem 0; }
+  .physiokit-hero { background: #101318; color: #d6d9e0; border: 1px solid #292f38; border-radius: 1.5rem; padding: clamp(1.5rem, 3vw, 2.25rem); }
+  .hero-meta { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+  .product { display: inline-flex; align-items: center; gap: .6rem; color: #f1f3f7; font-size: clamp(1.75rem, 3vw, 2.4rem); font-weight: 750; letter-spacing: -.04em; }
+  .product img { display: block; width: 1.5rem; height: 1.5rem; object-fit: contain; }
   .version { border: 1px solid #525966; border-radius: 999px; padding: .35rem .8rem; color: #c1c7d1; white-space: nowrap; font-size: .9rem; font-variant-numeric: tabular-nums; }
   .hero-layout { display: grid; grid-template-columns: 1.25fr 1fr; gap: clamp(1.5rem, 4vw, 3.5rem); align-items: center; }
-  h1 { color: #fff; font-size: clamp(2.25rem, 3.5vw, 3.5rem); line-height: 1.1; letter-spacing: -.04em; margin: 0 0 1.5rem; }
+  h1 { color: #fff; font-size: clamp(2.25rem, 3.5vw, 3.5rem); line-height: 1.1; letter-spacing: -.04em; margin: 0 0 1rem; }
   h1 span { color: #72c8fb; }
-  .hero-copy p { max-width: 57ch; font-size: 1.08rem; line-height: 1.75; }
+  .hero-copy p { max-width: 57ch; font-size: 1.08rem; line-height: 1.6; }
   nav { display: flex; flex-wrap: wrap; gap: .75rem; }
-  .hero-actions { margin-top: 2rem; }
+  .hero-actions { margin-top: 1.4rem; }
   nav a { display: inline-flex; align-items: center; gap: .75rem; padding: .7rem 1.15rem; border: 1px solid #505761; border-radius: 999px; color: #f3f4f7; text-decoration: none; font-weight: 600; }
   .hero-actions .primary { color: #101318; background: #72c8fb; border-color: #72c8fb; }
   .hero-actions a:hover { border-color: #a4dcff; background: #1c2b37; }
   .hero-actions .primary:hover { color: #101318; background: #a4dcff; }
   a:focus-visible { outline: 2px solid #72c8fb; outline-offset: 4px; }
-  .capabilities { background: #191e25; border: 1px solid #343d49; border-radius: 1.15rem; padding: 1.35rem; }
-  .capabilities-label { color: #c1c7d1; text-transform: uppercase; letter-spacing: .1em; font-size: .72rem; font-weight: 600; margin: 0 0 1.15rem; }
-  ol { display: grid; gap: .65rem; list-style: none; margin: 0; padding: 0; }
-  li { display: flex; align-items: center; gap: .85rem; border: 1px solid #363f4b; background: #202731; border-radius: .6rem; padding: .85rem; }
+  .capabilities { background: #191e25; border: 1px solid #343d49; border-radius: 1.15rem; padding: 1rem; }
+  .capabilities-label { color: #c1c7d1; text-transform: uppercase; letter-spacing: .1em; font-size: .72rem; font-weight: 600; margin: 0 0 .75rem; }
+  ol { display: grid; gap: .45rem; list-style: none; margin: 0; padding: 0; }
+  li { display: flex; align-items: center; gap: .75rem; border: 1px solid #363f4b; background: #202731; border-radius: .6rem; padding: .55rem .7rem; }
   .step { color: #72c8fb; font-size: .78rem; font-variant-numeric: tabular-nums; }
   li strong { display: block; color: #f0f2f6; font-size: .95rem; }
   li div > span { display: block; color: #bbc3d0; font-size: .8rem; margin-top: .2rem; line-height: 1.45; }
@@ -63,5 +63,5 @@ const capabilities = [
   .signal-links a { color: var(--helia-product-accent); border-color: var(--sl-color-hairline); font-weight: 500; }
   .signal-links a:hover { background: color-mix(in srgb, var(--helia-product-accent) 10%, transparent); }
   @media (max-width: 60rem) { .hero-layout { grid-template-columns: 1fr; } ol { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 34rem) { ol { grid-template-columns: 1fr; } .hero-meta { margin-bottom: 1.75rem; } }
+  @media (max-width: 34rem) { ol { grid-template-columns: 1fr; } }
 </style>
