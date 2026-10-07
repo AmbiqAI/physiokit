@@ -2,14 +2,14 @@
 title: "Understand the signals behind wearable health"
 description: "Python tools to generate, clean, and measure physiological signals."
 hero:
-  tagline: "physioKIT is a Python-based signal-processing toolkit for ECG, PPG, respiration, motion, and heart rate variability. Generate test signals, clean measurements, and derive features through a consistent API."
+  tagline: "physioKIT is an open-source Python library for physiological signal processing. Generate example waveforms, clean sampled data, and calculate peaks, rates, motion features, and heart rate variability."
 ---
 
-## What is physioKIT?
+## From sampled signals to measurements
 
-physioKIT helps developers explore physiological data collected by wearables and other sensors. It provides Python routines for generating synthetic signals, filtering and cleaning recordings, finding events such as peaks, and calculating derived measures. The examples show how these pieces fit together; the [Python API](/physiokit/api/) documents each callable in detail.
+Raw sensor samples rarely answer a question on their own. With ECG, for example, you can clean a waveform, locate R-peaks, derive RR intervals, and calculate heart rate variability. physioKIT exposes those steps as separate Python functions, so you can inspect the intermediate signals and use the measurements you need. The guides below cover pulse, respiration, and motion workflows too.
 
-The toolkit focuses on signal processing. It does not require a model-training workflow to get started. Install the package, try an example with synthetic data, then bring your own recordings when you are ready.
+New to the library? The [quickstart](/physiokit/tutorial/quickstart/) runs that ECG workflow with synthetic data, so no external dataset is needed. Then choose a signal guide for code examples and saved visualizations, or use the [Python API](/physiokit/api/) to check function parameters and return values.
 
 ## Explore by signal
 
@@ -22,8 +22,8 @@ The toolkit focuses on signal processing. It does not require a model-training w
   <a className="physiokit-card" href="/physiokit/reference/signal/"><strong>Signal utilities</strong><span>Filter, resample, smooth, and inspect sampled signals.</span></a>
 </div>
 
-## Start with an example
+## Bring your own signal
 
-The [quickstart](/physiokit/tutorial/quickstart/) installs physioKIT and walks through a synthetic ECG example. The [signals overview](/physiokit/reference/) collects shorter examples across modalities. Interactive plots show the saved example waveforms; they are documentation assets, not measurements from a live device.
+Once you have tried a synthetic example, replace its generated samples with your own recording and set the correct sampling rate. Use the [signals overview](/physiokit/reference/) to find a matching workflow, then consult the [Python API](/physiokit/api/) for the inputs and outputs of each function. The interactive plots show saved example waveforms, not measurements from a live device.
 
 physioKIT is distributed under the [BSD-3-Clause license](https://github.com/AmbiqAI/physiokit/blob/main/LICENSE). Refer to the [source repository](https://github.com/AmbiqAI/physiokit) for development and issue tracking.

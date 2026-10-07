@@ -1,6 +1,7 @@
 ---
 import { readFileSync } from 'node:fs';
 import DefaultHero from '@astrojs/starlight/components/Hero.astro';
+import Button from '@ambiqai/helia-ui/astro/Button';
 const { data } = Astro.locals.starlightRoute.entry;
 const source = readFileSync('../pyproject.toml', 'utf8');
 const version = source.match(/^version\s*=\s*"([^"]+)"/m)?.[1];
@@ -8,9 +9,9 @@ if (!version) throw new Error('Missing physioKIT version in pyproject.toml');
 const base = import.meta.env.BASE_URL;
 const capabilities = [
   ['01', 'Generate', 'Synthetic ECG, PPG, and respiratory signals'],
-  ['02', 'Clean', 'Filters and noise handling for sampled signals'],
-  ['03', 'Measure', 'Peaks, intervals, rates, and HRV metrics'],
-  ['04', 'Explore', 'Interactive examples and a searchable Python API'],
+  ['02', 'Clean', 'Filter noise from sampled sensor data'],
+  ['03', 'Find events', 'Locate peaks and derive intervals'],
+  ['04', 'Measure', 'Calculate rates, motion features, and HRV'],
 ];
 ---
 {data.hero?.tagline ? <>
@@ -32,7 +33,7 @@ const capabilities = [
     </div>
   </section>
   <nav class="signal-links" aria-label="Explore signal examples">
-    {['ECG', 'PPG', 'RSP', 'IMU', 'HRV'].map((label) => <a href={`${base}/reference/${label.toLowerCase()}/`}>{label}<span aria-hidden="true">↗</span></a>)}
+    {['ECG', 'PPG', 'RSP', 'IMU', 'HRV'].map((label) => <Button variant="secondary" size="sm" href={`${base}/reference/${label.toLowerCase()}/`}>{label} <span aria-hidden="true">↗</span></Button>)}
   </nav>
 </> : <DefaultHero />}
 <style>
@@ -59,9 +60,7 @@ const capabilities = [
   .step { color: #72c8fb; font-size: .78rem; font-variant-numeric: tabular-nums; }
   li strong { display: block; color: #f0f2f6; font-size: .95rem; }
   li div > span { display: block; color: #bbc3d0; font-size: .8rem; margin-top: .2rem; line-height: 1.45; }
-  .signal-links { justify-content: center; margin: 1.75rem 0 .25rem; }
-  .signal-links a { color: var(--helia-product-accent); border-color: var(--sl-color-hairline); font-weight: 500; }
-  .signal-links a:hover { background: color-mix(in srgb, var(--helia-product-accent) 10%, transparent); }
+  .signal-links { justify-content: center; margin: 1.5rem 0 .25rem; }
   @media (max-width: 60rem) { .hero-layout { grid-template-columns: 1fr; } ol { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 34rem) { ol { grid-template-columns: 1fr; } }
 </style>
