@@ -55,3 +55,13 @@ test('unknown routes return the built not-found page', async ({ page }) => {
   await expect(page.getByRole('heading', { name: '404', exact: true })).toBeVisible();
   await expect(page.locator('.helia-site-header__title')).toHaveAttribute('href', '/physiokit/');
 });
+
+test('API catalog search opens the selected function anchor', async ({ page }) => {
+  await page.goto('/physiokit/api/');
+  await page.getByRole('searchbox', { name: 'Search Python API' }).fill('simulate_daubechies');
+  const result = page.locator('.helia-reference-browser').getByRole('link', { name: 'simulate_daubechies', exact: true });
+  await expect(result).toHaveCount(1);
+  await result.click();
+  await expect(page).toHaveURL(/\/api\/physiokit\/ecg\/synthesize\/#physiokit\.ecg\.synthesize\.simulate_daubechies$/);
+  await expect(page.locator('[id="physiokit.ecg.synthesize.simulate_daubechies"]')).toBeVisible();
+});
