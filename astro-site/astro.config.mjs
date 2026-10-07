@@ -21,6 +21,7 @@ export default defineConfig({
         sidebar: 'always',
         header: {
           title: 'physioKIT',
+          titleRegularPrefix: 'physio',
           hub: { label: 'HELIA', href: 'https://ambiqai.github.io/helia-developer-hub/' },
         },
         discoverability: { markdown: true, llms: true, jsonLd: true, ogImage: true },
