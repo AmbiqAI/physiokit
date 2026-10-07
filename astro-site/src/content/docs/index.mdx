@@ -1,0 +1,56 @@
+---
+title: "Understand the signals behind wearable health"
+description: "Python tools to generate, clean, and measure physiological signals."
+hero:
+  tagline: "physioKIT is an open-source Python library for physiological signal processing. Generate example waveforms, clean sampled data, and calculate peaks, rates, motion features, and heart rate variability."
+---
+
+import Icon from '@ambiqai/helia-ui/astro/Icon';
+import Card from '@ambiqai/helia-ui/astro/Card';
+import CardHeader from '@ambiqai/helia-ui/astro/CardHeader';
+import CardContent from '@ambiqai/helia-ui/astro/CardContent';
+import CardGrid from '@ambiqai/helia-ui/astro/CardGrid';
+
+<span id="from-sampled-signals-to-measurements"></span>
+
+## What is physioKIT?
+
+Raw sensor samples rarely answer a question on their own. With ECG, for example, you can clean a waveform, locate R-peaks, derive RR intervals, and calculate heart rate variability. physioKIT exposes those steps as separate Python functions, so you can inspect the intermediate signals and use the measurements you need. The guides below cover pulse, respiration, and motion workflows too.
+
+New to the library? The [quickstart](/physiokit/tutorial/quickstart/) runs that ECG workflow with synthetic data, so no external dataset is needed. Then replace the generated samples with your own recording and set the correct sampling rate. The signal guides show code examples and saved visualizations; the [Python API](/physiokit/api/) documents parameters and return values.
+
+## Explore by signal
+
+<div className="physiokit-cards">
+  <a className="physiokit-card" href="/physiokit/reference/ecg/"><span className="physiokit-card-heading"><Icon name="heart-pulse" /><strong>ECG</strong></span><span>Synthesize and clean waveforms, find R-peaks, and derive RR intervals.</span></a>
+  <a className="physiokit-card" href="/physiokit/reference/ppg/"><span className="physiokit-card-heading"><Icon name="wave-square" /><strong>PPG</strong></span><span>Work with pulse peaks, heart and respiratory rate estimates, and SpO₂ examples.</span></a>
+  <a className="physiokit-card" href="/physiokit/reference/rsp/"><span className="physiokit-card-heading"><Icon name="lungs" /><strong>Respiration</strong></span><span>Explore respiratory waveforms, peaks, and rate calculations.</span></a>
+  <a className="physiokit-card" href="/physiokit/reference/imu/"><span className="physiokit-card-heading"><Icon name="person-walking" /><strong>Motion</strong></span><span>Calculate ENMO, tilt angles, and activity counts from accelerometer data.</span></a>
+  <a className="physiokit-card" href="/physiokit/reference/hrv/"><span className="physiokit-card-heading"><Icon name="chart-line" /><strong>Heart rate variability</strong></span><span>Calculate time- and frequency-domain measures from beat intervals.</span></a>
+  <a className="physiokit-card" href="/physiokit/reference/signal/"><span className="physiokit-card-heading"><Icon name="sliders" /><strong>Signal utilities</strong></span><span>Filter, resample, smooth, and inspect sampled signals.</span></a>
+</div>
+
+## Installation
+
+In a Python 3.12 project, add physioKIT:
+
+```bash
+uv init --python 3.12 my-physio-project
+cd my-physio-project
+uv add physiokit
+```
+
+The [quickstart](/physiokit/tutorial/quickstart/) runs a synthetic ECG example. For an existing recording, follow [Use your own data](/physiokit/tutorial/your-data/). The interactive plots show saved example waveforms, not live measurements.
+
+physioKIT is distributed under the [BSD-3-Clause license](https://github.com/AmbiqAI/physiokit/blob/main/LICENSE). Refer to the [source repository](https://github.com/AmbiqAI/physiokit) for development and issue tracking.
+
+<span id="bring-your-own-signal"></span>
+
+## Explore the documentation
+
+<CardGrid columns={2} equalize class="kit-home-nav">
+  <Card as="article" interactive><CardHeader titleAs="h3" href="/physiokit/tutorial/quickstart/"><Icon name="circle-play" text="Getting started" /></CardHeader><CardContent><p>Install physioKIT and run a synthetic ECG example.</p><p class="physiokit-card-cue">Start here →</p></CardContent></Card>
+  <Card as="article" interactive><CardHeader titleAs="h3" href="/physiokit/reference/"><Icon name="wave-square" text="Signal guides" /></CardHeader><CardContent><p>Explore ECG, PPG, respiration, motion and HRV workflows.</p><p class="physiokit-card-cue">Explore guides →</p></CardContent></Card>
+  <Card as="article" interactive><CardHeader titleAs="h3" href="/physiokit/tutorial/your-data/"><Icon name="database" text="Use your own data" /></CardHeader><CardContent><p>Bring a recording into a signal-processing workflow.</p><p class="physiokit-card-cue">Use your recording →</p></CardContent></Card>
+  <Card as="article" interactive><CardHeader titleAs="h3" href="/physiokit/api/"><Icon name="code" text="Python API" /></CardHeader><CardContent><p>Look up functions, parameters and return values.</p><p class="physiokit-card-cue">Browse the API →</p></CardContent></Card>
+</CardGrid>

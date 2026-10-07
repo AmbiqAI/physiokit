@@ -20,7 +20,7 @@ physioKIT is an open-source Python package designed for processing and analyzing
 
 ## Requirements
 
-* [Python 3.12+](https://www.python.org)
+* [Python 3.12–3.14](https://www.python.org)
 
 ## Installation
 
@@ -83,6 +83,10 @@ hrv_fd = pk.hrv.compute_hrv_frequency(
 )
 
 ```
+
+## Documentation
+
+The [physioKIT documentation](https://ambiqai.github.io/physiokit/) includes a quickstart, signal examples, and a generated Python API reference. Its source and local build instructions are in [`astro-site/`](astro-site/README.md).
 
 ## License
 

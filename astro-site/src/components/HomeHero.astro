@@ -1,0 +1,67 @@
+---
+import { readFileSync } from 'node:fs';
+import DefaultHero from '@astrojs/starlight/components/Hero.astro';
+import Button from '@ambiqai/helia-ui/astro/Button';
+const { data } = Astro.locals.starlightRoute.entry;
+const source = readFileSync('../pyproject.toml', 'utf8');
+const version = source.match(/^version\s*=\s*"([^"]+)"/m)?.[1];
+if (!version) throw new Error('Missing physioKIT version in pyproject.toml');
+const base = import.meta.env.BASE_URL;
+const isHome = Astro.url.pathname.replace(/\/+$/, '') === base.replace(/\/+$/, '');
+const capabilities = [
+  ['01', 'Generate', 'Synthetic ECG, PPG, and respiratory signals'],
+  ['02', 'Clean', 'Filter noise from sampled sensor data'],
+  ['03', 'Find events', 'Locate peaks and derive intervals'],
+  ['04', 'Measure', 'Calculate rates, motion features, and HRV'],
+];
+---
+{isHome && data.hero?.tagline ? <>
+  <section class="physiokit-hero" aria-labelledby="_top">
+    <div class="hero-meta"><span class="product"><img src={`${base}/assets/favicon.png`} alt="" width="28" height="28" />physioKIT</span><span class="version">v{version}</span></div>
+    <div class="hero-layout">
+      <div class="hero-copy">
+        <h1 id="_top">Understand the signals<br /><span>behind wearable health.</span></h1>
+        <p>{data.hero.tagline}</p>
+        <nav class="hero-actions" aria-label="Get started with physioKIT">
+          <a class="primary" href={`${base}/tutorial/`}>Get started</a>
+          <a href={`${base}/reference/`}>Explore examples</a>
+        </nav>
+      </div>
+      <div class="capabilities" aria-label="physioKIT capabilities">
+        <p class="capabilities-label">From signal to insight</p>
+        <ol>{capabilities.map(([number, title, description]) => <li><span class="step">{number}</span><div><strong>{title}</strong><span>{description}</span></div></li>)}</ol>
+      </div>
+    </div>
+  </section>
+  <nav class="signal-links" aria-label="Explore signal examples">
+    {['ECG', 'PPG', 'RSP', 'IMU', 'HRV'].map((label) => <Button variant="secondary" size="sm" href={`${base}/reference/${label.toLowerCase()}/`}>{label} <span aria-hidden="true">↗</span></Button>)}
+  </nav>
+</> : <DefaultHero />}
+<style>
+  .physiokit-hero { background: #101318; color: #d6d9e0; border: 1px solid #292f38; border-radius: 1.5rem; padding: clamp(1.5rem, 3vw, 2.25rem); }
+  .hero-meta { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+  .product { display: inline-flex; align-items: center; gap: .6rem; color: #f1f3f7; font-size: clamp(1.75rem, 3vw, 2.4rem); font-weight: 750; letter-spacing: -.04em; }
+  .product img { display: block; width: 1.5rem; height: 1.5rem; object-fit: contain; }
+  .version { border: 1px solid #525966; border-radius: 999px; padding: .35rem .8rem; color: #c1c7d1; white-space: nowrap; font-size: .9rem; font-variant-numeric: tabular-nums; }
+  .hero-layout { display: grid; grid-template-columns: 1.25fr 1fr; gap: clamp(1.5rem, 4vw, 3.5rem); align-items: center; }
+  h1 { color: #fff; font-size: clamp(2.25rem, 3.5vw, 3.5rem); line-height: 1.1; letter-spacing: -.04em; margin: 0 0 1rem; }
+  h1 span { color: #72c8fb; }
+  .hero-copy p { max-width: 57ch; font-size: 1.08rem; line-height: 1.6; }
+  nav { display: flex; flex-wrap: wrap; gap: .75rem; }
+  .hero-actions { margin-top: 1.4rem; }
+  .hero-actions a { display: inline-flex; align-items: center; gap: .75rem; padding: .7rem 1.15rem; border: 1px solid #505761; border-radius: 999px; color: #f3f4f7; text-decoration: none; font-weight: 600; }
+  .hero-actions .primary { color: #101318; background: #72c8fb; border-color: #72c8fb; }
+  .hero-actions a:hover { border-color: #a4dcff; background: #1c2b37; }
+  .hero-actions .primary:hover { color: #101318; background: #a4dcff; }
+  .hero-actions a:focus-visible { outline: 2px solid #72c8fb; outline-offset: 4px; }
+  .capabilities { background: #191e25; border: 1px solid #343d49; border-radius: 1.15rem; padding: 1rem; }
+  .capabilities-label { color: #c1c7d1; text-transform: uppercase; letter-spacing: .1em; font-size: .72rem; font-weight: 600; margin: 0 0 .75rem; }
+  ol { display: grid; gap: .45rem; list-style: none; margin: 0; padding: 0; }
+  li { display: flex; align-items: center; gap: .75rem; border: 1px solid #363f4b; background: #202731; border-radius: .6rem; padding: .55rem .7rem; }
+  .step { color: #72c8fb; font-size: .78rem; font-variant-numeric: tabular-nums; }
+  li strong { display: block; color: #f0f2f6; font-size: .95rem; }
+  li div > span { display: block; color: #bbc3d0; font-size: .8rem; margin-top: .2rem; line-height: 1.45; }
+  .signal-links { justify-content: center; margin: 1.5rem 0 .25rem; }
+  @media (max-width: 60rem) { .hero-layout { grid-template-columns: 1fr; } ol { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 34rem) { ol { grid-template-columns: 1fr; } }
+</style>

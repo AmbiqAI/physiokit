@@ -1,0 +1,219 @@
+---
+title: "Photoplethysmography (PPG)"
+description: "Synthesize, clean, and measure PPG with pulse and oxygenation examples."
+---
+
+Photoplethysmography (PPG) is a non-invasive optical technique used to measure blood volume changes in the microvascular bed of tissue. PPG signals are often used to measure heart rate, heart rate variability (HRV), respiratory rate, and oxygen saturation (SpO2). In physioKIT, we provide a variety of routines for processing PPG signals.
+
+The snippets below form a walkthrough: later snippets may reuse variables from earlier ones. The plots are saved example outputs. For a standalone runnable example, start with the [quickstart](/physiokit/tutorial/quickstart/).
+
+## Synthetic PPG
+
+We can generate a synthetic PPG signal using the `ppg.synthesize` function. The function returns three NumPy arrays: the PPG waveform, segmentation mask, and fiducial mask. The `signal_length` parameter specifies the number of samples. The `sample_rate` parameter specifies the sampling rate in Hz. The `heart_rate` parameter specifies the heart rate in beats per minute (BPM).
+
+In the following snippet, we generate a synthetic PPG signal with a heart rate of 64 BPM sampled at 1000 Hz.
+
+```python
+import physiokit as pk
+
+sample_rate = 1000  # Hz
+heart_rate = 64  # BPM
+signal_length = 10*sample_rate # 10 seconds
+
+ppg, segs, fids = pk.ppg.synthesize(
+    signal_length=signal_length,
+    sample_rate=sample_rate,
+    heart_rate=heart_rate,
+    frequency_modulation=0.3,
+    ibi_randomness=0.1
+)
+```
+
+<iframe className="physiokit-plot" src="/physiokit/assets/pk-synthetic-ppg-raw.html" title="PPG example plot: pk-synthetic-ppg-raw.html" loading="lazy"></iframe>
+
+---
+
+## Noise Injection
+
+We can additionally add noise to generate a more realistic PPG signal.
+
+Given the previous synthetic PPG signal, we can add baseline wander, powerline noise, and custom noise sources.
+
+```python
+# Add baseline wander
+ppg_noise = pk.signal.add_baseline_wander(
+    data=ppg,
+    amplitude=1,
+    frequency=0.5,
+    sample_rate=sample_rate
+)
+
+# Add powerline noise
+ppg_noise = pk.signal.add_powerline_noise(
+    data=ppg_noise,
+    amplitude=0.05,
+    frequency=60,
+    sample_rate=sample_rate
+)
+
+# Add additional noise sources
+ppg_noise = pk.signal.add_noise_sources(
+    data=ppg_noise,
+    amplitudes=[0.05, 0.05],
+    frequencies=[10, 20],
+    noise_shapes=["laplace", "laplace"],
+    sample_rate=sample_rate
+)
+```
+
+<iframe className="physiokit-plot" src="/physiokit/assets/pk-synthetic-ppg-noise.html" title="PPG example plot: pk-synthetic-ppg-noise.html" loading="lazy"></iframe>
+
+---
+
+## Sanitize PPG
+
+PPG signals are often corrupted by noise. The `ppg.clean` function provides a simple way to remove noise from PPG signals. By default, the routine implements a bandpass filter with cutoff frequencies of 0.5 Hz and 4 Hz. The `lowcut` and `highcut` parameters can be used to specify the cutoff frequencies. The `order` parameter specifies the order of the filter. The `sample_rate` parameter specifies the sampling rate in Hz. The function returns a numpy array with the cleaned PPG signal.
+
+In the following snippet, we clean the noisy PPG signal using a bandpass filter with cutoff frequencies of 0.5 Hz and 4 Hz.
+
+```python
+...
+
+# Clean PPG signal
+ppg_clean = pk.ppg.clean(
+    data=ppg_noise,
+    lowcut=0.5,
+    highcut=4,
+    order=3,
+    sample_rate=sample_rate
+)
+```
+
+<iframe className="physiokit-plot" src="/physiokit/assets/pk-synthetic-ppg-clean.html" title="PPG example plot: pk-synthetic-ppg-clean.html" loading="lazy"></iframe>
+
+---
+
+## Extract R-Peaks and RR-Intervals
+
+A common task in PPG processing is to extract systolic peaks and peak-to-peak intervals. This has a 1:1 correspondence with r-peaks and therefore can be used to compute heart rate and HRV.
+
+In the following snippet, we extract systolic peaks and peak-to-peak intervals from the cleaned PPG signal.
+
+```python
+...
+
+# Extract s-peaks
+peaks = pk.ppg.find_peaks(data=ppg_clean, sample_rate=sample_rate)
+
+# Compute peak-to-peak intervals
+rri = pk.ppg.compute_rr_intervals(peaks=peaks)
+
+# Identify abnormal RR-intervals (e.g., ectopic beats)
+# Mask is a boolean array where 0 indicates a normal RR-interval
+mask = pk.ppg.filter_rr_intervals(rr_ints=rri, sample_rate=sample_rate)
+
+# Keep normal RR-intervals
+peaks_clean = peaks[mask == 0]
+rri_clean = rri[mask == 0]
+```
+
+<iframe className="physiokit-plot" src="/physiokit/assets/pk-synthetic-ppg-rpeak.html" title="PPG example plot: pk-synthetic-ppg-rpeak.html" loading="lazy"></iframe>
+
+---
+
+## Compute Heart Rate
+
+The `ppg.compute_heart_rate` function computes the heart rate based on the selected `method`. The `peak` method computes heart rate based on identified systolic peaks whereas `fft` method uses FFT to compute the heart rate. The function returns the heart rate in beats per minute (BPM) along with a "quality of signal" (QoS) metric. The QoS metric is a value between 0 and 1 where 1 indicates a high quality signal and 0 indicates a low quality signal. The QoS metric is based on the selected `method`.
+
+Continuing from the previous example, we can compute the heart rate using the `fft` method.
+
+```python
+# Compute heart rate using FFT
+hr_bpm, hr_qos = pk.ppg.compute_heart_rate(
+    ppg_clean,
+    method="fft",
+    sample_rate=sample_rate
+)
+```
+
+**Example output:**
+**Heart rate: 64 BPM**
+
+---
+
+## Compute HRV Metrics
+
+Refer to [HRV Documentation](/physiokit/reference/hrv/) for computing HRV metrics based on systolic peaks.
+
+---
+
+## Derive Respiratory Rate
+
+Respiratory sinus arrhythmia (RSA) is a phenomenon where the heart rate varies with respiration. Specifically, during inspiration, the heart rate increases and during expiration, the heart rate decreases. This is due to the parasympathetic nervous system which is responsible for slowing the heart rate. The `ppg.derive_respiratory_rate` function computes the respiratory rate based on the RR-intervals. The function returns the respiratory rate in breaths per minute (BPM) along with a "quality of signal" (QoS) metric. The QoS metric is a value between 0 and 1 where 1 indicates a high quality signal and 0 indicates a low quality signal. The QoS metric is based on the selected `method`. Beyond modulating the peak-to-peak intervals, respiration also modulates the amplitude of the PPG signal.
+
+In the following snippet, we derive the respiratory rate from the PPG signal.
+
+```python
+...
+
+# Compute respiratory rate using RIFV method
+rr_bpm, rr_qos = pk.ppg.derive_respiratory_rate(
+    ppg=ppg_clean,
+    peaks=peaks[mask == 0],
+    rri=rri[mask == 0],
+    method="rifv",
+    sample_rate=sample_rate
+)
+```
+**Example output:**
+**Respiratory rate: 18 BPM**
+
+> **Note:** In certain conditions such as noisy environments, certain subjects, PPG position, etc., the respiratory rate may not be accurately estimated. In these cases, the QoS metric will be low.
+
+---
+
+## Compute SpO2
+
+Using two PPG signals with different wavelengths, we can compute the oxygen saturation (SpO2). In physioKIT, we can compute SpO2 in time domain using `ppg.compute_spo2_in_time` or frequency domain using `ppg.compute_spo2_in_frequency`.
+
+In the following snippet, we compute SpO2 in time and frequency domain from PPG signals captured by the MAX8614x sensor.
+
+```python
+max8614x_coefs = [-16.666666, 8.333333, 100]
+
+# Load PPG signals
+ppg_red = ...
+ppg_ir = ...
+
+# NOTE: Pass the raw PPG signals as routines need to extract DC component
+
+# Compute SpO2 in time domain
+spo2_td = pk.ppg.compute_spo2_in_time(
+    ppg1=ppg_red,
+    ppg2=ppg_ir,
+    coefs=max8614x_coefs,
+    lowcut=0.5,
+    highcut=4,
+    sample_rate=sample_rate
+)
+
+# Compute SpO2 in frequency domain
+spo2_fd = pk.ppg.compute_spo2_in_frequency(
+    ppg1=ppg_red,
+    ppg2=ppg_ir,
+    coefs=max8614x_coefs,
+    lowcut=0.5,
+    highcut=4,
+    sample_rate=sample_rate
+)
+```
+**Example output:**
+**SpO₂: 98%**
+
+> **Note:** When calling `ppg.compute_spo2_in_time` or `ppg.compute_spo2_in_frequency`, the `coefs` parameter must be specified. The coefficients are used to convert the PPG signals to SpO2 via a 2nd order polynomial. The coefficients are specific to the PPG sensor and should be provided by the manufacturer.
+
+---
+
+## API
+
+[Refer to PPG API for more details](/physiokit/api/physiokit/ppg/)

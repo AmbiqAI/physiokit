@@ -1,0 +1,29 @@
+---
+title: "Getting started"
+description: "Install physioKIT, run a first signal-processing workflow, and prepare your own data."
+---
+
+import CardGrid from '@ambiqai/helia-ui/astro/CardGrid';
+import LinkCard from '@ambiqai/helia-ui/astro/LinkCard';
+
+physioKIT is a Python library for processing sampled physiological signals. It can generate synthetic examples, clean recordings, find events such as ECG R-peaks, and calculate derived measures. You can follow the first example without a dataset or sensor. When you have your own recording, use its actual sampling rate with each processing function.
+
+## Choose a first step
+
+<CardGrid columns={2}>
+  <LinkCard href="/physiokit/tutorial/quickstart/" title="Install and run a first analysis">
+    Install with uv or pip, generate a synthetic ECG, find R-peaks, and calculate HRV measures.
+  </LinkCard>
+  <LinkCard href="/physiokit/tutorial/your-data/" title="Use your own data">
+    Load one ECG channel, check its shape and sampling rate, then locate peaks in your recording.
+  </LinkCard>
+</CardGrid>
+
+## How the workflow fits together
+
+1. **Provide samples.** Start with a generated signal or load an array from your own recording. Record the sampling rate in hertz (samples per second).
+2. **Prepare the signal.** Choose the cleaning routine for the signal type and pass the sampling rate used to collect the data.
+3. **Find events and calculate measures.** For ECG, R-peaks are returned as sample positions. Their spacing becomes RR intervals; the sampling rate converts those intervals to time-based measures.
+4. **Inspect the result.** Compare intermediate signals and detected events before using a derived value. The [signal guides](/physiokit/reference/) pair code examples with saved plots, while the [API Reference](/physiokit/api/) documents function inputs and outputs.
+
+physioKIT requires Python 3.12–3.14. The quickstart uses synthetic ECG data, so it is the shortest way to check your installation before working with a recording.

@@ -1,0 +1,77 @@
+---
+title: "Install and quickstart"
+description: "Install physioKIT and try a synthetic ECG signal."
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+physioKIT requires Python 3.12–3.14. Start in a Python project or virtual environment, then run the synthetic ECG example below. No external dataset is needed. If you already have a recording, begin here to check the installation, then move to [Use your own data](/physiokit/tutorial/your-data/).
+
+## Installation
+
+<Tabs>
+<TabItem label="uv project">
+
+Create a project and add physioKIT. In an existing uv project, start with `uv add physiokit`.
+
+```bash
+uv init --python 3.12 my-physio-project
+cd my-physio-project
+uv add physiokit
+```
+
+</TabItem>
+<TabItem label="pip">
+
+Install into an active virtual environment.
+
+```bash
+python -m pip install physiokit
+```
+
+</TabItem>
+</Tabs>
+
+After installation, check that your project can import the package. Use `uv run python` in a uv project or `python` in an activated virtual environment:
+
+```python
+import physiokit as pk
+
+print(pk.__version__)
+```
+
+## Generate, clean, and measure ECG
+
+This example produces a synthetic ECG, cleans it, finds R-peaks, and calculates heart rate variability measures. Run it in a notebook or Python script after installation.
+
+```python title="Python"
+import physiokit as pk
+
+sample_rate = 1000  # Hz
+signal_length = 8 * sample_rate
+ecg, segments, fiducials = pk.ecg.synthesize(
+    signal_length=signal_length,
+    sample_rate=sample_rate,
+    heart_rate=64,
+    leads=1,
+)
+ecg = ecg.squeeze()
+clean = pk.ecg.clean(ecg, sample_rate=sample_rate)
+peaks = pk.ecg.find_peaks(clean, sample_rate=sample_rate)
+intervals = pk.ecg.compute_rr_intervals(peaks)
+mask = pk.ecg.filter_rr_intervals(intervals, sample_rate=sample_rate)
+hrv = pk.hrv.compute_hrv_time(intervals[mask == 0], sample_rate=sample_rate)
+print(hrv)
+```
+
+The generator returns the waveform plus segmentation and fiducial arrays. This example uses the one-lead waveform. `find_peaks` returns positions in samples, `compute_rr_intervals` calculates the spacing between them in samples, and `filter_rr_intervals` marks intervals to exclude. The accepted intervals go to `compute_hrv_time`, which uses `sample_rate` to calculate time-domain HRV measures.
+
+The following saved plot illustrates a cleaned synthetic ECG. The documentation build does not execute the example.
+
+<iframe className="physiokit-plot" src="/physiokit/assets/pk-synthetic-ecg-clean.html" title="Cleaned synthetic ECG example" loading="lazy"></iframe>
+
+## Where to go next
+
+Try a different `heart_rate` in the generator, then compare the detected peak positions. To process a recording, follow [Use your own data](/physiokit/tutorial/your-data/). The [ECG guide](/physiokit/reference/ecg/) shows more of the ECG workflow; the other [signal guides](/physiokit/reference/) cover PPG, respiration, motion, HRV, and shared utilities. The [API Reference](/physiokit/api/) gives parameter and return-value details.
+
+The [plot source notebook](https://github.com/AmbiqAI/physiokit/blob/main/notebooks/docs.ipynb) generated the saved visuals. It contains data placeholders and is not a standalone quickstart.

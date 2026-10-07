@@ -1,0 +1,10 @@
+node_modules/
+.astro/
+dist/
+.cache/
+test-results/
+playwright-report/
+public/reference/
+src/content/docs/api/
+src/data/api-sidebar.json
+src/data/api-index.json

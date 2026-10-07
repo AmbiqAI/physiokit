@@ -5,7 +5,7 @@ Thanks for your interest in contributing to physiokit! This guide covers the bas
 ## Quick start
 
 ### Prerequisites
-- Python 3.12+ (see `pyproject.toml` for supported versions).
+- Python 3.12–3.14 (see `pyproject.toml` for supported versions).
 - Recommended: `uv` for dependency management.
 
 ### Setup
@@ -32,11 +32,18 @@ Thanks for your interest in contributing to physiokit! This guide covers the bas
   uv run pytest tests/
   ```
 
-### Docs (optional)
+### Documentation
+
+Use Node 24 (see `astro-site/.nvmrc`) and sync Python dependencies for generated API extraction. From the repository root:
+
 ```bash
-uv sync --group docs
-uv run mkdocs serve
+uv sync --frozen
+cd astro-site
+npm ci
+npm run dev
 ```
+
+Before submitting documentation changes, run `npm run check`, `npm run build`, `npm run check:output`, and `npm test` from `astro-site/`. Install the browser once with `npx playwright install chromium`. See [the site README](astro-site/README.md) for authored and generated content sources.
 
 ## Pull requests
 - Keep PRs focused and scoped to a single change.

@@ -1,0 +1,108 @@
+---
+title: "Signal guides"
+description: "Explore ECG, PPG, respiration, motion, HRV, and shared signal utilities."
+---
+
+import CardGrid from '@ambiqai/helia-ui/astro/CardGrid';
+import LinkCard from '@ambiqai/helia-ui/astro/LinkCard';
+
+Choose a signal to see focused examples and saved plots. Start with the [quickstart](/physiokit/tutorial/quickstart/) if you want a complete synthetic ECG workflow before exploring individual functions.
+
+## Choose a signal
+
+<CardGrid columns={2}>
+  <LinkCard href="/physiokit/reference/ecg/" title="ECG">Clean waveforms, find R-peaks, derive RR intervals, and generate synthetic ECG.</LinkCard>
+  <LinkCard href="/physiokit/reference/ppg/" title="PPG">Find pulse peaks and explore heart rate, respiratory rate, and SpO₂ examples.</LinkCard>
+  <LinkCard href="/physiokit/reference/rsp/" title="Respiration">Find respiratory peaks and calculate rate from sampled breathing signals.</LinkCard>
+  <LinkCard href="/physiokit/reference/imu/" title="Motion">Calculate ENMO, tilt angles, and activity counts from accelerometer data.</LinkCard>
+  <LinkCard href="/physiokit/reference/hrv/" title="Heart rate variability">Calculate time- and frequency-domain measures from beat intervals.</LinkCard>
+  <LinkCard href="/physiokit/reference/signal/" title="Signal utilities">Find shared filtering, resampling, smoothing, and transform examples.</LinkCard>
+</CardGrid>
+
+## Short examples
+
+
+### Compute heart rate from ECG peaks
+
+
+```python
+import physiokit as pk
+
+fs = 250
+ecg, segments, fiducials = pk.ecg.synthesize(
+    signal_length=10 * fs,
+    sample_rate=fs,
+    heart_rate=72,
+    leads=1,
+)
+ecg = pk.ecg.clean(ecg.squeeze(), sample_rate=fs)
+
+bpm, qos = pk.ecg.compute_heart_rate(ecg, sample_rate=fs, method="peak")
+print(bpm, qos)
+```
+
+
+### Find PPG peaks
+
+
+```python
+import numpy as np
+import physiokit as pk
+
+fs = 100
+t = np.arange(0, 8, 1 / fs)
+ppg = np.sin(2 * np.pi * 1.1 * t)
+
+peaks = pk.ppg.find_peaks(ppg, sample_rate=fs)
+print(len(peaks))
+```
+
+
+### Respiratory rate from RSP using FFT
+
+
+```python
+import numpy as np
+import physiokit as pk
+
+fs = 25
+t = np.arange(0, 40, 1 / fs)
+rsp = np.sin(2 * np.pi * 0.2 * t)
+
+bpm, qos = pk.rsp.compute_respiratory_rate(rsp, sample_rate=fs, method="fft")
+print(bpm, qos)
+```
+
+
+### IMU ENMO and tilt
+
+
+```python
+import numpy as np
+import physiokit as pk
+
+x = np.array([0, 0.1, 0.2])
+y = np.array([0, 0.1, 0.2])
+z = np.array([1, 1.0, 1.1])
+
+enmo = pk.imu.compute_enmo(x, y, z)
+angles = pk.imu.compute_tilt_angles(x, y, z, in_radians=False)
+print(enmo, angles)
+```
+
+
+### Signal helpers: filter and FFT
+
+
+```python
+import numpy as np
+import physiokit as pk
+
+fs = 100
+t = np.arange(0, 5, 1 / fs)
+sig = np.sin(2 * np.pi * 2 * t) + 0.2 * np.random.randn(t.size)
+
+clean = pk.signal.filter_signal(sig, lowcut=0.5, highcut=20, sample_rate=fs)
+freqs, sp = pk.signal.compute_fft(clean, sample_rate=fs)
+print(freqs[np.argmax(np.abs(sp))])
+```
