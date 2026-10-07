@@ -84,6 +84,10 @@ hrv_fd = pk.hrv.compute_hrv_frequency(
 
 ```
 
+## Documentation
+
+The [physioKIT documentation](https://ambiqai.github.io/physiokit/) includes a quickstart, signal examples, and a generated Python API reference. Its source and local build instructions are in [`astro-site/`](astro-site/README.md).
+
 ## License
 
 This project is licensed under the terms of BSD 3-Clause.

@@ -1,0 +1,41 @@
+{
+  "name": "physiokit-site",
+  "description": "physioKIT documentation and Python API",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "engines": {
+    "node": ">=24",
+    "npm": ">=11"
+  },
+  "scripts": {
+    "prepare:docs": "node scripts/build-reference.mjs",
+    "predev": "npm run prepare:docs",
+    "dev": "astro dev",
+    "prebuild": "npm run prepare:docs",
+    "build": "astro build",
+    "postbuild": "node scripts/publish-reference.mjs",
+    "check:output": "python3 scripts/check-output.py",
+    "precheck": "npm run prepare:docs",
+    "check": "astro check",
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "@ambiqai/helia-ui": "github:AmbiqAI/helia-ui#v0.1.0-alpha.23",
+    "@astrojs/react": "7.0.0",
+    "@astrojs/starlight": "^0.41.5",
+    "@fontsource-variable/inter": "5.3.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "astro": "7.3.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "sharp": "^0.35.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.6",
+    "@playwright/test": "1.63.0",
+    "linkedom": "0.18.13",
+    "typescript": "^5.9.3"
+  }
+}

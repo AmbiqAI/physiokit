@@ -56,7 +56,7 @@ def _simulate_breathmetrics_core(
 
     Args:
         signal_length (int, optional): Length of signal in samples. Defaults to 10000.
-        sampling_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
+        sample_rate (float, optional): Sampling rate in Hz. Defaults to 1000 Hz.
         breathing_rate (float, optional): Breathing rate in Hz. Defaults to 0.25 Hz.
         average_amplitude (float, optional): Average amplitude of breaths. Defaults to 0.5.
         amplitude_variance (float, optional): Variance of amplitude. Defaults to 0.1.

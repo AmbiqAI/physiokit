@@ -1,0 +1,208 @@
+---
+title: "Respiratory (RSP)"
+description: "Explore respiratory signals, peak detection, and rate metrics."
+---
+
+Respiratory rate is often measured on the chest using a respiration belt or a respiratory inductance plethysmography (RIP) sensor. physioKIT provides a set of functions to process RSP signals. The functions can be used to generate synthetic RSP signals, clean noisy RSP signals, extract respiratory peaks, compute respiratory rate, and compute dual band metrics.
+
+The snippets below form a walkthrough: later snippets may reuse variables from earlier ones. The plots are saved example outputs. For a standalone runnable example, start with the [quickstart](/physiokit/tutorial/quickstart/).
+
+## Synthetic RSP
+
+We can generate a synthetic RSP signal using the `rsp.synthesize` function. The function returns a numpy array with the RSP signal. The `duration` parameter specifies the length of the signal in seconds. The `sample_rate` parameter specifies the sampling rate in Hz. The `respiratory_rate` parameter specifies the respiratory rate in breaths per minute (BPM). The function returns a numpy array with the RSP signal.
+
+In the following snippet, we generate a synthetic RSP inductance band signal with a respiratory rate of 12 BPM sampled at 1000 Hz.
+
+```python
+import physiokit as pk
+
+sample_rate = 1000 # Hz
+respiratory_rate = 12 # BPM
+signal_length = 10 * sample_rate # 10 seconds
+
+rsp, segs, fids = pk.rsp.synthesize(
+    signal_length=signal_length,
+    sample_rate=sample_rate,
+    respiratory_rate=respiratory_rate,
+)
+```
+
+<iframe className="physiokit-plot" src="/physiokit/assets/pk-synthetic-rsp-raw.html" title="RSP example plot: pk-synthetic-rsp-raw.html" loading="lazy"></iframe>
+
+---
+
+## Noise Injection
+
+We can additionally add noise to generate a more realistic RSP signal.
+
+Below adds baseline wander, powerline noise, and custom noise sources to the synthetic RSP signal.
+
+```python
+# Add baseline wander
+rsp_noise = pk.signal.add_baseline_wander(
+    data=rsp,
+    amplitude=2,
+    frequency=.05,
+    sample_rate=sample_rate
+)
+
+# Add powerline noise
+rsp_noise = pk.signal.add_powerline_noise(
+    data=rsp_noise,
+    amplitude=0.05,
+    frequency=60,
+    sample_rate=sample_rate
+)
+
+# Add additional noise sources
+rsp_noise = pk.signal.add_noise_sources(
+    data=rsp_noise,
+    amplitudes=[0.05, 0.05],
+    frequencies=[10, 20],
+    noise_shapes=["laplace", "laplace"],
+    sample_rate=sample_rate
+)
+```
+
+<iframe className="physiokit-plot" src="/physiokit/assets/pk-synthetic-rsp-noise.html" title="RSP example plot: pk-synthetic-rsp-noise.html" loading="lazy"></iframe>
+
+---
+
+## Sanitize RSP
+
+We can clean the RSP signal using the `rsp.clean` function. By default, the routine implements a bandpass filter with cutoff frequencies of 0.05 Hz and 3 Hz. The `lowcut` and `highcut` parameters can be used to specify the cutoff frequencies. The `order` parameter specifies the order of the filter. The `sample_rate` parameter specifies the sampling rate in Hz. The function returns a numpy array with the cleaned RSP signal.
+
+In the following snippet, we clean the noisy RSP signal using a bandpass filter with cutoff frequencies of 0.05 Hz and 3 Hz.
+
+```python
+...
+
+# Clean RSP signal
+rsp_clean = pk.rsp.clean(
+    data=rsp_noise,
+    lowcut=0.05,
+    highcut=3,
+    order=3,
+    sample_rate=sample_rate
+)
+```
+
+<iframe className="physiokit-plot" src="/physiokit/assets/pk-synthetic-rsp-clean.html" title="RSP example plot: pk-synthetic-rsp-clean.html" loading="lazy"></iframe>
+
+## Extract Respiratory Peaks
+
+A common task in RSP processing is to extract respiratory peaks. The `rsp.find_peaks` function implements a simple peak detection algorithm. The function returns a numpy array with the indices of the peaks.
+
+In the following snippet, we extract respiratory peaks from the cleaned RSP signal.
+
+```python
+...
+
+# Extract respiratory cycles
+peaks = pk.rsp.find_peaks(data=rsp_clean, sample_rate=sample_rate)
+
+# Compute RR-intervals
+rri = pk.rsp.compute_rr_intervals(peaks=peaks)
+
+# Filter RR-intervals
+mask = pk.rsp.filter_rr_intervals(rr_ints=rri, sample_rate=sample_rate)
+
+# Keep normal RR-intervals
+peaks_clean = peaks[mask == 0]
+rri_clean = rri[mask == 0]
+```
+
+<iframe className="physiokit-plot" src="/physiokit/assets/pk-synthetic-rsp-rpeak.html" title="RSP example plot: pk-synthetic-rsp-rpeak.html" loading="lazy"></iframe>
+
+---
+
+## Compute Respiratory Rate
+
+The `rsp.compute_respiratory_rate` function computes the respiratory rate in breaths per minute (BPM) based on the selected `method`. The `peak` method computes respiratory rate based on identified respiratory peaks whereas `fft` method uses FFT to compute the respiratory rate. The function returns the respiratory rate in breaths per minute (BPM) along with a "quality of signal" (QoS) metric. The QoS metric is based on the selected `method`.
+
+In the following snippet, we compute the respiratory rate based on the identified respiratory peaks.
+
+```python
+# Compute respiratory rate
+rr_bpm, rr_qos = pk.rsp.compute_respiratory_rate(
+    data=rsp_clean,
+    method="fft",
+    sample_rate=sample_rate,
+    lowcut=0.05,
+    highcut=1
+)
+```
+**Example output:**<br />
+**Respiratory rate: 12 BPM**
+
+---
+
+## Compute Dual Band Metrics
+
+Using dual RIP bands, a ribcage (RC) band and a abdominal (AB) band, we can compute additional respiratory metrics. The `rsp.compute_dual_band_metrics` function computes the following metrics:
+
+| Metric | Description |
+| --- | --- |
+| **rc_rr** | RC respiratory rate (BPM) |
+| **ab_rr** | AB respiratory rate (BPM) |
+| **vt_rr** | VT respiratory rate (BPM) |
+| **phase** | Phase angle (degrees) |
+| **lbi** | Labored breathing index |
+| **rc_lead** | RC leads AB |
+| **rc_percent** | Percent RC contribution |
+| **qos** | Quality of signal (0-1) |
+| **rc_pk_freq** | RC peak frequency (Hz) |
+| **rc_pk_pwr** | RC peak power |
+| **ab_pk_freq** | AB peak frequency (Hz) |
+| **ab_pk_pwr** | AB peak power |
+| **vt_pk_freq** | VT peak frequency (Hz) |
+| **vt_pk_pwr** | VT peak power |
+
+In the following example, we generate synthetic RC and AB band data, compute the dual band metrics, and plot the results. We compute the metrics over a sliding window with a length of 10 seconds and an overlap of 1 second.
+
+```python
+sample_rate = 1000
+respiratory_rate = 12.2
+rc_amp = 1.5
+ab_amp = 1.0
+dur_sec = 60
+win_len = 10*sample_rate
+ovl_len = 1*sample_rate
+
+# Synthesize RC and AB band data
+rc, segs, fids = pk.rsp.synthesize(
+    signal_length=dur_sec*sample_rate,
+    sample_rate=sample_rate,
+    respiratory_rate=respiratory_rate
+)
+rc = rc * rc_amp
+
+ab, segs, fids = pk.rsp.synthesize(
+    signal_length=dur_sec*sample_rate,
+    sample_rate=sample_rate,
+    respiratory_rate=respiratory_rate
+)
+ab = ab * ab_amp
+
+# Compute metrics over sliding window
+ts_metrics, dual_metrics = [], []
+for i in range(0, rc.size - win_len, ovl_len):
+    rc_win = rc[i:i+win_len]
+    ab_win = ab[i:i+win_len]
+    ts_metrics.append((i+win_len/2)/sample_rate)
+    dual_metrics.append(pk.rsp.compute_dual_band_metrics(
+        rc=rc_win,
+        ab=ab_win,
+        sample_rate=sample_rate,
+        pwr_threshold=0.9
+    ))
+
+```
+
+<iframe className="physiokit-plot" src="/physiokit/assets/pk_rsp_dual_metrics.html" title="RSP example plot: pk_rsp_dual_metrics.html" loading="lazy"></iframe>
+
+---
+
+## API
+
+[Refer to RSP API for more details](/physiokit/api/physiokit/rsp/)

@@ -213,11 +213,10 @@ def _generate_ant_stemi_parameters(parameters: EcgPresetParameters) -> EcgPreset
     """Generate ANT STEMI parameters
 
     Args:
-        parameters (SyntheticParameters): parameters
-        rate (float): Heart rate
+        parameters (EcgPresetParameters): Preset parameters to adjust.
 
     Returns:
-        SyntheticParameters: parameters
+        EcgPresetParameters: Adjusted preset parameters.
     """
     parameters.s_presents = [0, 1, 1, 1, 0] + [1] * 7
     parameters.j_points = [
@@ -242,11 +241,10 @@ def _generate_rand_morph_parameters(parameters: EcgPresetParameters) -> EcgPrese
     """Generate random morphology parameters
 
     Args:
-        parameters (SyntheticParameters): parameters
-        rate (float): Heart rate
+        parameters (EcgPresetParameters): Preset parameters to adjust.
 
     Returns:
-        SyntheticParameters: parameters
+        EcgPresetParameters: Adjusted preset parameters.
     """
     parameters.q_depths = [random.uniform(0, 0.2) for _ in range(12)]
     parameters.pr_interval = random.randint(80, 110)
