@@ -1,0 +1,39 @@
+---
+title: "Use your own data"
+description: "Prepare a sampled ECG recording and find R-peaks with physioKIT."
+---
+
+The [quickstart](/physiokit/tutorial/quickstart/) generates its own ECG signal. To work with a recording instead, load one channel into a one-dimensional NumPy array and supply the rate at which it was sampled. The example below assumes that you have saved one ECG channel as `ecg.npy`; replace the loading line if your data uses another format.
+
+## Check the samples first
+
+- **Sampling rate:** Use the recording's actual rate in hertz. Do not rely on a function's default when your data was sampled at a different rate.
+- **Shape:** Select one channel before running the R-peak detector. The example checks for a one-dimensional array.
+- **Values:** Check for missing or nonfinite samples before filtering. How to repair gaps or artifacts depends on the recording and is outside this example.
+
+## Clean ECG and locate peaks
+
+```python title="Python"
+import numpy as np
+import physiokit as pk
+
+sample_rate = 250  # Replace with your recording's rate in Hz.
+ecg = np.load("ecg.npy")  # A one-dimensional array of ECG samples.
+
+if ecg.ndim != 1 or ecg.size == 0:
+    raise ValueError("Select one nonempty ECG channel before processing")
+if not np.all(np.isfinite(ecg)):
+    raise ValueError("Handle missing or nonfinite ECG samples first")
+
+clean = pk.ecg.clean(ecg, sample_rate=sample_rate)
+peaks = pk.ecg.find_peaks(clean, sample_rate=sample_rate)
+peak_seconds = peaks / sample_rate
+print(f"Detected {len(peaks)} R-peaks")
+print(peak_seconds)
+```
+
+`peaks` contains sample positions, not timestamps. Dividing by `sample_rate` converts those positions to seconds from the start of the array. Inspect the cleaned waveform and peak positions together before calculating further measures. If no peaks are found, check the channel selection, sampling rate, recording length, and signal quality.
+
+## Continue the analysis
+
+The [ECG guide](/physiokit/reference/ecg/) shows additional cleaning, RR-interval, heart-rate, and synthesis examples. To calculate HRV, follow the interval filtering and `compute_hrv_time` calls in the [quickstart](/physiokit/tutorial/quickstart/). The [signal guides](/physiokit/reference/) cover PPG, respiration, motion, and shared utilities when your source is not ECG.

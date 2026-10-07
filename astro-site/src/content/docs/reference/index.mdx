@@ -1,21 +1,25 @@
 ---
-title: "Signals Overview"
+title: "Signal guides"
 description: "Explore ECG, PPG, respiration, motion, HRV, and shared signal utilities."
 ---
 
+import CardGrid from '@ambiqai/helia-ui/astro/CardGrid';
+import LinkCard from '@ambiqai/helia-ui/astro/LinkCard';
 
-physioKIT bundles end-to-end utilities for common wearable signals—ECG, PPG, respiratory (RSP), inertial (IMU), and derived HRV. Each module ships cleaning, peak detection, metrics, and synthetic data helpers built on a consistent API.
+Choose a signal to see focused examples and saved plots. Start with the [quickstart](/physiokit/tutorial/quickstart/) if you want a complete synthetic ECG workflow before exploring individual functions.
 
-## Modules at a Glance
+## Choose a signal
 
-- **[ECG](/physiokit/reference/ecg/)**: Cleaning, R-peak detection, RR intervals, HR/respiration, segmentation, and synthetic ECG.
-- **[PPG](/physiokit/reference/ppg/)**: Peak detection, HR/respiration from peaks or FFT, SpO₂ estimation, and PPG synthesis.
-- **[RSP](/physiokit/reference/rsp/)**: Respiratory peak detection, rate estimation (FFT/peaks), and dual-band ribcage/abdomen metrics.
-- **[IMU](/physiokit/reference/imu/)**: ENMO, tilt angles, and activity counts for accelerometer data.
-- **[HRV](/physiokit/reference/hrv/)**: Time and frequency-domain HRV metrics and supporting dataclasses.
-- **[Signal](/physiokit/reference/signal/)**: Shared filters, resampling, smoothing, noise/distortion helpers, and FFT utilities.
+<CardGrid columns={2}>
+  <LinkCard href="/physiokit/reference/ecg/" title="ECG">Clean waveforms, find R-peaks, derive RR intervals, and generate synthetic ECG.</LinkCard>
+  <LinkCard href="/physiokit/reference/ppg/" title="PPG">Find pulse peaks and explore heart rate, respiratory rate, and SpO₂ examples.</LinkCard>
+  <LinkCard href="/physiokit/reference/rsp/" title="Respiration">Find respiratory peaks and calculate rate from sampled breathing signals.</LinkCard>
+  <LinkCard href="/physiokit/reference/imu/" title="Motion">Calculate ENMO, tilt angles, and activity counts from accelerometer data.</LinkCard>
+  <LinkCard href="/physiokit/reference/hrv/" title="Heart rate variability">Calculate time- and frequency-domain measures from beat intervals.</LinkCard>
+  <LinkCard href="/physiokit/reference/signal/" title="Signal utilities">Find shared filtering, resampling, smoothing, and transform examples.</LinkCard>
+</CardGrid>
 
-## Quickstart Examples
+## Short examples
 
 
 ### Compute heart rate from ECG peaks

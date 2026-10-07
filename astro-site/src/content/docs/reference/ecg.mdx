@@ -79,9 +79,9 @@ ecg = pk.signal.add_lead_noise(
 
 ## Sanitize ECG
 
-As mentioned above, ECG signals are often corrupted by noise and artifacts. The `ecg.clean` function provides a simple way to remove noise from ECG signals. By default, the routine implements a bandpass filter with cutoff frequencies of 0.5 and 40 Hz.
+As mentioned above, ECG signals are often corrupted by noise and artifacts. The `ecg.clean` function provides a simple way to remove noise from ECG signals. By default, the routine implements a bandpass filter with cutoff frequencies of 0.5 and 30 Hz.
 
-In the following snippet, we apply a bandpass filter from 2 to 30 Hz to the synthetic ECG signal.
+In the following snippet, we apply a bandpass filter from 1 to 30 Hz to the synthetic ECG signal.
 
 ```python
 ...

@@ -3,8 +3,13 @@ import { expect, test } from '@playwright/test';
 test('home, examples, API and plots survive the migration', async ({ page }) => {
   await page.goto('/physiokit/');
   await expect(page.getByRole('heading', { name: /Understand the signals/ })).toBeVisible();
+  await page.getByRole('link', { name: 'Get started' }).click();
+  await expect(page.getByRole('heading', { name: 'Getting started' })).toBeVisible();
+  await page.getByRole('link', { name: 'Use your own data' }).last().click();
+  await expect(page.getByRole('heading', { name: 'Clean ECG and locate peaks' })).toBeVisible();
+  await page.goto('/physiokit/');
   await page.getByRole('link', { name: 'Explore examples' }).click();
-  await expect(page.getByRole('heading', { name: 'Signals Overview' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Signal guides' })).toBeVisible();
   await page.goto('/physiokit/reference/ecg/');
   await expect(page.getByRole('heading', { name: 'Electrocardiography (ECG)' })).toBeVisible();
   const plot = page.locator('iframe[src="/physiokit/assets/pk-synthetic-ecg-raw.html"]');
@@ -20,8 +25,8 @@ test('mobile navigation and documentation assets work', async ({ page }) => {
   await expect(page.getByRole('tab', { name: 'uv project' })).toBeVisible();
   await page.locator('summary[aria-label^="Current section"]').click();
   await page.getByRole('navigation', { name: 'Choose section' })
-    .getByRole('link', { name: 'Signals and examples' }).click();
-  await expect(page.getByRole('heading', { name: 'Signals Overview' })).toBeVisible();
+    .getByRole('link', { name: 'Guides' }).click();
+  await expect(page.getByRole('heading', { name: 'Signal guides' })).toBeVisible();
   const plot = await page.request.get('/physiokit/assets/pk-synthetic-ecg-clean.html');
   expect(plot.ok()).toBeTruthy();
   await page.goto('/physiokit/tutorial/quickstart/');

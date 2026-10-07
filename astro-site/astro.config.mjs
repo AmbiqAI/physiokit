@@ -7,7 +7,6 @@ import { sections } from './src/navigation.mjs';
 export default defineConfig({
   site: 'https://ambiqai.github.io',
   base: '/physiokit',
-  redirects: { '/tutorial': '/physiokit/tutorial/quickstart/' },
   integrations: [
     react(),
     starlight({

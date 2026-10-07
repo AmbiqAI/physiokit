@@ -10,14 +10,18 @@ export const sections = [
   { label: 'Home', href: '/physiokit/', sidebar: false },
   {
     label: 'Getting started',
-    href: '/physiokit/tutorial/quickstart/',
-    sidebar: [page('Install and quickstart', 'tutorial/quickstart')],
+    href: '/physiokit/tutorial/',
+    sidebar: [
+      page('Overview', 'tutorial'),
+      page('Install and quickstart', 'tutorial/quickstart'),
+      page('Use your own data', 'tutorial/your-data'),
+    ],
   },
   {
-    label: 'Signals and examples',
+    label: 'Guides',
     href: '/physiokit/reference/',
     sidebar: [
-      page('Overview', 'reference'),
+      page('Signal guides', 'reference'),
       page('ECG', 'reference/ecg'),
       page('PPG', 'reference/ppg'),
       page('Respiration', 'reference/rsp'),
@@ -27,7 +31,7 @@ export const sections = [
     ],
   },
   {
-    label: 'Python API',
+    label: 'API Reference',
     href: '/physiokit/api/',
     sidebar: [page('API catalog', 'api'), ...apiGroups],
   },

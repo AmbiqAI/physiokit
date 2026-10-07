@@ -33,7 +33,9 @@ for file in site.rglob("*.html"):
 
 required = [
     "index.html",
+    "tutorial/index.html",
     "tutorial/quickstart/index.html",
+    "tutorial/your-data/index.html",
     "reference/index.html",
     *[f"reference/{name}/index.html" for name in ("ecg", "ppg", "rsp", "imu", "hrv", "signal")],
     "api/index.html",
