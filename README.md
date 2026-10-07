@@ -20,7 +20,7 @@ physioKIT is an open-source Python package designed for processing and analyzing
 
 ## Requirements
 
-* [Python 3.12+](https://www.python.org)
+* [Python 3.12–3.14](https://www.python.org)
 
 ## Installation
 
