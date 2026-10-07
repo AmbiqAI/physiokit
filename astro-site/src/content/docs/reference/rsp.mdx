@@ -9,7 +9,7 @@ The snippets below form a walkthrough: later snippets may reuse variables from e
 
 ## Synthetic RSP
 
-We can generate a synthetic RSP signal using the `rsp.synthesize` function. The function returns a numpy array with the RSP signal. The `duration` parameter specifies the length of the signal in seconds. The `sample_rate` parameter specifies the sampling rate in Hz. The `respiratory_rate` parameter specifies the respiratory rate in breaths per minute (BPM). The function returns a numpy array with the RSP signal.
+We can generate a synthetic RSP signal using the `rsp.synthesize` function. The function returns three NumPy arrays: the RSP waveform, segmentation mask, and fiducial mask. The `signal_length` parameter specifies the number of samples. The `sample_rate` parameter specifies the sampling rate in Hz. The `respiratory_rate` parameter specifies the respiratory rate in breaths per minute (BPM).
 
 In the following snippet, we generate a synthetic RSP inductance band signal with a respiratory rate of 12 BPM sampled at 1000 Hz.
 
@@ -120,7 +120,7 @@ rri_clean = rri[mask == 0]
 
 The `rsp.compute_respiratory_rate` function computes the respiratory rate in breaths per minute (BPM) based on the selected `method`. The `peak` method computes respiratory rate based on identified respiratory peaks whereas `fft` method uses FFT to compute the respiratory rate. The function returns the respiratory rate in breaths per minute (BPM) along with a "quality of signal" (QoS) metric. The QoS metric is based on the selected `method`.
 
-In the following snippet, we compute the respiratory rate based on the identified respiratory peaks.
+In the following snippet, we compute the respiratory rate from the cleaned waveform using the FFT method.
 
 ```python
 # Compute respiratory rate
@@ -139,7 +139,7 @@ rr_bpm, rr_qos = pk.rsp.compute_respiratory_rate(
 
 ## Compute Dual Band Metrics
 
-Using dual RIP bands, a ribcage (RC) band and a abdominal (AB) band, we can compute additional respiratory metrics. The `rsp.compute_dual_band_metrics` function computes the following metrics:
+Using dual RIP bands, a ribcage (RC) band and an abdominal (AB) band, we can compute additional respiratory metrics. The `rsp.compute_dual_band_metrics` function computes the following metrics:
 
 | Metric | Description |
 | --- | --- |

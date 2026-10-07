@@ -15,3 +15,5 @@ Next: resolve review findings, obtain the shared release after approval, update 
 Gotchas: existing `/reference/*`, `/tutorial/quickstart/`, and `/api/physiokit/*` routes are retained. `/tutorial/` is authored Getting Started content; `/tutorial/your-data/` is new. Plots are lazy standalone iframes using the Plotly CDN. Notebook data placeholders need external recordings. The release workflow calls the docs workflow, which publishes Astro after cutover. Local macOS SciPy `_propack` import is unreliable; runtime snippet validation used Linux.
 
 Publication: final review fixes are pushed. Fresh CI and Copilot re-reviews requested; verify the final head before approval. Product PRs remain draft pending shared helia-ui approval, release and immutable dependency pins.
+
+Review follow-up: guide prose now names the actual ECG preset and PPG/RSP synthesis APIs, sample-count inputs and tuple returns. Respiratory examples name the selected method.

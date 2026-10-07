@@ -178,7 +178,7 @@ rr_bpm, rr_qos = pk.ecg.derive_respiratory_rate(
 ---
 ## Advanced Synthetic ECG
 
-physioKIT provides a more customizable way to generate synthetic ECG signals. The `ecg.generate_nsr` and `ecg.generate_afib` functions enable generation of normal sinus rhythm (NSR) and atrial fibrillation (AFib) ECG signals, respectively. In addition to returning the ECG signal, these advanced functions also return the PQRST segmentations and fiducials. Both methods also allow tuning parameters such as cardiovascular presets (e.g. LBBB), p and t wave multipliers, signal impedance, and more.
+Use `ecg.synthesize` with `EcgPreset.SR` or `EcgPreset.AFIB` to generate normal sinus rhythm or atrial fibrillation examples. The function returns the ECG waveform, PQRST segmentation mask, and fiducial mask. Parameters control the preset, P- and T-wave multipliers, signal impedance, and noise.
 
 In the following example, we generate a single lead normal sinus rhythm ECG signal with a heart rate of 64 BPM sampled at 1000 Hz.
 
