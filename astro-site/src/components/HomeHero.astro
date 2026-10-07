@@ -7,6 +7,7 @@ const source = readFileSync('../pyproject.toml', 'utf8');
 const version = source.match(/^version\s*=\s*"([^"]+)"/m)?.[1];
 if (!version) throw new Error('Missing physioKIT version in pyproject.toml');
 const base = import.meta.env.BASE_URL;
+const isHome = Astro.url.pathname.replace(/\/+$/, '') === base.replace(/\/+$/, '');
 const capabilities = [
   ['01', 'Generate', 'Synthetic ECG, PPG, and respiratory signals'],
   ['02', 'Clean', 'Filter noise from sampled sensor data'],
@@ -14,7 +15,7 @@ const capabilities = [
   ['04', 'Measure', 'Calculate rates, motion features, and HRV'],
 ];
 ---
-{data.hero?.tagline ? <>
+{isHome && data.hero?.tagline ? <>
   <section class="physiokit-hero" aria-labelledby="_top">
     <div class="hero-meta"><span class="product"><img src={`${base}/assets/favicon.png`} alt="" width="28" height="28" />physioKIT</span><span class="version">v{version}</span></div>
     <div class="hero-layout">

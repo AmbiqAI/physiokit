@@ -47,3 +47,11 @@ test('official Ambiq footer art follows the chosen theme', async ({ page }) => {
     await expect.poll(() => logo.evaluate((element) => getComputedStyle(element).maskImage)).toContain(asset);
   }
 });
+
+
+test('unknown routes return the built not-found page', async ({ page }) => {
+  const response = await page.goto('/physiokit/this-route-does-not-exist/');
+  expect(response?.status()).toBe(404);
+  await expect(page.getByRole('heading', { name: '404', exact: true })).toBeVisible();
+  await expect(page.locator('.helia-site-header__title')).toHaveAttribute('href', '/physiokit/');
+});

@@ -34,6 +34,7 @@ for file in site.rglob("*.html"):
     pages[file.resolve()] = parser
 
 required = [
+    "404.html",
     "index.html",
     "tutorial/index.html",
     "tutorial/quickstart/index.html",
