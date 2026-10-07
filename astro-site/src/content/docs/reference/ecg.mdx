@@ -29,6 +29,7 @@ ecg, segs, fids = pk.ecg.synthesize(
     preset=pk.ecg.EcgPreset.SR,
     noise_multiplier=0.1
 )
+ecg = ecg.squeeze()
 ```
 
 <iframe className="physiokit-plot" src="/physiokit/assets/pk-synthetic-ecg-raw.html" title="ECG example plot: pk-synthetic-ecg-raw.html" loading="lazy"></iframe>
@@ -39,7 +40,7 @@ ecg, segs, fids = pk.ecg.synthesize(
 
 Often real world ECG signals are corrupted by a variety of noise sources. To generate a more realistic ECG signal, physioKIT provides a number of noise injection routines such as baseline wander, powerline noise, and custom noise sources.
 
-Given the previous synthetic ECG signal, we can add baseline wander, powerline noise, and custom noise sources.
+The single-lead waveform above is flattened to one value per sample. Noise helpers use that sample count to generate noise over time. We can add baseline wander, powerline noise, and custom noise sources.
 
 ```python
 # Add baseline wander

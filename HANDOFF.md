@@ -24,3 +24,5 @@ Not-found handling: restrict the product hero to the home route so unknown route
 Release validation: clean installation of alpha.24 passed. Final check/build/output checks pass, with 7 rendered acceptance checks passing against the clean released dependency. User authorized merging after green CI.
 
 Final review: contributor instructions now use Astro; install guidance matches requires-python >=3.12,<3.15. API catalog search browser coverage passes.
+
+Final review follow-up: flatten the single ECG lead before noise injection and supply the documented Node 24 version file. Linux Python 3.12 executed the ECG synthesis and every documented noise call: 8000 finite samples with time-varying noise. Astro check/build/output and all seven browser tests pass after this fix.
