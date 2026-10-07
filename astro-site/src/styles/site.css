@@ -1,3 +1,4 @@
+.helia-site-header__title { font-weight: var(--helia-weight-regular); }
 .sl-markdown-content img { height: auto; max-width: 100%; }
 .sl-markdown-content table { display: block; overflow-x: auto; font-size: .9rem; }
 .sl-markdown-content details { border: 1px solid var(--sl-color-hairline); border-radius: .7rem; padding: .8rem 1rem; margin-block: 1rem; }
