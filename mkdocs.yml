@@ -29,7 +29,7 @@ nav:
 theme:
   name: material
   favicon: assets/favicon.png
-  logo: assets/logo-white.png
+  logo: assets/ambiq-logo-blue.svg
   icon:
       repo: fontawesome/brands/github-alt
   font:

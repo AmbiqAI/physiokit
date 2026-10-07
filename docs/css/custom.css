@@ -217,3 +217,33 @@ th, td {
 .md-typeset h2 {
   color: #2094F3;
 }
+
+
+:is(.md-header__button, .md-nav__button).md-logo {
+  display: flex;
+  align-items: center;
+  margin: 0.3rem 0.2rem;
+  padding: 0.2rem 0.35rem;
+  border-radius: 0.25rem;
+  background: #fff;
+}
+
+:is(.md-header__button, .md-nav__button).md-logo img {
+  width: 5.7rem;
+  height: auto;
+  max-height: 1.65rem;
+}
+
+[data-md-color-scheme="slate"] :is(.md-header__button, .md-nav__button).md-logo {
+  background: transparent;
+}
+
+[data-md-color-scheme="slate"] :is(.md-header__button, .md-nav__button).md-logo img {
+  content: url("../assets/ambiq-logo-white.svg");
+}
+
+@media screen and (max-width: 44.984375em) {
+  .md-header__button.md-logo img {
+    width: 4.2rem;
+  }
+}
