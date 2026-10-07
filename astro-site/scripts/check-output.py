@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import ast
+import re
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
@@ -42,6 +44,14 @@ required = [
     "api/physiokit/index.html",
 ]
 errors: list[str] = []
+for source in Path("src/content/docs").rglob("*.mdx"):
+    for match in re.finditer(r"^```python[^\n]*\n(.*?)^```", source.read_text(), re.MULTILINE | re.DOTALL):
+        try:
+            ast.parse(match.group(1))
+        except SyntaxError as error:
+            line = source.read_text()[: match.start()].count("\n") + 1
+            errors.append(f"{source}:{line}: invalid Python snippet: {error.msg}")
+
 for route in required:
     if not (site / route).is_file():
         errors.append(f"Missing route: {route}")

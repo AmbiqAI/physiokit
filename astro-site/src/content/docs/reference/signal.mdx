@@ -29,18 +29,18 @@ import physiokit as pk
 fs = 1000  # Hz
 tgt_hr = 64  # BPM
 
-ppg = pk.ppg.synthesize(
-    duration=10,  # in seconds
+ppg, segments, fiducials = pk.ppg.synthesize(
+    signal_length=10 * fs,
     sample_rate=fs,
     heart_rate=tgt_hr,
 )
 
 ppg_clean = pk.signal.filter_signal(
-    data=ppg_noise,
+    data=ppg,
     lowcut=0.5,
     highcut=4,
     order=3,
-    sample_rate=fs
+    sample_rate=fs,
     forward_backward=True
 )
 ```
@@ -67,8 +67,8 @@ import physiokit as pk
 fs = 1000  # Hz
 tgt_hr = 64  # BPM
 
-ppg = pk.ppg.synthesize(
-    duration=10,  # in seconds
+ppg, segments, fiducials = pk.ppg.synthesize(
+    signal_length=10 * fs,
     sample_rate=fs,
     heart_rate=tgt_hr,
 )
@@ -94,6 +94,7 @@ ppg_noise = pk.signal.add_noise_sources(
     data=ppg_noise,
     amplitudes=[0.05, 0.05],
     frequencies=[10, 20],
+    noise_shapes=["laplace", "laplace"],
     sample_rate=fs
 )
 ```

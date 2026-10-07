@@ -26,19 +26,23 @@ Choose a signal to see focused examples and saved plots. Start with the [quickst
 
 
 ```python
-import numpy as np
 import physiokit as pk
 
 fs = 250
-t = np.arange(0, 10, 1 / fs)
-ecg = np.sin(2 * np.pi * 1.2 * t)  # toy signal
+ecg, segments, fiducials = pk.ecg.synthesize(
+    signal_length=10 * fs,
+    sample_rate=fs,
+    heart_rate=72,
+    leads=1,
+)
+ecg = pk.ecg.clean(ecg.squeeze(), sample_rate=fs)
 
 bpm, qos = pk.ecg.compute_heart_rate(ecg, sample_rate=fs, method="peak")
 print(bpm, qos)
 ```
 
 
-### Find PPG peaks and estimate SpO₂
+### Find PPG peaks
 
 
 ```python
@@ -50,8 +54,7 @@ t = np.arange(0, 8, 1 / fs)
 ppg = np.sin(2 * np.pi * 1.1 * t)
 
 peaks = pk.ppg.find_peaks(ppg, sample_rate=fs)
-spo2 = pk.ppg.compute_spo2_in_time(ppg, ppg, sample_rate=fs)
-print(len(peaks), spo2)
+print(len(peaks))
 ```
 
 

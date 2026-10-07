@@ -125,7 +125,7 @@ rri_clean = rri[mask == 0]
 
 The `ppg.compute_heart_rate` function computes the heart rate based on the selected `method`. The `peak` method computes heart rate based on identified systolic peaks whereas `fft` method uses FFT to compute the heart rate. The function returns the heart rate in beats per minute (BPM) along with a "quality of signal" (QoS) metric. The QoS metric is a value between 0 and 1 where 1 indicates a high quality signal and 0 indicates a low quality signal. The QoS metric is based on the selected `method`.
 
-Continuing from the previous example, we can compute the heart rate using the `peak` method.
+Continuing from the previous example, we can compute the heart rate using the `fft` method.
 
 ```python
 # Compute heart rate using FFT
@@ -158,7 +158,7 @@ In the following snippet, we derive the respiratory rate from the PPG signal.
 
 # Compute respiratory rate using RIFV method
 rr_bpm, rr_qos = pk.ppg.derive_respiratory_rate(
-    ppg=peaks[mask == 0],
+    ppg=ppg_clean,
     peaks=peaks[mask == 0],
     rri=rri[mask == 0],
     method="rifv",
