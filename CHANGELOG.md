@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.11.1](https://github.com/AmbiqAI/physiokit/compare/v0.11.0...v0.11.1) (2026-10-25)
+
+
+### Bug Fixes
+
+* refresh certificate trust dependencies ([cdf0026](https://github.com/AmbiqAI/physiokit/commit/cdf002696b7f254ec10b336e18333667cc11da5d))
+
+
+### Documentation
+
+* migrate physioKIT to Astro and align the KIT landing page ([#26](https://github.com/AmbiqAI/physiokit/issues/26)) ([42faabf](https://github.com/AmbiqAI/physiokit/commit/42faabf58deb4b802a5bce17383c1f0032b84ad0))
+* remove landing TOC and align mobile navigation ([#29](https://github.com/AmbiqAI/physiokit/issues/29)) ([8aacb2c](https://github.com/AmbiqAI/physiokit/commit/8aacb2ca3e394a6a2c1314a9cdb9b0853d066efd))
+
 ## [0.11.0](https://github.com/AmbiqAI/physiokit/compare/v0.10.1...v0.11.0) (2026-01-20)
 
 
