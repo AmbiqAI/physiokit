@@ -19,6 +19,7 @@ classifiers = [
 ]
 
 dependencies = [
+  "certifi>=2026.10.19",
   "numpy>=2.1.1,<3.0",
   "scipy>=1.14.1,<2.0",
   "requests>=2.32.4,<3.0",
@@ -30,6 +31,7 @@ Source = 'https://github.com/AmbiqAI/physiokit'
 
 [dependency-groups]
 dev = [
+  "virtualenv>=21.14.13",
   "pytest>=8.0.0,<9.0",
   "pre-commit>=3.6.0,<4.0",
   "ipython>=8.20.0,<9.0",
